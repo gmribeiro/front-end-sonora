@@ -1,9 +1,9 @@
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/footer'
-import './css/Home.css'
+import './css/MeusConvites.css'
 import React from 'react'
 
-function Home() {
+function Meusconvites() {
   return (
     <>
         <Header/>
@@ -12,4 +12,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Meusconvites
