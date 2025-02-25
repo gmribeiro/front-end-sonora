@@ -31,3 +31,25 @@ header .cima img {
 .search:hover{
     border: 0.5px solid #c2a0bb;
 }
+
+.links{
+    height: 3rem;
+    width: 100%;
+    color: #c2a0bb;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+}
+
+.link{
+    text-decoration: none;
+    color: #c2a0bb;
+    font-size: 1.5rem;
+}
+
+.link:hover{
+    color: #fff;
+    text-decoration: none;
+    transition: 50ms;
+}
