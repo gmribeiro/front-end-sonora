@@ -49,7 +49,19 @@ header .cima img {
 }
 
 .link:hover{
-    color: #fff;
+    color: #272749;
     text-decoration: none;
     transition: 50ms;
+}
+
+.div-cadastro{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    text-decoration: none;
+}
+
+.icone{
+    font-size: 6rem;
 }

@@ -1,5 +1,6 @@
-import './header.css'
+import './header.css';
 import { Link } from 'react-router-dom';
+import { CgProfile } from "react-icons/cg";
 import React from 'react'
 
 function Header() {
@@ -13,7 +14,13 @@ function Header() {
             <Link className='link' to="/">Home</Link>
             <Link className='link' to="/Meusconvites">Meus Convites</Link>
             <Link className='link' to="/Localizacao">Localização</Link>
+            <Link className='link' to="/Cadastro">Cadastre-se</Link>
           </nav>
+
+          <div className='div-cadastro'>
+            <CgProfile className='icone'/>
+          </div>
+
         </div>
       </header>
   )
