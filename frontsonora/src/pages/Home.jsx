@@ -1,5 +1,15 @@
-import './App.css'
+import Header from '../components/Header/Header'
+import './css/Home.css'
 
 
+import React from 'react'
 
-export default App
+function Home() {
+  return (
+    <>
+        <Header/>
+    </>
+  )
+}
+
+export default Home
