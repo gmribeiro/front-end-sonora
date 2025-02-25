@@ -1,8 +1,8 @@
 import Header from '../components/Header/Header'
-import './css/Home.css'
+import './css/Eventos.css'
 import React from 'react'
 
-function Home() {
+function Eventos() {
   return (
     <>
         <Header/>
@@ -10,4 +10,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Eventos

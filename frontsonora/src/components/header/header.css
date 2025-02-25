@@ -1,0 +1,33 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    background-color: #564a72;
+    color: #c2a0bb;
+}
+
+header .cima {
+    display: flex; 
+    align-items: center;
+}
+
+header .cima img {
+    max-height: 10rem;
+    margin-left: 5rem; 
+}
+
+.search{
+    width: 30rem;
+    height: 3rem;
+    border-style: hidden;
+    border-color: #c2a0bb;
+    border-radius: 0.8rem;
+    text-align: justify;
+    text-indent: 1rem;
+    margin-left: 5rem;
+}
+
+.search:hover{
+    border: 0.5px solid #c2a0bb;
+}
