@@ -10,6 +10,7 @@ header {
 header .cima {
     display: flex; 
     align-items: center;
+    gap: 2.5rem;
 }
 
 header .cima img {
@@ -18,14 +19,14 @@ header .cima img {
 }
 
 .search{
-    width: 30rem;
+    width: 50rem;
     height: 3rem;
     border-style: hidden;
     border-color: #c2a0bb;
     border-radius: 0.8rem;
     text-align: justify;
     text-indent: 1rem;
-    margin-left: 5rem;
+    margin-left: 2rem;
 }
 
 .search:hover{
@@ -54,12 +55,22 @@ header .cima img {
     transition: 50ms;
 }
 
+.div-localizacao:hover{
+    color: #272749;
+    transition: 100ms;
+}
+
 .div-cadastro{
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 2rem;
     text-decoration: none;
+}
+
+.div-cadastro:hover{
+    color: #272749;
+    transition: 100ms;
 }
 
 .icone{

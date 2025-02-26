@@ -1,0 +1,53 @@
+.container-eventos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 6rem 15rem; 
+    padding: 5rem;
+    justify-content: center;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.evento {
+    width: 300px;
+    height: 520px; 
+    background: linear-gradient(to bottom, #2E284E, #5A4E75, #8B7EA2, #C5B6D2, #E8DFEC);
+    border-radius: 12px;
+    text-align: center;
+    padding: 2rem;
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+.evento img {
+    width: 250px;
+    height: 350px; 
+    object-fit: cover; 
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.evento h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.evento p {
+    font-size: 1.2rem;
+    color: #5A4E75;
+    margin-bottom: 1rem;
+}
+
+.btn-reservar {
+    background-color: #5A4E75;  
+    color: #ffffff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.btn-reservar:hover {
+    background-color: #2E284E;
+}
