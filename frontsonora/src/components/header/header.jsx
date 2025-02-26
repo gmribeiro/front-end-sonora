@@ -8,7 +8,10 @@ function Header() {
   return (
       <header>
         <div className='cima'>
-          <img src="../../public/logosemfundo.png" alt="" />
+          <Link className="link logo-link" to="/">
+            <img src="../../public/logosemfundo.png" alt="Logo" className="logo"/>
+          </Link>
+
           <input type="search" name="search" className='search' placeholder='Encontre seu estilo favorito'/>
 
           <nav className='links'>
@@ -21,13 +24,13 @@ function Header() {
             <Link className='link' to="/Cadastro">Cadastre-se</Link>
           </nav>
 
-          <div className='div-cadastro'>
+          <Link className="link logo-link" to="/Meuperfil">
               <CgProfile className='icone'/>
-          </div>
+          </Link>
 
         </div>
       </header>
   )
 }
 
-export default Header
+export default Header;
