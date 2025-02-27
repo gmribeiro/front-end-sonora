@@ -1,9 +1,11 @@
 import './css/Cadastro.css'
+import Cadastrar from '../components/Cadastrar/cadastrar.jsx'
 import React from 'react'
 
 function Cadastro() {
   return (
     <>
+    <Cadastrar/>
     </>
   )
 }
