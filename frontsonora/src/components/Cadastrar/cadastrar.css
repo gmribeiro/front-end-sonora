@@ -3,7 +3,6 @@ body, html {
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
 }
 
 .fundo {
@@ -45,7 +44,7 @@ body, html {
     margin-top: 20px;
 }
 
-.botao-musico, .botao-cliente {
+.botao-musico, .botao-cliente, .botao-voltar {
     background-color: #1F1536;
     color: white;
     border: none;
@@ -58,4 +57,15 @@ body, html {
 
 .botao-musico:hover, .botao-cliente:hover {
     background-color: #A48BB3;
+}
+
+.botao-voltar {
+    position: absolute;
+    top: 50px;
+    left: 100px;
+    background-color: #A48BB3;
+}
+
+.botao-voltar:hover{
+    background-color: #1F1536;
 }

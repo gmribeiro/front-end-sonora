@@ -3,6 +3,7 @@ import './cadastrar.css'
 const Cadastrar = () => {
     return (
         <div className='fundo'>
+            <button className='botao-voltar' onClick={() => window.location.href = '/'}>Voltar</button>
             <img src="../public/fundocadastro.png" alt="" />
             <div className='area-cadastro'>
                 <h1>Realize seu cadastro e começe a curtir a música</h1>
