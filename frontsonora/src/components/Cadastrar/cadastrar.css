@@ -10,10 +10,8 @@ body, html {
     width: 100vw;
     height: 100vh;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-start; /* Alinha tudo à esquerda */
     color: #1F1536;
 }
 
@@ -32,15 +30,20 @@ body, html {
     z-index: 1;
     background: #EDE6F2;
     padding: 20px;
-    border-radius: 10px;
     font-size: 15px;
-    padding-bottom: 40rem;
+    padding-bottom: 44.5rem;
+    width: 45vw; 
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .botoes-cadastro {
     display: flex;
     justify-content: center;
-    gap: 15rem;
+    gap: 4rem;
     margin-top: 20px;
 }
 
@@ -61,11 +64,19 @@ body, html {
 
 .botao-voltar {
     position: absolute;
-    top: 50px;
-    left: 100px;
+    bottom: 20px;
+    right: 20px;
     background-color: #A48BB3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 22px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
 }
 
-.botao-voltar:hover{
+.botao-voltar:hover {
     background-color: #1F1536;
 }
+

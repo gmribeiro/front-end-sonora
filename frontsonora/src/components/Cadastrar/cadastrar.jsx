@@ -1,10 +1,10 @@
-import './cadastrar.css'
+import './cadastrar.css';
 
 const Cadastrar = () => {
     return (
         <div className='fundo'>
             <button className='botao-voltar' onClick={() => window.location.href = '/'}>Voltar</button>
-            <img src="../public/fundocadastro.png" alt="" />
+            <img src="../public/fundocadastro.png" alt="Fundo" />
             <div className='area-cadastro'>
                 <h1>Realize seu cadastro e começe a curtir a música</h1>
                 <h2>Escolha seu tipo de cadastro:</h2>
@@ -14,7 +14,7 @@ const Cadastrar = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Cadastrar;
