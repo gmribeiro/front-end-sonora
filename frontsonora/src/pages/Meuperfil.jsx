@@ -1,5 +1,5 @@
 import Header from '../components/HeaderPerfil/headerperfil'
-import './css/meuperfil.css'
+import './css/global.css'
 import React from 'react'
 
 function Meuperfil() {
