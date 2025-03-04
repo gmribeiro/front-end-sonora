@@ -1,8 +1,10 @@
+/* Reset básico */
 body, html {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
+    font-family: Arial, sans-serif;
 }
 
 .fundo {
@@ -11,8 +13,9 @@ body, html {
     height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* Alinha tudo à esquerda */
+    justify-content: flex-start;
     color: #1F1536;
+    overflow: hidden; /* Evita rolagem desnecessária */
 }
 
 .fundo img {
@@ -25,58 +28,113 @@ body, html {
     z-index: -1;
 }
 
+/* Área do formulário de cadastro */
 .area-cadastro {
     position: relative;
     z-index: 1;
     background: #EDE6F2;
-    padding: 20px;
-    font-size: 15px;
-    padding-bottom: 44.5rem;
-    width: 45vw; 
-    min-width: 400px;
+    padding: 3rem;
+    font-size: 1rem;
+    width: 40vw;
+    min-width: 350px;
+    max-width: 600px;
+    min-height: 70vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border-radius: 10px;
 }
 
+/* Botões de cadastro */
 .botoes-cadastro {
     display: flex;
     justify-content: center;
-    gap: 4rem;
-    margin-top: 20px;
+    gap: 2rem;
+    margin-top: 1rem;
 }
 
 .botao-musico, .botao-cliente, .botao-voltar {
     background-color: #1F1536;
     color: white;
     border: none;
-    padding: 10px 20px;
-    font-size: 22px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
     border-radius: 5px;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
 }
 
 .botao-musico:hover, .botao-cliente:hover {
     background-color: #A48BB3;
+    transform: scale(1.05);
 }
 
+/* Botão voltar ajustado */
 .botao-voltar {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: 1rem;
+    right: 1rem;
     background-color: #A48BB3;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 22px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s;
 }
 
 .botao-voltar:hover {
     background-color: #1F1536;
 }
 
+/* Responsividade */
+@media (max-width: 1024px) {
+    .area-cadastro {
+        width: 50vw;
+        min-height: 60vh;
+        padding: 2rem;
+    }
+    
+    .botoes-cadastro {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+    }
+    
+    .botao-musico, .botao-cliente {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .fundo {
+        justify-content: center;
+    }
+
+    .area-cadastro {
+        width: 80vw;
+        min-height: auto;
+        padding: 2rem;
+    }
+
+    .botao-voltar {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        margin-top: 1rem;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .area-cadastro {
+        width: 90vw;
+        padding: 1.5rem;
+    }
+
+    .botoes-cadastro {
+        gap: 0.5rem;
+    }
+
+    .botao-musico, .botao-cliente {
+        font-size: 1rem;
+        padding: 0.6rem 1rem;
+    }
+}

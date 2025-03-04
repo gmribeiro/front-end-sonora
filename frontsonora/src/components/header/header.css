@@ -1,21 +1,28 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    width: 100%;
+    padding: 2rem 5%;
     background-color: #564a72;
     color: #c2a0bb;
 }
 
 header .cima {
-    display: flex; 
+    display: flex;
     align-items: center;
-    gap: 2.5rem;
+    gap: 2rem;
+    width: 100%;
 }
 
 header .cima img {
-    max-height: 10rem;
-    margin-left: 5rem; 
+    max-height: 8rem;
 }
 
 .logo-link {
@@ -24,7 +31,7 @@ header .cima img {
 }
 
 .logo {
-    width: 120px; 
+    width: 100px;
     height: auto;
     transition: opacity 0.3s ease;
 }
@@ -33,62 +40,79 @@ header .cima img {
     opacity: 0.8;
 }
 
-
-.search{
-    width: 50rem;
+.search {
+    flex: 1;
+    max-width: 500px;
     height: 3rem;
-    border-style: hidden;
-    border-color: #c2a0bb;
+    border: none;
     border-radius: 0.8rem;
-    text-align: justify;
     text-indent: 1rem;
-    margin-left: 2rem;
+    min-width: 250px;
 }
 
-.search:hover{
+.search:hover {
     border: 0.5px solid #c2a0bb;
 }
 
-.links{
-    height: 3rem;
-    width: 100%;
-    color: #c2a0bb;
+.links {
     display: flex;
-    justify-content: space-around;
-    align-items: center;
-    
+    justify-content: center;
+    gap: 2rem;
+    width: 100%;
+    padding: 1rem;
 }
 
-.link{
+.link {
     text-decoration: none;
     color: #c2a0bb;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 
-.link:hover{
+.link:hover {
     color: #272749;
-    text-decoration: none;
     transition: 50ms;
 }
 
-.div-localizacao:hover{
+.div-localizacao:hover,
+.div-cadastro:hover {
     color: #272749;
     transition: 100ms;
 }
 
-.div-cadastro{
+.div-cadastro {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
     text-decoration: none;
 }
 
-.div-cadastro:hover{
-    color: #272749;
-    transition: 100ms;
+.icone {
+    font-size: 4rem;
 }
 
-.icone{
-    font-size: 6rem;
+/* Responsividade */
+@media (max-width: 1024px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem 2rem;
+    }
+
+    .search {
+        max-width: 80%;
+        margin: 1rem auto;
+    }
+
+    .links {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .link {
+        font-size: 1.2rem;
+    }
+
+    .icone {
+        font-size: 3rem;
+    }
 }
