@@ -42,12 +42,12 @@ header .cima img {
 
 .search {
     flex: 1;
-    max-width: 500px; 
-    height: 3.4rem; 
+    max-width: 500px;
+    height: 3.4rem;
     border: none;
     border-radius: 1rem;
     text-indent: 1rem;
-    min-width: 400px; 
+    min-width: 400px;
     font-size: 1rem;
     margin-right: 2rem;
 }
@@ -59,37 +59,36 @@ header .cima img {
 .links {
     display: flex;
     align-items: center;
-    gap: 6rem; 
-    padding: 0.5rem;
+    gap: 3rem;
 }
 
 .link {
-    text-decoration: none;
+    text-decoration: none; /* Remove a linha azul (sublinhado) nos links */
     color: #c2a0bb;
     font-size: 1rem;
 }
 
 .link:hover {
     color: #272749;
-    transition: 50ms;
-    transition: background-color 0.5s ease, color 0.5s ease; 
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-#btn-cadastro {
-    background-color: #fff;
-    color: #564a72;
-    padding: 0.7rem 1rem; 
-    border-radius: 0.5rem;
-    font-weight: bold;
-    text-align: center;
-    transition: background-color 0.3s ease, color 0.3s ease;
+.perfil {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Pequeno espaçamento entre o ícone e o nome */
 }
 
-#btn-cadastro:hover {
-    background-color: #c2a0bb;
-    color: white;
+.perfil-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #c2a0bb;
 }
 
+.icone-perfil {
+    font-size: 3.2rem;
+}
 
 @media (max-width: 1024px) {
     header {
@@ -99,9 +98,9 @@ header .cima img {
     }
 
     .search {
-        max-width: 90%; 
+        max-width: 90%;
         margin: 1rem auto;
-        height: 3rem; 
+        height: 3rem;
     }
 
     .links {
@@ -112,10 +111,6 @@ header .cima img {
     .link {
         font-size: 1.2rem;
     }
-
-    .icone {
-        font-size: 3rem;
-    }
 }
 
 @media (max-width: 768px) {
@@ -124,8 +119,8 @@ header .cima img {
     }
 
     .search {
-        max-width: 95%; 
-        height: 2.8rem; 
+        max-width: 95%;
+        height: 2.8rem;
     }
 
     .links {
@@ -134,10 +129,6 @@ header .cima img {
 
     .link {
         font-size: 1rem;
-    }
-
-    .icone {
-        font-size: 2.5rem;
     }
 }
 
@@ -148,7 +139,7 @@ header .cima img {
 
     .search {
         max-width: 100%;
-        height: 2.5rem; 
+        height: 2.5rem;
     }
 
     .links {
@@ -157,9 +148,5 @@ header .cima img {
 
     .link {
         font-size: 1rem;
-    }
-
-    .icone {
-        font-size: 2rem;
     }
 }

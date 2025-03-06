@@ -1,14 +1,12 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+.espaco-eventos {
+    background-color: #EDE6F2;
 }
 
 .container-eventos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
+    gap: 6rem;
+    padding: 3rem;
     max-width: 1200px;
     margin: auto;
     justify-content: center;

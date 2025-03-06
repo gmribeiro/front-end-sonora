@@ -1,8 +1,9 @@
-import './header.css';
+import './headercadastrado.css';
 import { Link } from 'react-router-dom';
-import React from 'react'
+import React from 'react';
+import { CgProfile } from "react-icons/cg";
 
-function Header() {
+function HeaderCadastrado() {
   return (
       <header>
         <div className='cima'>
@@ -15,12 +16,16 @@ function Header() {
           <nav className='links'>
             <Link className='link' to="/">HOME</Link>
             <Link className='link' to="/MeusConvites">MEUS CONVITES</Link>
-            <Link className='link' id='btn-cadastro' to="/Cadastro">CADASTRE-SE</Link>
+            <div className="perfil">
+              <Link className='link perfil-item' to="/Meuperfil">
+                <CgProfile className="icone-perfil" />
+                <span className='nome-perfil'>MF_SPINULA</span>
+              </Link> 
+            </div>
           </nav>
-
         </div>
       </header>
-  )
+  );
 }
 
-export default Header;
+export default HeaderCadastrado;

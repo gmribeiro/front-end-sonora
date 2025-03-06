@@ -1,4 +1,4 @@
-import Header from '../components/Header/header'
+import HeaderCadastrado from '../components/HeaderCadastrado/headercadastrado'
 import Footer from '../components/Footer/footer'
 import './css/global.css'
 import React from 'react'
@@ -6,7 +6,7 @@ import React from 'react'
 function Meusconvites() {
   return (
     <>
-        <Header/>
+        <HeaderCadastrado/>
         <Footer/>
     </>
   )

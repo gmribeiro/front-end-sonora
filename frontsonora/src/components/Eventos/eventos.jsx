@@ -11,15 +11,17 @@ const Eventos = () => {
     ];
 
     return (
-        <div className="container-eventos">
-            {eventos.map(evento => (
-                <div key={evento.id} className="evento">
-                    <img src={evento.imagem} alt={evento.titulo} />
-                    <h3>{evento.titulo}</h3>
-                    <p>{evento.local} - {evento.hora}</p>
-                    <button className="btn-reservar">Reservar</button>
-                </div>
-            ))}
+        <div className='espaco-eventos'>
+            <div className="container-eventos">
+                {eventos.map(evento => (
+                    <div key={evento.id} className="evento">
+                        <img src={evento.imagem} alt={evento.titulo} />
+                        <h3>{evento.titulo}</h3>
+                        <p>{evento.local} - {evento.hora}</p>
+                        <button className="btn-reservar">Reservar</button>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
