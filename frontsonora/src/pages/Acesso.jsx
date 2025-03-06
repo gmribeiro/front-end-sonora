@@ -1,9 +1,9 @@
-import Header from '../components/Header/Header'
+import Header from '../components/Header/header'
 import Footer from '../components/Footer/footer'
 import './css/global.css'
 import React from 'react'
 
-function Localizacao() {
+function Acesso() {
   return (
     <>
         <Header/>
@@ -12,4 +12,4 @@ function Localizacao() {
   )
 }
 
-export default Localizacao
+export default Acesso

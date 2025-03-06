@@ -8,7 +8,7 @@ const HeaderPerfil = () => {
       {/* Logo */}
       <div className="cima">
         <Link className="link logo-link" to="/">
-          <img src="../../public/logosemfundo.png" alt="Logo" className="logo" />
+          <img src="/logosemfundo.png" alt="Logo" className="logo" />
         </Link>
       </div>
       

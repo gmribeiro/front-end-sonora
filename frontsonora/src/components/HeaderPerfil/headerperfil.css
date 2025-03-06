@@ -4,7 +4,7 @@
 }
 
 .logo {
-    width: 90px;  /* Reduzi um pouco para melhor proporção no header menor */
+    width: 90px;  
     height: auto;
     transition: opacity 0.3s ease;
 }
@@ -16,12 +16,12 @@
 .profile-section {
     display: flex;
     align-items: center;
-    gap: 20px; /* Diminuído para economizar espaço */
-    margin-left: 20px; /* Reduzi para aproximar os elementos */
+    gap: 20px; 
+    margin-left: 20px; 
     max-width: 90vw;
     width: 100%;
     justify-content: flex-start;
-    height: 2rem; /* Defini uma altura menor para o header */
+    height: 1rem; 
 }
 
 .profile-info {
@@ -32,7 +32,7 @@
 }
 
 .username {
-    font-size: 1.5rem; /* Reduzi um pouco para melhor encaixe */
+    font-size: 1.5rem; 
     font-weight: bold;
 }
 
@@ -45,7 +45,7 @@
 .logout-button {
     background-color: white;
     color: #5a3d7a;
-    padding: 5px 25px; /* Ajustei para um botão mais compacto */
+    padding: 5px 25px;
     border-radius: 9999px;
     cursor: pointer;
     transition: background 0.2s ease-in-out;
@@ -65,7 +65,7 @@
 }
 
 .profile-circle {
-    width: 140px; /* Diminuído para harmonizar com o header menor */
+    width: 140px; 
     height: 140px;
     background-color: #c4a1c9;
     border-radius: 50%;
@@ -73,7 +73,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: translateY(60px) translateX(-120px); /* Ajustado para melhor alinhamento */
+    transform: translateY(60px) translateX(-120px); 
 }
 
 /* Responsividade */
@@ -84,7 +84,7 @@
         margin-left: 0;
         text-align: center;
         gap: 15px;
-        height: auto; /* Deixa flexível em telas menores */
+        height: auto; 
     }
 
     .profile-circle {

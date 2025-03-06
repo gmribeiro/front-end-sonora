@@ -4,7 +4,7 @@ const Cadastrar = () => {
     return (
         <div className='fundo'>
             <button className='botao-voltar' onClick={() => window.location.href = '/'}>Voltar</button>
-            <img src="../public/fundocadastro.png" alt="Fundo" />
+            <img src="/fundocadastro.png" alt="Fundo" />
             <div className='area-cadastro'>
                 <h1>Conectamos você à música</h1>
                 <h2>Cadastre-se abaixo:</h2>
