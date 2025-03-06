@@ -63,7 +63,7 @@ header .cima img {
 }
 
 .link {
-    text-decoration: none; /* Remove a linha azul (sublinhado) nos links */
+    text-decoration: none; 
     color: #c2a0bb;
     font-size: 1rem;
 }
@@ -76,7 +76,7 @@ header .cima img {
 .perfil {
     display: flex;
     align-items: center;
-    gap: 0.5rem; /* Pequeno espaçamento entre o ícone e o nome */
+    gap: 0.5rem; 
 }
 
 .perfil-item {
@@ -90,6 +90,7 @@ header .cima img {
     font-size: 3.2rem;
 }
 
+/* Responsividade */
 @media (max-width: 1024px) {
     header {
         flex-direction: column;

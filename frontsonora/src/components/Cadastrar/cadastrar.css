@@ -99,12 +99,14 @@ body, html {
     transform: scale(1.05);
 }
 
+/* Responsividade para Desktop (acima de 1024px) */
 @media (max-width: 1024px) {
     .area-cadastro {
         width: 60vw;  
     }
 }
 
+/* Responsividade para Tablets (768px a 1024px) */
 @media (max-width: 768px) {
     .area-cadastro {
         width: 80vw;
@@ -119,6 +121,7 @@ body, html {
     }
 }
 
+/* Responsividade para Celulares (abaixo de 768px) */
 @media (max-width: 480px) {
     .area-cadastro {
         width: 100vw;

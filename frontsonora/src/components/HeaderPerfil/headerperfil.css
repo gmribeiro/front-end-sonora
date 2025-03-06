@@ -129,3 +129,32 @@
         padding: 3px 18px;
     }
 }
+
+@media (max-width: 480px) {
+    .logo {
+        width: 80px;
+    }
+
+    .profile-section {
+        gap: 8px;
+        margin-left: 0;
+    }
+
+    .profile-circle {
+        width: 90px;
+        height: 90px;
+    }
+
+    .username {
+        font-size: 1.1rem;
+    }
+
+    .logout-button {
+        font-size: 0.7rem;
+        padding: 3px 15px;
+    }
+
+    .edit-name {
+        font-size: 0.7rem;
+    }
+}
