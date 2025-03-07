@@ -10,6 +10,9 @@ body, html {
     position: relative;
     width: 100vw;
     height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
 }
 
@@ -23,47 +26,46 @@ body, html {
     z-index: 0;
 }
 
-.area-cadastro {
-    position: absolute;
-    top: 0;
-    left: 0;
+.area-entrar {
     background: #EDE6F2;
-    width: 50vw;  
-    height: 100vh; 
+    width: 30vw;  
+    height: 30vw; 
     display: flex;
     flex-direction: column;
     justify-content: center; 
     align-items: center;
     padding: 3rem;
     box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
 }
 
-.area-cadastro h1, .area-cadastro h2 {
+.area-entrar h1, .area-entrar h2 {
     margin-bottom: 1rem;
     color: #1F1536;
+    text-align: center;
 }
 
-.form-cadastro {
+.form-entrar {
     display: flex;
     flex-direction: column;
-    width: 80%;
+    width: 100%;
+    align-items: center;
 }
 
-.form-cadastro label {
+.form-entrar label {
     font-weight: bold;
     margin-bottom: 0.3rem;
 }
 
-.form-cadastro input {
-    width: 100%;
+.form-entrar input {
+    width: 80%;
     padding: 0.8rem;
     border: 1px solid #A48BB3;
-    border-radius: 5px;
     font-size: 1rem;
     margin-bottom: 1rem;
 }
 
-.botao-cadastrar {
+.botao-entrar {
     background-color: #1F1536;
     color: white;
     border: none;
@@ -72,10 +74,10 @@ body, html {
     cursor: pointer;
     border-radius: 5px;
     transition: background 0.3s, transform 0.2s;
-    width: 100%;
+    width: 50%;
 }
 
-.botao-cadastrar:hover {
+.botao-entrar:hover {
     background-color: #A48BB3;
     transform: scale(1.05);
 }
@@ -95,6 +97,10 @@ body, html {
     z-index: 10;
 }
 
+.sem-conta {
+    margin-top: 2rem;
+}
+
 .botao-voltar:hover {
     background-color: #1F1536;
     transform: scale(1.05);
@@ -102,14 +108,14 @@ body, html {
 
 /* Responsividade para Desktop (acima de 1024px) */
 @media (max-width: 1024px) {
-    .area-cadastro {
+    .area-entrar {
         width: 60vw;  
     }
 }
 
 /* Responsividade para Tablets (768px a 1024px) */
 @media (max-width: 768px) {
-    .area-cadastro {
+    .area-entrar {
         width: 80vw;
         padding: 2rem;
     }
@@ -124,8 +130,8 @@ body, html {
 
 /* Responsividade para Celulares (abaixo de 768px) */
 @media (max-width: 480px) {
-    .area-cadastro {
-        width: 100vw;
+    .area-entrar {
+        width: 90vw;
         padding: 1.5rem;
     }
 

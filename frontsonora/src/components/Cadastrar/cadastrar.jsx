@@ -1,4 +1,5 @@
 import './cadastrar.css';
+import { Link } from 'react-router-dom';
 
 const Cadastrar = () => {
     return (
@@ -27,6 +28,11 @@ const Cadastrar = () => {
 
                     <button type="submit" className="botao-cadastrar">Cadastrar-se</button>
                 </form>
+
+                <div className='sem-conta'>
+                    Já tem uma conta?
+                    <Link className='link' to="/Acesso"> Acesse aqui</Link>
+                </div>
             </div>
         </div>
     );

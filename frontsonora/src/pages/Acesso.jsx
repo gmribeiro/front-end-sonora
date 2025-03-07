@@ -1,4 +1,4 @@
-import Acessar from '../components/Acessar/acessar'
+import Acessar from '../components/Acessar/acessar.jsx'
 import './css/global.css'
 import React from 'react'
 
