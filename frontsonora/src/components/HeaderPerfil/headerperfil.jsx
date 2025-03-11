@@ -1,30 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./HeaderPerfil.css";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; // Importando Link
 
 const HeaderPerfil = () => {
+  const [nome, setNome] = useState("Nome de usuário");
+  const [editando, setEditando] = useState(false);
+  const navigate = useNavigate();
+
+  const alterarNome = () => {
+    setEditando(!editando);
+  };
+
+  const handleLogout = () => {
+    navigate("/acesso");
+  };
+
   return (
-    <header className="header-container">
-      {/* Logo */}
-      <div className="cima">
-        <Link className="link logo-link" to="/">
+    <header className="header-perfil">
+      {/* Logo com redirecionamento para Home */}
+      <div className="logo-container">
+        <Link to="/" className="logo-link">
           <img src="/logosemfundo.png" alt="Logo" className="logo" />
         </Link>
       </div>
-      
+
       {/* Perfil */}
-      <div className="profile-section">
-        <div className="profile-image-container">
-          <div className="profile-circle"></div>
-        </div>
-        <div className="profile-info">
-          <h2 className="username">Nome de Usuário</h2>
-          <span className="edit-name">✏️ Editar nome</span>
+      <div className="info-perfil">
+        <div className="foto-container"></div>
+        <div className="perfil-info">
+          {editando ? (
+            <input
+              type="text"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              className="input-nome"
+            />
+          ) : (
+            <h1>{nome}</h1>
+          )}
+          <button onClick={alterarNome} className="btn-editar">
+            {editando ? "Salvar" : "Editar"}
+          </button>
         </div>
       </div>
-      
-      {/* Botão de Logout */}
-      <button className="logout-button">
+      <button onClick={handleLogout} className="btn-sair">
         Sair da conta
       </button>
     </header>
