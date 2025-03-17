@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./HeaderPerfil.css";
 import { Link } from "react-router-dom"; // Importando Link
+import { MdNotifications } from "react-icons/md"; // Ícone de Notificações
 
 const HeaderPerfil = () => {
   const [nome, setNome] = useState("Nome de usuário");
@@ -44,6 +45,12 @@ const HeaderPerfil = () => {
           </button>
         </div>
       </div>
+
+      {/* Botão de Notificações */}
+      <button className="btn-notifications">
+        <MdNotifications size={28} />
+      </button>
+
       <button onClick={handleLogout} className="btn-sair">
         Sair da conta
       </button>

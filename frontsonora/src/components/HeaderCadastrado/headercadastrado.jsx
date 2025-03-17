@@ -2,6 +2,7 @@ import './headercadastrado.css';
 import { Link } from 'react-router-dom';
 import React from 'react';
 import { CgProfile } from "react-icons/cg";
+import { MdNotifications } from "react-icons/md";
 
 function HeaderCadastrado() {
   return (
@@ -17,6 +18,10 @@ function HeaderCadastrado() {
             <Link className='link' to="/">HOME</Link>
             <Link className='link' to="/MeusConvites">MEUS CONVITES</Link>
             <div className="perfil">
+              {/* Botão de Notificações */}
+              <button className="btn-notifications">
+                <MdNotifications />
+              </button>
               <Link className='link perfil-item' to="/Meuperfil">
                 <CgProfile className="icone-perfil" />
                 <span className='nome-perfil'>MF_SPINULA</span>
