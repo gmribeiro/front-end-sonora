@@ -1,7 +1,8 @@
 import './acessar.css';
 import { Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 
-const Cadastrar = () => {
+const Acessar = () => {
     return (
         <div className='fundo'>
             <button className='botao-voltar' onClick={() => window.location.href = '/'}>Voltar</button>
@@ -18,8 +19,24 @@ const Cadastrar = () => {
 
                     <button type="submit" className="botao-entrar">Entrar</button>
                 </form>
+
+                <h3>ou</h3>
+
+                <GoogleLogin
+                    clientId="514141073233-1e9hp32vikk8euh1hgoap2p0otbnvltp.apps.googleusercontent.com"
+                    onSuccess={credentialResponse => {
+                        console.log(credentialResponse);
+                        // login bem-sucedido
+                    }}
+                    onError={() => {
+                        console.log('Login Failed');
+                        // login falho
+                    }}
+                    className="botao-google" // Adicionando a classe aqui
+                />
+
                 <div className='sem-conta'>
-                    Não tem uma conta? 
+                    Não tem uma conta?
                     <Link className='link' to="/Cadastro"> Cadastrar</Link>
                 </div>
             </div>
@@ -27,4 +44,4 @@ const Cadastrar = () => {
     );
 };
 
-export default Cadastrar;
+export default Acessar;

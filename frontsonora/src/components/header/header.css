@@ -9,7 +9,7 @@ header {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 1rem 5%;
+    padding: 2rem 5%;
     background-color: #564a72;
     color: #c2a0bb;
 }
@@ -17,12 +17,12 @@ header {
 header .cima {
     display: flex;
     align-items: center;
-    gap: 2rem;
     width: 100%;
 }
 
 header .cima img {
-    max-height: 8rem;
+    max-height: 10rem;
+    min-height: 5rem; 
 }
 
 .logo-link {
@@ -31,7 +31,7 @@ header .cima img {
 }
 
 .logo {
-    width: 100px;
+    width: 100%;
     height: auto;
     transition: opacity 0.3s ease;
 }
@@ -47,9 +47,10 @@ header .cima img {
     border: none;
     border-radius: 1rem;
     text-indent: 1rem;
-    min-width: 400px;
+    min-width: 200px;
     font-size: 1rem;
-    margin-right: 2rem;
+    margin: 0 2rem;
+    background-color: #EDE6F2;
 }
 
 .search:hover {
@@ -74,17 +75,16 @@ header .cima img {
     transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-#btn-cadastro {
+#btn-entrar {
     background-color: #fff;
     color: #564a72;
     padding: 0.7rem 1rem;
-    border-radius: 0.5rem;
     font-weight: bold;
     text-align: center;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-#btn-cadastro:hover {
+#btn-entrar:hover {
     background-color: #c2a0bb;
     color: white;
 }
@@ -97,7 +97,7 @@ header .cima img {
     }
 
     .search {
-        max-width: 90%;
+        width: 90%;
         margin: 1rem auto;
         height: 3rem;
     }
@@ -110,10 +110,6 @@ header .cima img {
     .link {
         font-size: 1.2rem;
     }
-
-    .icone {
-        font-size: 3rem;
-    }
 }
 
 @media (max-width: 768px) {
@@ -122,7 +118,7 @@ header .cima img {
     }
 
     .search {
-        max-width: 95%;
+        width: 95%;
         height: 2.8rem;
     }
 
@@ -133,10 +129,6 @@ header .cima img {
     .link {
         font-size: 1rem;
     }
-
-    .icone {
-        font-size: 2.5rem;
-    }
 }
 
 @media (max-width: 480px) {
@@ -145,8 +137,9 @@ header .cima img {
     }
 
     .search {
-        max-width: 100%;
+        width: 100%;
         height: 2.5rem;
+        margin: 1rem 0;
     }
 
     .links {
@@ -157,7 +150,11 @@ header .cima img {
         font-size: 1rem;
     }
 
-    .icone {
-        font-size: 2rem;
+    header .cima img {
+        max-height: 8rem; /* Reduzi o tamanho da logo em telas menores */
+    }
+
+    .logo {
+        width: 100px; /* Reduzi a largura da logo em telas menores */
     }
 }
