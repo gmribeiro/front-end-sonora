@@ -32,12 +32,16 @@ const Acessar = () => {
                         console.log('Login Failed');
                         // login falho
                     }}
-                    className="botao-google" // Adicionando a classe aqui
+                    className="botao-google"
                 />
 
                 <div className='sem-conta'>
                     Não tem uma conta?
                     <Link className='link' to="/Cadastro"> Cadastrar</Link>
+                </div>
+
+                <div className='esqueci-senha'>
+                    <Link className='link' to="/EsqueciSenha">Esqueci a senha</Link>
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Acesso from './pages/Acesso'
 import Cadastro from './pages/Cadastro'
 import Meuperfil from './pages/Meuperfil'
+import EsqueciSenha from './pages/EsqueciSenha';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/acesso" element={<Acesso/>} />
         <Route path="/cadastro" element={<Cadastro/>} />
         <Route path="/meuperfil" element={<Meuperfil/>} />
+        <Route path="/esquecisenha" element={<EsqueciSenha/>} />
       </Routes>
     </Router>
   </StrictMode>,
