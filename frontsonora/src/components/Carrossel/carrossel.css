@@ -109,8 +109,8 @@
 /* Ajustes para telas maiores (ex: tablets e desktops) */
 @media (min-width: 1024px) {
     .categoria {
-        width: clamp(120px, 20vw, 160px);
-        height: clamp(100px, 15vw, 160px);
+        width: clamp(120px, 20vw, 220px);
+        height: clamp(100px, 15vw, 220px);
     }
 
     .icone {
