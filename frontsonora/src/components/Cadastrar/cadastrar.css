@@ -101,6 +101,28 @@ body, html {
     transform: scale(1.05);
 }
 
+.selecao-tipo-cadastro {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.selecao-tipo-cadastro button {
+    background-color: #A48BB3;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.selecao-tipo-cadastro button:hover {
+    background-color: #1F1536;
+    transform: scale(1.05);
+}
+
 /* Responsividade para Desktop (acima de 1024px) */
 @media (max-width: 1024px) {
     .area-cadastro {

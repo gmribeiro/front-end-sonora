@@ -3,11 +3,9 @@ import { useRef } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { GiCarnivalMask } from "react-icons/gi";
 import { GiCowboyBoot } from "react-icons/gi";
-import { FaMasksTheater } from "react-icons/fa6";
 import { IoMdMicrophone } from "react-icons/io";
 import { GiThunderSkull } from "react-icons/gi";
 import { GiBrazilFlag } from "react-icons/gi";
-import { FaBookReader } from "react-icons/fa";
 import { TbHorseToy } from "react-icons/tb";
 
 
@@ -15,11 +13,9 @@ import { TbHorseToy } from "react-icons/tb";
 const categorias = [
     { nome: "Carnaval", icone: <GiCarnivalMask/> },
     { nome: "Sertanejo", icone: <GiCowboyBoot/>  },
-    { nome: "Teatros e Espetáculos", icone: <FaMasksTheater /> },
-    { nome: "Stand Up Comedy", icone: <IoMdMicrophone/> },
+    { nome: "Indie", icone: <IoMdMicrophone/> },
     { nome: "Rock'n roll", icone:  <GiThunderSkull/> },
     { nome: "MPB", icone: <GiBrazilFlag/> },
-    { nome: "Congressos e Palestras", icone: <FaBookReader/> },
     { nome: "Infantil", icone: <TbHorseToy/> },
 ];
 

@@ -11,9 +11,9 @@
     display: flex;
     overflow-x: auto;
     scroll-behavior: smooth;
-    gap: 1rem;
-    padding: 1rem;
-    max-width: 80vw;
+    gap: clamp(1rem, 3vw, 2rem);
+    padding: clamp(1rem, 2vw, 2rem);
+    max-width: 90vw;
     scrollbar-width: none;
 }
 
@@ -30,14 +30,14 @@
     color: white;
     padding: 1rem;
     border-radius: 50%;
-    width: 150px;
-    height: 150px;
+    width: clamp(100px, 25vw, 150px);
+    height: clamp(80px, 15vw, 150px); 
     text-align: center;
     font-weight: bold;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s;
-    margin-top: 5rem;
-    margin-bottom: 5rem;
+    margin-top: 5%;
+    margin-bottom: 5%;
 }
 
 .categoria:hover {
@@ -66,9 +66,58 @@
 }
 
 .left {
-    left: 170px;
+    left: 2%;
 }
 
 .right {
-    right: 170px;
+    right: 2%;
+}
+
+/* Ajustes para telas médias (ex: tablets menores) */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .categoria {
+        width: clamp(110px, 22vw, 160px);
+        height: clamp(90px, 14vw, 160px);
+    }
+
+    .icone {
+        font-size: 2.2rem;
+    }
+
+    .carrossel-btn {
+        font-size: 1.6rem;
+    }
+}
+
+/* Ajustes para telas menores (ex: smartphones) */
+@media (max-width: 768px) {
+    .categoria {
+        width: clamp(80px, 20vw, 120px);
+        height: clamp(60px, 12vw, 120px);
+        padding: 0.8rem;
+    }
+
+    .icone {
+        font-size: 1.5rem;
+    }
+
+    .carrossel-btn {
+        font-size: 1.2rem;
+    }
+}
+
+/* Ajustes para telas maiores (ex: tablets e desktops) */
+@media (min-width: 1024px) {
+    .categoria {
+        width: clamp(120px, 20vw, 160px);
+        height: clamp(100px, 15vw, 160px);
+    }
+
+    .icone {
+        font-size: 2.5rem;
+    }
+
+    .carrossel-btn {
+        font-size: 1.8rem;
+    }
 }
