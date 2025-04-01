@@ -18,10 +18,7 @@ function HeaderCadastrado() {
             <Link className='link' to="/">HOME</Link>
             <Link className='link' to="/MeusConvites">MEUS CONVITES</Link>
             <div className="perfil">
-              {/* Botão de Notificações */}
-              <button className="btn-notifications">
-                <MdNotifications />
-              </button>
+            <div className="btn-notifications"><Link className='link' to="/notificacao"><MdNotifications size={28} /></Link></div>
               <Link className='link perfil-item' to="/Meuperfil">
                 <CgProfile className="icone-perfil" />
                 <span className='nome-perfil'>MF_SPINULA</span>

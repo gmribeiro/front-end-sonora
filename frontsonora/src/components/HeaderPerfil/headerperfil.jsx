@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./HeaderPerfil.css";
-import { Link } from "react-router-dom"; // Importando Link
-import { MdNotifications } from "react-icons/md"; // Ícone de Notificações
+import { Link } from "react-router-dom";
+import { MdNotifications } from "react-icons/md";
 
 const HeaderPerfil = () => {
   const [nome, setNome] = useState("Nome de usuário");
@@ -19,14 +19,12 @@ const HeaderPerfil = () => {
 
   return (
     <header className="header-perfil">
-      {/* Logo com redirecionamento para Home */}
       <div className="logo-container">
         <Link to="/" className="logo-link">
           <img src="/logosemfundo.png" alt="Logo" className="logo" />
         </Link>
       </div>
 
-      {/* Perfil */}
       <div className="info-perfil">
         <div className="foto-container"></div>
         <div className="perfil-info">
@@ -46,10 +44,7 @@ const HeaderPerfil = () => {
         </div>
       </div>
 
-      {/* Botão de Notificações */}
-      <button className="btn-notifications">
-        <MdNotifications size={28} />
-      </button>
+      <div className="btn-notifications"><Link className='link' to="/notificacao"><MdNotifications size={28} /></Link></div>
 
       <button onClick={handleLogout} className="btn-sair">
         Sair da conta

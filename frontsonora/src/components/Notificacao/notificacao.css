@@ -1,0 +1,64 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #EDE6F2;
+}
+
+.notifications-container {
+    flex: 1; /* Faz o container crescer sem ultrapassar */
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Mantém centralizado */
+    padding: 10px;
+}
+
+.notifications-title {
+    background-color: #5d476e;
+    color: white;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    width: 85%;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.notifications-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: 85%;
+    height: auto;
+    margin-top: 15px;
+}
+
+.notification-card {
+    background-color: #5d476e;
+    color: white;
+    padding: 15px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    height: 250px;
+}
+
+.notification-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+}
