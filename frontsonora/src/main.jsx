@@ -9,6 +9,9 @@ import Cadastro from './pages/Cadastro'
 import Meuperfil from './pages/Meuperfil'
 import EsqueciSenha from './pages/EsqueciSenha';
 import Notificacao from './pages/Notificacao'
+import SobreNos from './pages/genericos/SobreNos'
+import Termos from './pages/genericos/Termos'
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -21,6 +24,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/meuperfil" element={<Meuperfil/>} />
         <Route path="/esquecisenha" element={<EsqueciSenha/>} />
         <Route path="/notificacao" element={<Notificacao/>} />
+        <Route path="/sobrenos" element={<SobreNos/>} />
+        <Route path="/termos" element={<Termos/>} />
         
       </Routes>
     </Router>
