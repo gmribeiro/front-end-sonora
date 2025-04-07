@@ -9,7 +9,7 @@ header {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 2rem 5%;
+    padding: 2rem 100rem;
     background-color: #564a72;
     color: #c2a0bb;
 }
@@ -21,8 +21,12 @@ header .cima {
 }
 
 header .cima img {
-    max-height: 10rem;
-    min-height: 5rem; 
+    max-height: 6rem;
+    min-height: 4rem;
+    height: auto;
+    width: auto;
+    max-width: 150px;
+
 }
 
 .logo-link {

@@ -1,0 +1,80 @@
+.sobre-nos-container {
+    font-family: 'Georgia', serif;
+    color: #1f1f1f;
+    line-height: 1.6;
+    background-color: #FFFFFF;
+  }
+  
+  /* Seção com fundo azul claro */
+  .sobre-nos-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4rem 8%;
+    flex-wrap: wrap;
+  }
+  
+  .sobre-nos-banner h1 {
+    font-size: 2.5rem;
+    color: #ab8feb;
+    margin-bottom: 1rem;
+  }
+  
+  .sobre-nos-banner .text-content {
+    max-width: 50%;
+  }
+  
+  .sobre-nos-banner img {
+    max-width: 400px;
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  /* Conteúdo principal (texto) */
+  .sobre-nos-content {
+    padding: 4rem 8%;
+  }
+  
+  .sobre-nos-content h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .sobre-nos-content p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #ab8feb;
+  }
+  
+  /* Estilo especial para a primeira letra do primeiro parágrafo */
+  .sobre-nos-content p:first-of-type::first-letter {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ab8feb;
+    margin-right: 0.2rem;
+    float: left;
+    line-height: 1;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .sobre-nos-banner {
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem;
+    }
+  
+    .sobre-nos-banner .text-content {
+      max-width: 100%;
+    }
+  
+    .sobre-nos-banner img {
+      margin-top: 2rem;
+      max-width: 90%;
+    }
+  
+    .sobre-nos-content {
+      padding: 2rem;
+    }
+  }
+  
