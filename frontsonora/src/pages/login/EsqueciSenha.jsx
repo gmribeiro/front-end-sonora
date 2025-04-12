@@ -1,5 +1,5 @@
-import './css/global.css';
-import './css/esquecisenha.css';
+import '../css/global.css';
+import '../css/esquecisenha.css';
 import React, { useState } from 'react';
 
 function EsqueciSenha() {
@@ -14,7 +14,7 @@ function EsqueciSenha() {
             <div className="esqueci-senha-container">
                 <button className='botao-voltar' onClick={() => window.location.href = '/Acesso'}>Voltar</button>
                 <h1>Vamos recuperar sua senha:</h1>
-                <img src="fundoesquecisenha.png" alt="" />
+                <img src="images/fundoesquecisenha.png" alt="" />
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="email">Digite seu email:</label>
                     <input

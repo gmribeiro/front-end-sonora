@@ -1,181 +1,200 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 2rem 100rem;
-    background-color: #564a72;
-    color: #c2a0bb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 1.5rem; /* Ajustei o padding padrão */
+  background-color: #564a72;
+  color: #c2a0bb;
 }
 
 header .cima {
-    display: flex;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 header .cima img {
-    max-height: 6rem;
-    min-height: 4rem;
-    height: auto;
-    width: auto;
-    max-width: 150px;
-
+  max-height: 4rem; /* Reduzi ainda mais a altura máxima da imagem */
+  min-height: 2.5rem;
+  height: auto;
+  width: auto;
+  max-width: 100px; /* Reduzi ainda mais a largura máxima da imagem */
 }
 
 .logo-link {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .logo {
-    width: 100%;
-    height: auto;
-    transition: opacity 0.3s ease;
+  width: 100%;
+  height: auto;
+  transition: opacity 0.3s ease;
 }
 
 .logo:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 .search {
-    flex: 1;
-    max-width: 500px;
-    height: 3.4rem;
-    border: none;
-    border-radius: 1rem;
-    text-indent: 1rem;
-    min-width: 200px;
-    font-size: 1rem;
-    margin: 0 10rem;
-    background-color: #EDE6F2;
+  flex: 1;
+  max-width: 300px; /* Reduzi ainda mais a largura máxima da barra de pesquisa */
+  height: 2.5rem; /* Reduzi ainda mais a altura da barra de pesquisa */
+  border: none;
+  border-radius: 0.8rem; /* Ajustei o border-radius */
+  text-indent: 0.8rem; /* Ajustei o text-indent */
+  min-width: 120px; /* Reduzi ainda mais a largura mínima */
+  font-size: 0.8rem; /* Reduzi ainda mais o tamanho da fonte */
+  margin: 0 1rem; /* Reduzi ainda mais a margem horizontal */
+  background-color: #EDE6F2;
 }
 
 .search:hover {
-    border: 1px solid #c2a0bb;
+  border: 1px solid #c2a0bb;
 }
 
 .links {
-    display: flex;
-    align-items: center;
-    gap: 10rem;
-    padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Reduzi ainda mais o espaçamento entre os links */
+  padding: 0.3rem; /* Reduzi ainda mais o padding */
 }
 
 .link {
-    text-decoration: none;
-    color: #c2a0bb;
-    font-size: 18px;
-    position: relative;
-    display: inline-block;
-    padding-bottom: 5px;
+  text-decoration: none;
+  color: #c2a0bb;
+  font-size: 0.5rem; /* Reduzi ainda mais o tamanho da fonte dos links */
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px; /* Ajustei ainda mais o padding inferior */
 }
 
 .link .underline {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background-color: #272749;
-    transition: width 0.3s ease, left 0.3s ease;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 1.5px; /* Reduzi a altura da linha */
+  background-color: #272749;
+  transition: width 0.3s ease, left 0.3s ease;
 }
 
 .link:hover .underline {
-    width: 100%;
-    left: 0;
+  width: 100%;
+  left: 0;
 }
 
 #btn-entrar {
-    background-color: #fff;
-    color: #564a72;
-    padding: 1rem 1rem;
-    font-weight: bold;
-    text-align: center;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    text-decoration: none;
-    font-size: 18px;
+  background-color: #fff;
+  color: #564a72;
+  padding: 1rem 1rem; /* Reduzi ainda mais o padding do botão */
+  font-weight: bold;
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  font-size: 1rem; /* Reduzi ainda mais o tamanho da fonte do botão */
 }
 
 #btn-entrar:hover {
-    background-color: #c2a0bb;
-    color: white;
+  background-color: #c2a0bb;
+  color: white;
 }
 
 @media (max-width: 1024px) {
-    header {
-        flex-direction: column;
-        text-align: center;
-        padding: 1rem 2rem;
-    }
+  header {
+    padding: 0.8rem 1.2rem; /* Ajustei o padding para telas menores */
+  }
 
-    .search {
-        width: 80%;
-        margin: 1rem auto;
-        height: 3rem;
-    }
+  .cima {
+    margin-bottom: 0.3rem; /* Adicionei margem inferior no .cima */
+  }
 
-    .links {
-        flex-direction: column;
-        gap: 1rem;
-        padding-top: 1rem;
-    }
+  header .cima img {
+    margin-bottom: 0.3rem; /* Ajustei a margem inferior da logo */
+    max-height: 5rem; /* Ajustei a altura para telas médias */
+    max-width: 120px; /* Ajustei a largura para telas médias */
+  }
 
-    .link {
-        font-size: 1.1rem;
-    }
+  .search {
+    width: 70%; /* Ajustei a largura */
+    margin: 0.8rem auto; /* Ajustei a margem */
+    height: 2.3rem; /* Ajustei a altura */
+    font-size: 0.75rem; /* Ajustei a fonte */
+  }
+
+  .links {
+    gap: 1rem; /* Ajustei o espaçamento */
+    padding-top: 0.8rem; /* Ajustei o padding superior */
+  }
+
+  .link {
+    font-size: 0.85rem; /* Ajustei a fonte */
+  }
+
+  .links {
+    gap: 1.2rem; /* Ajustei o espaçamento em coluna */
+  }
 }
 
 @media (max-width: 768px) {
-    header {
-        padding: 1rem;
-    }
+  header {
+    padding: 0.6rem 0.8rem; /* Ajustei o padding para telas menores */
+  }
 
-    .search {
-        width: 85%;
-        height: 2.8rem;
-    }
+  .search {
+    width: 80%; /* Ajustei a largura */
+    height: 2rem; /* Ajustei a altura */
+    font-size: 0.7rem; /* Ajustei a fonte */
+  }
 
-    .links {
-        gap: 0.8rem;
-    }
+  .links {
+    gap: 0.5rem; /* Ajustei o espaçamento */
+  }
 
-    .link {
-        font-size: 1rem;
-    }
+  .link {
+    font-size: 0.75rem; /* Ajustei a fonte */
+  }
+
+  #btn-entrar {
+    padding: 0.5rem 0.7rem; /* Ajustei o padding do botão */
+    font-size: 0.8rem; /* Ajustei a fonte do botão */
+  }
 }
 
 @media (max-width: 480px) {
-    header {
-        padding: 0.5rem;
-    }
+  header {
+    padding: 0.3rem 0.5rem; /* Ajustei o padding para telas menores */
+  }
 
-    .search {
-        width: 95%;
-        height: 2.5rem;
-        margin: 1rem 0;
-    }
+  .cima img {
+    max-height: 3rem; /* Ajustei a altura para telas pequenas */
+    max-width: 80px; /* Ajustei a largura para telas pequenas */
+  }
 
-    .links {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
+  .search {
+    width: 90%; /* Ajustei a largura */
+    height: 1.8rem; /* Ajustei a altura */
+    margin: 0.5rem 0; /* Ajustei a margem */
+    font-size: 0.65rem; /* Ajustei a fonte */
+  }
 
-    .link {
-        font-size: 0.9rem;
-    }
+  .links {
+    gap: 0.3rem; /* Ajustei o espaçamento */
+  }
 
-    header .cima img {
-        max-height: 8rem;
-    }
+  .link {
+    font-size: 0.7rem; /* Ajustei a fonte */
+  }
 
-    .logo {
-        width: 90px;
-    }
+  #btn-entrar {
+    padding: 0.4rem 0.6rem; /* Ajustei o padding do botão */
+    font-size: 0.75rem; /* Ajustei a fonte do botão */
+  }
 }

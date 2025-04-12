@@ -4,9 +4,9 @@ body, html {
     width: 100%;
     height: 100%;
     font-family: Arial, sans-serif;
-}
-
-.fundo {
+  }
+  
+  .fundo {
     position: relative;
     width: 100vw;
     height: 100vh;
@@ -14,9 +14,9 @@ body, html {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-}
-
-.fundo img {
+  }
+  
+  .fundo img {
     position: absolute;
     top: 0;
     left: 0;
@@ -24,9 +24,9 @@ body, html {
     height: 100%;
     object-fit: cover;
     z-index: 0;
-}
-
-.area-entrar {
+  }
+  
+  .area-entrar {
     background: #EDE6F2;
     width: 80vw;
     max-width: 400px;
@@ -35,163 +35,202 @@ body, html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    padding: 1.5rem; /* Reduzi o padding padrão */
     box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
     z-index: 1;
-}
-
-.area-entrar h1, .area-entrar h2 {
-    margin-bottom: 1rem;
+  }
+  
+  .area-entrar h1 {
+    margin-bottom: 0.8rem; /* Reduzi a margem inferior */
     color: #1F1536;
     text-align: center;
-}
-
-.form-entrar {
+  }
+  
+  .form-entrar {
     display: flex;
     flex-direction: column;
     width: 100%;
     align-items: center;
-}
-
-.form-entrar label {
+  }
+  
+  .form-entrar label {
     font-weight: bold;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.2rem; /* Reduzi a margem inferior */
     color: #1F1536;
-}
-
-.form-entrar input {
-    width: 80%;
-    padding: 0.8rem;
+    font-size: 1.4rem; /* Reduzi o tamanho da fonte */
+  }
+  
+  .form-entrar input {
+    width: 95%;
+    padding: 1rem; /* Reduzi o padding */
     border: 1px solid #1F1536;
-    font-size: 1rem;
-    margin-bottom: 1rem;
+    font-size: 1rem; /* Reduzi o tamanho da fonte */
+    margin-bottom: 1rem; /* Reduzi a margem inferior */
     background-color: white;
-}
-
-h3 {
     color: #1F1536;
-    margin: 0.5rem;
-}
-
-.botao-entrar {
+  }
+  
+  h3 {
+    color: #1F1536;
+    margin: 0.4rem; /* Reduzi a margem */
+    font-size: 1.2rem; /* Reduzi o tamanho da fonte */
+  }
+  
+  .botao-entrar {
     background-color: #1F1536;
     color: white;
     border: none;
-    padding: 0.75rem;
-    font-size: 1.2rem;
+    padding: 0.6rem; /* Reduzi o padding */
+    font-size: 1rem; /* Reduzi o tamanho da fonte */
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
     width: 80%;
-    margin-top: 1rem;
-}
-
-.botao-entrar:hover {
+    margin-top: 0.8rem; /* Reduzi a margem superior */
+  }
+  
+  .botao-entrar:hover {
     background-color: #A48BB3;
-    transform: scale(1.05);
-}
-
-.botao-voltar {
+    transform: scale(1.02); /* Suavizei o efeito de hover */
+  }
+  
+  .botao-voltar {
     position: absolute;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 0.5rem; /* Reduzi a distância da borda inferior */
+    right: 0.5rem; /* Reduzi a distância da borda direita */
     background-color: #A48BB3;
     color: white;
     border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 1rem;
-    font-size: 1rem;
+    padding: 0.6rem 1rem; /* Reduzi o padding */
+    border-radius: 0.8rem; /* Suavizei um pouco a borda */
+    font-size: 0.9rem; /* Reduzi o tamanho da fonte */
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
     z-index: 10;
-}
-
-.sem-conta {
-    margin-top: 2rem;
+  }
+  
+  .sem-conta {
+    margin-top: 1.5rem; /* Reduzi a margem superior */
     color: #1F1536;
-}
-
-.sem-conta .link {
+    font-size: 1.2rem; /* Reduzi o tamanho da fonte */
+    text-align: center; /* Centralizei o texto */
+  }
+  
+  .sem-conta .link {
     color: #A48BB3;
-}
-
-.sem-conta .link:hover {
+    font-size: 1.2rem; /* Reduzi o tamanho da fonte */
+    margin-left: 0.4rem;
+  }
+  
+  .sem-conta .link:hover {
     color: #1F1536;
-}
-
-.esqueci-senha {
-    margin-top: 1rem;
+    text-decoration: underline; /* Adicionei um sublinhado no hover para melhor destaque */
+  }
+  
+  .esqueci-senha {
+    margin-top: 0.8rem; /* Reduzi a margem superior */
     color: #1F1536;
-    text-align: center; 
-}
-
-.esqueci-senha .link {
+    text-align: center;
+  }
+  
+  .esqueci-senha .link {
     color: #A48BB3;
-}
-
-.esqueci-senha .link:hover {
+    font-size:1.2rem;
+  }
+  
+  .esqueci-senha .link:hover {
     color: #1F1536;
-}
-
-.botao-voltar:hover {
+    text-decoration: underline; /* Adicionei um sublinhado no hover para melhor destaque */
+  }
+  
+  .botao-voltar:hover {
     background-color: #1F1536;
-    transform: scale(1.05);
-}
-
-/* Responsividade para Tablets (768px a 1024px) */
-@media (min-width: 768px) and (max-width: 1024px) {
+    transform: scale(1.02); /* Suavizei o efeito de hover */
+  }
+  
+  /* Responsividade para Tablets (768px a 1024px) */
+  @media (min-width: 768px) and (max-width: 1024px) {
     .area-entrar {
-        width: 60vw;
-        padding: 2.5rem;
+      width: 65vw; /* Aumentei um pouco a largura */
+      padding: 2rem; /* Ajustei o padding */
     }
-
+  
     .botao-voltar {
-        font-size: 1.1rem;
-        padding: 1rem 1.8rem;
+      font-size: 1rem; /* Ajustei o tamanho da fonte */
+      padding: 0.8rem 1.5rem; /* Ajustei o padding */
     }
-}
-
-/* Responsividade para Celulares (abaixo de 768px) */
-@media (max-width: 768px) {
+  
+    .area-entrar h1,
+    .area-entrar h2 {
+      font-size: 1.8rem; /* Aumentei um pouco o título para telas maiores */
+    }
+  }
+  
+  /* Responsividade para Celulares (abaixo de 768px) */
+  @media (max-width: 768px) {
     .area-entrar {
-        padding: 1.5rem;
-        width: 90vw;
+      padding: 1rem; /* Reduzi o padding */
+      width: 95vw; /* Aumentei a largura para ocupar mais espaço */
     }
-
+  
     .botao-voltar {
-        font-size: 0.9rem;
-        padding: 0.7rem 1.2rem;
+      font-size: 0.8rem; /* Mantive o tamanho da fonte */
+      padding: 0.6rem 1rem; /* Ajustei o padding */
     }
-}
-
-/* Responsividade para telas menores (abaixo de 480px) */
-@media (max-width: 480px) {
+  
+    .area-entrar h1,
+    .area-entrar h2 {
+      font-size: 1.3rem; /* Reduzi um pouco o título */
+    }
+  }
+  
+  /* Responsividade para telas menores (abaixo de 480px) */
+  @media (max-width: 480px) {
     .area-entrar {
-        padding: 1rem;
+      padding: 0.8rem; /* Reduzi ainda mais o padding */
     }
-
+  
     .botao-voltar {
-        font-size: 0.8rem;
-        padding: 0.6rem 1rem;
+      font-size: 0.7rem; /* Reduzi mais o tamanho da fonte */
+      padding: 0.5rem 0.8rem; /* Reduzi mais o padding */
     }
-
+  
+    .area-entrar h1,
+    .area-entrar h2 {
+      font-size: 1.1rem; /* Reduzi mais o título */
+    }
+  
+    .form-entrar input {
+      padding: 0.5rem; /* Reduzi o padding do input */
+    }
+  
     .botao-entrar {
-        font-size: 1rem;
+      font-size: 0.9rem; /* Reduzi o tamanho da fonte do botão */
     }
-}
-
-/* Responsividade para telas maiores (acima de 1024px) */
-@media (min-width: 1024px) {
+  }
+  
+  /* Responsividade para telas maiores (acima de 1024px) */
+  @media (min-width: 1024px) {
     .area-entrar {
-        width: 35vw;
-        padding: 3rem;
+      width: 30vw; /* Reduzi a largura para telas maiores */
+      padding: 2.5rem; /* Ajustei o padding */
     }
-
+  
     .botao-voltar {
-        font-size: 1.2rem;
-        padding: 1rem 2rem;
+      font-size: 1.1rem; /* Ajustei o tamanho da fonte */
+      padding: 0.8rem 1.5rem; /* Ajustei o padding */
     }
-
+  
+    .area-entrar h1,
+    .area-entrar h2 {
+      font-size: 2rem; /* Aumentei o título para telas maiores */
+    }
+  
+    .form-entrar input {
+      padding: 0.7rem; /* Ajustei o padding do input */
+      font-size: 1rem; /* Ajustei o tamanho da fonte do input */
+    }
+  
     .botao-entrar {
-        font-size: 1.3rem;
+      font-size: 1.2rem; /* Ajustei o tamanho da fonte do botão */
     }
-}
+  }

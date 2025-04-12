@@ -9,7 +9,7 @@ function HeaderCadastrado() {
       <header>
         <div className='cima'>
           <Link className="link logo-link" to="/">
-            <img src="/logosemfundo.png" alt="Logo" className="logo"/>
+            <img src="../images/logosemfundo.png" alt="Logo" className="logo"/>
           </Link>
 
           <input type="search" name="search" className='search' placeholder='Encontre seu estilo favorito'/>

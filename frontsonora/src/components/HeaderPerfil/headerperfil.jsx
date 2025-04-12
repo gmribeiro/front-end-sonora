@@ -21,7 +21,7 @@ const HeaderPerfil = () => {
     <header className="header-perfil">
       <div className="logo-container">
         <Link to="/" className="logo-link">
-          <img src="/logosemfundo.png" alt="Logo" className="logo" />
+          <img src="../images/logosemfundo.png" alt="Logo" className="logo" />
         </Link>
       </div>
 

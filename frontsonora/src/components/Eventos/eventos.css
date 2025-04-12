@@ -1,133 +1,162 @@
 .espaco-eventos {
     background-color: #EDE6F2;
-}
-
-.container-eventos {
+    padding: 1.5rem 0; /* Adicionei um padding vertical para respiro */
+  }
+  
+  .container-eventos {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 6rem;
-    padding: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Ajustei o minmax para um valor um pouco menor */
+    gap: 2rem; /* Reduzi o gap entre os eventos */
+    padding: 1.5rem; /* Reduzi o padding interno do container */
     max-width: 1200px;
-    margin: auto;
+    margin: 0 auto; /* Centralizei o container */
     justify-content: center;
-}
-
-.evento {
+  }
+  
+  .evento {
     width: 100%;
     max-width: 320px;
-    min-width: 280px;
+    min-width: 250px; /* Reduzi o min-width do evento */
     height: auto;
     background: linear-gradient(to bottom, #2E284E, #5A4E75, #8B7EA2, #C5B6D2, #E8DFEC);
     border-radius: 12px;
     text-align: center;
-    padding: 1.5rem;
-    box-shadow: 0px 4px 6px rgba(0,0,0,0.5);
+    padding: 1rem; /* Reduzi o padding interno do evento */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 3rem;
-}
-
-.evento img {
+    margin-bottom: 8rem; /* Reduzi a margem inferior */
+  }
+  
+  .evento img {
     width: 100%;
-    max-width: 250px;
+    max-width: 200px; /* Reduzi a largura máxima da imagem do evento */
     height: auto;
     object-fit: cover;
     border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
-.evento h3 {
-    font-size: 1.4rem;
-    margin-bottom: 0.5rem;
-}
-
-.evento p {
-    font-size: 1.1rem;
+    margin-bottom: 0.8rem; /* Reduzi a margem inferior da imagem */
+  }
+  
+  .evento h3 {
+    font-size: 1.2rem; /* Reduzi o tamanho da fonte do título */
+    margin-bottom: 0.3rem; /* Reduzi a margem inferior do título */
+  }
+  
+  .evento p {
+    font-size: 1rem; /* Reduzi o tamanho da fonte do parágrafo */
     color: #5A4E75;
-    margin-bottom: 1rem;
-}
-
-.btn-reservar {
+    margin-bottom: 0.8rem; /* Reduzi a margem inferior do parágrafo */
+  }
+  
+  .btn-reservar {
     background-color: #5A4E75;
     color: #ffffff;
-    padding: 10px 20px;
-    font-size: 1rem;
+    padding: 8px 16px; /* Reduzi o padding do botão */
+    font-size: 0.9rem; /* Reduzi o tamanho da fonte do botão */
     border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: 0.3s ease;
-}
-
-.btn-reservar:hover {
+  }
+  
+  .btn-reservar:hover {
     background-color: #2E284E;
-}
-
-@media (max-width: 1024px) {
+  }
+  
+  @media (max-width: 1024px) {
     .container-eventos {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 3rem;
-        padding: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Ajustei o minmax */
+      gap: 1.5rem; /* Reduzi o gap */
+      padding: 1rem; /* Reduzi o padding */
     }
-
+  
     .evento {
-        max-width: 280px;
+      max-width: 280px; /* Mantive o max-width */
+      padding: 0.8rem; /* Reduzi o padding interno */
+      margin-bottom: 1.5rem; /* Reduzi a margem inferior */
     }
-
+  
+    .evento img {
+      max-width: 180px; /* Reduzi a largura máxima da imagem */
+      margin-bottom: 0.6rem; /* Reduzi a margem inferior */
+    }
+  
     .evento h3 {
-        font-size: 1.3rem;
+      font-size: 1.1rem; /* Reduzi a fonte */
     }
-
+  
     .evento p {
-        font-size: 1.1rem;
+      font-size: 0.95rem; /* Reduzi a fonte */
     }
-}
-
-@media (max-width: 768px) {
-    .container-eventos {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        padding: 1rem;
-    }
-
-    .evento {
-        max-width: 250px;
-    }
-
-    .evento h3 {
-        font-size: 1.2rem;
-    }
-
-    .evento p {
-        font-size: 1rem;
-    }
-
+  
     .btn-reservar {
-        padding: 8px 16px;
-        font-size: 0.9rem;
+      padding: 7px 14px; /* Reduzi o padding */
+      font-size: 0.85rem; /* Reduzi a fonte */
     }
-}
-
-@media (max-width: 480px) {
+  }
+  
+  @media (max-width: 768px) {
     .container-eventos {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Ajustei o minmax */
+      gap: 1rem; /* Reduzi o gap */
+      padding: 0.8rem; /* Reduzi o padding */
     }
-
+  
     .evento {
-        max-width: 220px;
-        padding: 1rem;
+      max-width: 250px; /* Mantive o max-width */
+      padding: 0.6rem; /* Reduzi o padding interno */
+      margin-bottom: 1rem; /* Reduzi a margem inferior */
     }
-
+  
+    .evento img {
+      max-width: 150px; /* Reduzi a largura máxima da imagem */
+      margin-bottom: 0.5rem; /* Reduzi a margem inferior */
+    }
+  
     .evento h3 {
-        font-size: 1.1rem;
+      font-size: 1rem; /* Reduzi a fonte */
     }
-
+  
     .evento p {
-        font-size: 0.9rem;
+      font-size: 0.9rem; /* Reduzi a fonte */
     }
-
+  
     .btn-reservar {
-        padding: 7px 14px;
-        font-size: 0.8rem;
+      padding: 6px 12px; /* Reduzi o padding */
+      font-size: 0.8rem; /* Reduzi a fonte */
     }
-}
+  }
+  
+  @media (max-width: 480px) {
+    .container-eventos {
+      grid-template-columns: 1fr; /* Força uma coluna em telas muito pequenas */
+      gap: 1.5rem; /* Aumentei um pouco o gap para melhor separação */
+      padding: 1rem; /* Ajustei o padding */
+    }
+  
+    .evento {
+      max-width: 100%; /* O evento ocupa toda a largura disponível */
+      min-width: auto; /* Permite que a largura se ajuste */
+      padding: 0.8rem; /* Ajustei o padding interno */
+      margin-bottom: 1.5rem; /* Ajustei a margem inferior */
+    }
+  
+    .evento img {
+      max-width: 70%; /* A imagem ocupa uma porcentagem da largura */
+      margin-bottom: 0.6rem; /* Ajustei a margem inferior */
+    }
+  
+    .evento h3 {
+      font-size: 1rem; /* Mantive a fonte */
+    }
+  
+    .evento p {
+      font-size: 0.85rem; /* Reduzi um pouco a fonte */
+    }
+  
+    .btn-reservar {
+      padding: 7px 14px; /* Ajustei o padding */
+      font-size: 0.8rem; /* Mantive a fonte */
+    }
+  }

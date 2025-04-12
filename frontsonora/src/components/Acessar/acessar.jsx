@@ -6,7 +6,7 @@ const Acessar = () => {
     return (
         <div className='fundo'>
             <button className='botao-voltar' onClick={() => window.location.href = '/'}>Voltar</button>
-            <img src="/fundocadastro.png" alt="Fundo" />
+            <img src="images/fundocadastro.png" alt="Fundo" />
             <div className='area-entrar'>
                 <h1>Bem-vindo de volta!</h1>
                 

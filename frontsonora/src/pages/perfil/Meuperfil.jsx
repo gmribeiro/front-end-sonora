@@ -1,6 +1,6 @@
-import Header from '../components/HeaderPerfil/headerperfil';
+import Header from '../../components/HeaderPerfil/headerperfil';
 import { Link } from 'react-router-dom';
-import './css/global.css';
+import '../css/global.css';
 import React from 'react';
 
 function Meuperfil() {

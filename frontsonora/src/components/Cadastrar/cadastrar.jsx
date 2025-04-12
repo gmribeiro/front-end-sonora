@@ -12,7 +12,7 @@ const Cadastrar = () => {
     return (
         <div className='fundo'>
             <button className='botao-voltar' onClick={() => window.location.href = '/'}>Voltar</button>
-            <img src="/fundocadastro.png" alt="Fundo" />
+            <img src="images/fundocadastro.png" alt="Fundo" />
             <div className='area-cadastro'>
                 <h1>Conectamos você à música</h1>
                 <h2>Escolha seu tipo de cadastro</h2>
@@ -36,7 +36,7 @@ const Cadastrar = () => {
                         <input type="email" id="email" name="email" placeholder="joao@gmail.com" required />
 
                         <label htmlFor="senha">Senha</label>
-                        <input type="password" id="senha" name="senha" placeholder="js12345" required />
+                        <input type="text" id="senha" name="senha" placeholder="js12345" required />
 
                         <label htmlFor="telefone">Telefone</label>
                         <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required />
@@ -57,7 +57,7 @@ const Cadastrar = () => {
                         <input type="email" id="email" name="email" placeholder="gaga@gmail.com" required />
 
                         <label htmlFor="senha">Senha</label>
-                        <input type="password" id="senha" name="senha" placeholder="abracadabra01" required />
+                        <input type="text" id="senha" name="senha" placeholder="abracadabra01" required />
 
                         <label htmlFor="telefone">Telefone</label>
                         <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required />

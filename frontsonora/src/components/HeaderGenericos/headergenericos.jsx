@@ -7,7 +7,7 @@ function HeaderGenericos() {
     <header>
       <div className="cima">
         <Link className="logo-link" to="/">
-          <img src="/logosemfundo.png" alt="Logo" className="logo" />
+          <img src="../images/logosemfundo.png" alt="Logo" className="logo" />
         </Link>
 
         <nav className="links">

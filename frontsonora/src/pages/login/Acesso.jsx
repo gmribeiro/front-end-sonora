@@ -1,5 +1,5 @@
-import Acessar from '../components/Acessar/acessar.jsx';
-import './css/global.css';
+import Acessar from '../../components/Acessar/acessar.jsx';
+import '../css/global.css';
 import React from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
