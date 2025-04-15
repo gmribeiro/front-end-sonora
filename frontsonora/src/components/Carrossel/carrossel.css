@@ -113,8 +113,8 @@
   /* Ajustes para telas maiores (ex: tablets e desktops) */
   @media (min-width: 1024px) {
     .categoria {
-      width: clamp(250px, 15vw, 180px);
-      height: clamp(250px, 15vw, 180px);
+      width: clamp(200px, 15vw, 180px);
+      height: clamp(200px, 15vw, 180px);
       padding: 1.2rem;
     }
   
