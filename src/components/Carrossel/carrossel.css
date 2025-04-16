@@ -1,0 +1,128 @@
+.carrossel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 5rem; /* Aumentei a margem superior */
+    margin-bottom: 5rem; /* Aumentei a margem inferior */
+  }
+  
+  .carrossel {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: clamp(0.5rem, 2vw, 1.5rem);
+    padding: clamp(0.5rem, 1vw, 1.5rem);
+    max-width: 95vw;
+    scrollbar-width: none;
+  }
+  
+  .carrossel::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .categoria {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #564a72;
+    color: white;
+    padding: 0.8rem;
+    border-radius: 50%;
+    width: clamp(80px, 20vw, 120px);
+    height: clamp(80px, 20vw, 120px);
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    margin-top: 2%;
+    margin-bottom: 2%;
+  }
+  
+  .categoria:hover {
+    transform: scale(1.05);
+  }
+  
+  .icone {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    margin-bottom: 0.3rem;
+  }
+  
+  .carrossel-btn {
+    background: #564a72;
+    color: white;
+    border: none;
+    padding: 0.2rem 0.4rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .carrossel-btn:hover {
+    background: #C5B6D2;
+  }
+  
+  .left {
+    left: 1%;
+  }
+  
+  .right {
+    right: 1%;
+  }
+  
+  /* Ajustes para telas médias (ex: tablets menores) */
+  @media (min-width: 769px) and (max-width: 1023px) {
+    .categoria {
+      width: clamp(90px, 18vw, 140px);
+      height: clamp(90px, 18vw, 140px);
+      padding: 1rem;
+    }
+  
+    .icone {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+  
+    .carrossel-btn {
+      font-size: 1.4rem;
+    }
+  }
+  
+  /* Ajustes para telas menores (ex: smartphones) */
+  @media (max-width: 768px) {
+    .categoria {
+      width: clamp(60px, 22vw, 90px);
+      height: clamp(60px, 22vw, 90px);
+      padding: 0.6rem;
+    }
+  
+    .icone {
+      font-size: clamp(1rem, 4vw, 1.5rem);
+    }
+  
+    .carrossel-btn {
+      font-size: 1rem;
+    }
+  }
+  
+  /* Ajustes para telas maiores (ex: tablets e desktops) */
+  @media (min-width: 1024px) {
+    .categoria {
+      width: clamp(200px, 15vw, 180px);
+      height: clamp(200px, 15vw, 180px);
+      padding: 1.2rem;
+    }
+  
+    .icone {
+      font-size: clamp(1.8rem, 2vw, 2.5rem);
+    }
+  
+    .carrossel-btn {
+      font-size: 1.6rem;
+    }
+  }

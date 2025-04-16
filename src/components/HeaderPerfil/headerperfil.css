@@ -1,0 +1,99 @@
+.header-perfil {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #5a4a72;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  color: white;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.logo {
+  height: 50px;
+  margin-left: 20px;
+}
+
+.foto-container {
+  width: 160px; /* Aumentando o tamanho */
+  height: 160px;
+  background-color: #c8a2c8;
+  border-radius: 50%;
+  position: absolute;
+  left: 200px;
+  top: 200%;
+  transform: translateY(-100%); /* descer bolinha roxa */
+}
+
+.info-perfil {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  margin-left: 220px; /* mover */
+}
+
+h1 {
+  font-size: 20px;
+}
+
+.input-nome {
+  font-size: 18px;
+  padding: 5px;
+  border-radius: 8px;
+  border: none;
+}
+
+.btn-editar {
+  background-color: white;
+  color: #5a4a72;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-editar:hover {
+  background-color: #ddd;
+}
+
+
+.btn-notifications {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  margin-right: 15px;
+  position: absolute;
+  right: 150px; 
+}
+
+.btn-notifications:hover {
+  color: #ddd;
+}
+
+.btn-sair {
+  background-color: white;
+  color: #5a4a72;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  position: absolute;
+  right: 20px;
+}
+
+.btn-sair:hover {
+  background-color: #ddd;
+}
