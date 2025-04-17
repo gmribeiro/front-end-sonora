@@ -2,7 +2,6 @@ import './acessar.css';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode'; // Linha corrigida
 import axios from 'axios';
 
 const Acessar = () => {
@@ -15,22 +14,20 @@ const Acessar = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         setCarregando(true);
-
+        setMensagem('');
         try {
             const response = await axios.post('http://localhost:8080/auth/login', {
                 email,
                 senha
             });
 
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-
+            localStorage.setItem('token', response.data);
             setMensagem('Login realizado com sucesso!');
             setTimeout(() => {
                 navigate('/perfil');
             }, 1000);
         } catch (error) {
-            setMensagem(error.response?.data?.message || 'Erro ao fazer login. Verifique suas credenciais.');
+            setMensagem(error.response?.data || 'Erro ao fazer login. Verifique suas credenciais.');
         } finally {
             setCarregando(false);
         }
@@ -39,24 +36,17 @@ const Acessar = () => {
     const handleGoogleSuccess = async (credentialResponse) => {
         setCarregando(true);
         try {
-            const decoded = jwtDecode(credentialResponse.credential);
-
-            const response = await axios.post('http://localhost:8080/auth/google', {
-                email: decoded.email,
-                name: decoded.name,
-                googleId: decoded.sub,
-                foto: decoded.picture
+            const response = await axios.post('http://localhost:8080/auth/google-login', { // Novo endpoint no backend
+                token: credentialResponse.credential
             });
 
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-
+            localStorage.setItem('token', response.data); // Backend deve retornar apenas o token
             setMensagem('Login com Google realizado com sucesso!');
             setTimeout(() => {
                 navigate('/perfil');
             }, 1000);
         } catch (error) {
-            setMensagem(error.response?.data?.message || 'Erro ao fazer login com Google.');
+            setMensagem(error.response?.data || 'Erro ao fazer login com Google.');
         } finally {
             setCarregando(false);
         }
@@ -117,6 +107,7 @@ const Acessar = () => {
                         shape="rectangular"
                         size="large"
                         width="350"
+                        clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                     />
                 </div>
 

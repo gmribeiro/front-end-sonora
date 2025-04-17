@@ -1,38 +1,33 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/auth/';
+const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
+});
 
-const register = (name, email, password) => {
-    return axios.post(API_URL + "register", {
-        name,
-        email,
-        password
+export const register = async (userData) => {
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+};
+
+export const login = async (credentials) => {
+    const response = await api.post('/auth/login', credentials);
+    return response.data;
+};
+
+export const verifyToken = async (token) => {
+    const response = await api.get('/auth/verify', {
+        headers: { Authorization: `Bearer ${token}` }
     });
+    return response.data;
 };
 
-const login = (email, password) => {
-    return axios.post(API_URL + "login", {
-        email,
-        password
-    }).then(response => {
-        if (response.data.token) {
-            localStorage.setItem("user", JSON.stringify(response.data));
-        }
-        return response.data;
+export const initiateGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
+};
+
+export const handleGoogleCallback = async () => {
+    const response = await api.get('/auth/login-success', {
+        withCredentials: true
     });
-};
-
-const logout = () => {
-    localStorage.removeItem("user");
-};
-
-const getCurrentUser = () => {
-    return JSON.parse(localStorage.getItem("user"));
-};
-
-export default {
-    register,
-    login,
-    logout,
-    getCurrentUser
+    return response.data;
 };
