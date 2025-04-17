@@ -2,6 +2,7 @@ import './acessar.css';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode'; // Linha corrigida
 import axios from 'axios';
 
 const Acessar = () => {
@@ -21,7 +22,6 @@ const Acessar = () => {
                 senha
             });
 
-            // Armazena o token JWT e dados do usuário
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
 
@@ -34,6 +34,36 @@ const Acessar = () => {
         } finally {
             setCarregando(false);
         }
+    };
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        setCarregando(true);
+        try {
+            const decoded = jwtDecode(credentialResponse.credential);
+
+            const response = await axios.post('http://localhost:8080/auth/google', {
+                email: decoded.email,
+                name: decoded.name,
+                googleId: decoded.sub,
+                foto: decoded.picture
+            });
+
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+
+            setMensagem('Login com Google realizado com sucesso!');
+            setTimeout(() => {
+                navigate('/perfil');
+            }, 1000);
+        } catch (error) {
+            setMensagem(error.response?.data?.message || 'Erro ao fazer login com Google.');
+        } finally {
+            setCarregando(false);
+        }
+    };
+
+    const handleGoogleError = () => {
+        setMensagem('Falha no login com Google. Tente novamente.');
     };
 
     return (
@@ -79,19 +109,16 @@ const Acessar = () => {
 
                 <h3>ou</h3>
 
-                {/* Parte do Google mantida exatamente como estava */}
-                <GoogleLogin
-                    clientId="514141073233-1e9hp32vikk8euh1hgoap2p0otbnvltp.apps.googleusercontent.com"
-                    onSuccess={credentialResponse => {
-                        console.log(credentialResponse);
-                        // login bem-sucedido - implementação futura
-                    }}
-                    onError={() => {
-                        console.log('Login Failed');
-                        // login falho - implementação futura
-                    }}
-                    className="botao-google"
-                />
+                <div className="google-login-container">
+                    <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={handleGoogleError}
+                        text="continue_with"
+                        shape="rectangular"
+                        size="large"
+                        width="350"
+                    />
+                </div>
 
                 <div className='sem-conta'>
                     Não tem uma conta?
