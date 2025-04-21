@@ -2,7 +2,7 @@ import './acessar.css';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
+import axios from 'axios'; // Você ainda pode usar axios para outras coisas
 
 const Acessar = () => {
     const [email, setEmail] = useState('');
@@ -11,6 +11,7 @@ const Acessar = () => {
     const [carregando, setCarregando] = useState(false);
     const navigate = useNavigate();
 
+    // Acessar.jsx
     const handleLogin = async (e) => {
         e.preventDefault();
         setCarregando(true);
@@ -21,7 +22,8 @@ const Acessar = () => {
                 senha
             });
 
-            localStorage.setItem('token', response.data);
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('nomeUsuario', response.data.nome);
             setMensagem('Login realizado com sucesso!');
             setTimeout(() => {
                 navigate('/perfil');
@@ -33,23 +35,9 @@ const Acessar = () => {
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse) => {
-        setCarregando(true);
-        try {
-            const response = await axios.post('http://localhost:8080/auth/google-login', { // Novo endpoint no backend
-                token: credentialResponse.credential
-            });
-
-            localStorage.setItem('token', response.data); // Backend deve retornar apenas o token
-            setMensagem('Login com Google realizado com sucesso!');
-            setTimeout(() => {
-                navigate('/perfil');
-            }, 1000);
-        } catch (error) {
-            setMensagem(error.response?.data || 'Erro ao fazer login com Google.');
-        } finally {
-            setCarregando(false);
-        }
+    const handleGoogleSuccess = (credentialResponse) => {
+        // Redirecionar o navegador para o endpoint de autorização do Google no backend
+        window.location.href = 'http://localhost:8080/auth/oauth2/authorization/google';
     };
 
     const handleGoogleError = () => {

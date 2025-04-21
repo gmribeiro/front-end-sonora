@@ -11,6 +11,7 @@ import Meuperfil from './pages/perfil/Meuperfil'
 import Notificacao from './pages/perfil/Notificacao'
 import SobreNos from './pages/genericos/SobreNos'
 import Termos from './pages/genericos/Termos'
+import Perfil from "./components/Perfil/Perfil.jsx";
 
 
 createRoot(document.getElementById('root')).render(
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/acesso" element={<Acesso/>} />
         <Route path="/cadastro" element={<Cadastro/>} />
         <Route path="/meuperfil" element={<Meuperfil/>} />
+        <Route path="/perfil" element={<Perfil/>} />
         <Route path="/esquecisenha" element={<EsqueciSenha/>} />
         <Route path="/notificacao" element={<Notificacao/>} />
         <Route path="/sobrenos" element={<SobreNos/>} />

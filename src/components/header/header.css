@@ -77,3 +77,31 @@
   font-size: 15px;
   text-decoration: none;
 }
+/* Header.css (ou seu arquivo de estilos do header) */
+/* ... outros estilos do header ... */
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-name {
+  color: #333;
+  font-weight: bold;
+}
+
+.logout-button {
+  padding: 8px 15px;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #c9302c;
+}

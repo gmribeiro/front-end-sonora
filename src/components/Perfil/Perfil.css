@@ -1,0 +1,58 @@
+/* Perfil.css */
+.perfil-fundo {
+    background-color: #f4f4f4;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.perfil-botao-voltar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.perfil-botao-voltar:hover {
+    background-color: #4cae4c;
+}
+
+.perfil-container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 80%;
+    max-width: 500px;
+}
+
+.perfil-container h1 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.perfil-botao-logout {
+    padding: 12px 25px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.perfil-botao-logout:hover {
+    background-color: #c9302c;
+}

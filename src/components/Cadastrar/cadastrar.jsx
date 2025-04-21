@@ -118,6 +118,7 @@ const Cadastrar = () => {
                             required
                         />
 
+
                         <button type="submit" className="botao-cadastrar">Cadastrar-se como Cliente</button>
                     </form>
                 )}
