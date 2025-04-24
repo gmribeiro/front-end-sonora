@@ -1,39 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 
-const ListaDeTarefasSimples = () => {
+const ListaDeTarefasSimplesEstudante = () => {
   const [novaTarefa, setNovaTarefa] = useState('');
   const [tarefas, setTarefas] = useState([]);
 
   const adicionarTarefa = () => {
     if (novaTarefa.trim() !== '') {
       setTarefas([...tarefas, novaTarefa.trim()]);
-      setNovaTarefa(''); // Limpa o input após adicionar
+      setNovaTarefa('');
     }
   };
 
-  const removerTarefa = (index) => {
-    const novaListaTarefas = [...tarefas];
-    novaListaTarefas.splice(index, 1);
-    setTarefas(novaListaTarefas);
-  };
-
-  const renderItem = ({ item, index }) => (
-    <View style={styles.itemTarefa}>
-      <Text>{item}</Text>
-      <TouchableOpacity onPress={() => removerTarefa(index)}>
-        <Text style={styles.botaoRemover}>Remover</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Lista de Tarefas</Text>
+      <Text style={styles.titulo}>Minhas Tarefas</Text>
       <View style={styles.containerInput}>
         <TextInput
           style={styles.input}
-          placeholder="Adicionar nova tarefa"
+          placeholder="Nova tarefa..."
           value={novaTarefa}
           onChangeText={text => setNovaTarefa(text)}
         />
@@ -43,7 +28,7 @@ const ListaDeTarefasSimples = () => {
       </View>
       <FlatList
         data={tarefas}
-        renderItem={renderItem}
+        renderItem={({ item }) => <Text style={styles.itemTarefa}>{item}</Text>}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
@@ -56,7 +41,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   titulo: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 15,
   },
@@ -67,7 +52,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: 'yellow',
     borderRadius: 5,
     paddingHorizontal: 10,
     marginRight: 10,
@@ -82,17 +67,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   itemTarefa: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  botaoRemover: {
-    color: 'red',
-    fontWeight: 'bold',
+    borderBottomColor: 'red',
   },
 });
 
-export default ListaDeTarefasSimples;
+export default ListaDeTarefasSimplesEstudante;
