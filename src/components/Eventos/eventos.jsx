@@ -1,4 +1,6 @@
+import React from 'react';
 import './eventos.css';
+import axios from 'axios'; // Importe o axios
 
 const Eventos = () => {
     const eventos = [
@@ -10,15 +12,44 @@ const Eventos = () => {
         { id: 6, titulo: "Techno Waves", local: "Itupeva", hora: "23:00", imagem: "../images/evento6.png" },
     ];
 
+    // Suponha que você tenha uma forma de obter o usuário logado
+    const obterUsuarioLogado = () => {
+        // Esta é uma simulação, você precisará implementar a lógica real
+        return { id: 123, nome: "Nome do Usuário" };
+    };
+
+    const handleReservar = (evento) => {
+        const usuario = obterUsuarioLogado();
+        const reservaData = {
+            usuario: usuario,
+            evento: { id: evento.id, titulo: evento.titulo },
+            confirmado: false
+        };
+
+        axios.post('/reservas', reservaData, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                console.log('Reserva criada com sucesso:', response.data);
+                alert(`Reserva para "${evento.titulo}" realizada!`);
+            })
+            .catch(error => {
+                console.error('Erro ao criar reserva:', error);
+                alert(`Erro ao reservar "${evento.titulo}". Tente novamente.`);
+            });
+    };
+
     return (
         <div className='espaco-eventos'>
             <div className="container-eventos">
                 {eventos.map(evento => (
                     <div key={evento.id} className="evento">
-                        <img src={evento.imagem} alt={evento.titulo} />
+                        <img src={evento.imagem} alt={evento.titulo}/>
                         <h3>{evento.titulo}</h3>
                         <p>{evento.local} - {evento.hora}</p>
-                        <button className="btn-reservar">Reservar</button>
+                        <button className="btn-reservar" onClick={() => handleReservar(evento)}>Reservar</button>
                     </div>
                 ))}
             </div>
