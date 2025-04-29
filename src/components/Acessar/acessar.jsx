@@ -21,16 +21,16 @@ const Acessar = () => {
                 senha
             });
 
-            // Armazena o token JWT e dados do usuário
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            // Armazena o token JWT
+            localStorage.setItem('token', response.data); // response.data é o token JWT como String
+
 
             setMensagem('Login realizado com sucesso!');
             setTimeout(() => {
                 navigate('/perfil');
             }, 1000);
         } catch (error) {
-            setMensagem(error.response?.data?.message || 'Erro ao fazer login. Verifique suas credenciais.');
+            setMensagem(error.response?.data || 'Erro ao fazer login. Verifique suas credenciais.');
         } finally {
             setCarregando(false);
         }
