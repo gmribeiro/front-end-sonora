@@ -12,16 +12,11 @@ const Eventos = () => {
         { id: 6, titulo: "Techno Waves", local: "Itupeva", hora: "23:00", imagem: "../images/evento6.png" },
     ];
 
-    // Suponha que você tenha uma forma de obter o usuário logado
-    const obterUsuarioLogado = () => {
-        // Esta é uma simulação, você precisará implementar a lógica real
-        return { id: 123, nome: "Nome do Usuário" };
-    };
-
     const handleReservar = (evento) => {
-        const usuario = obterUsuarioLogado();
+        // Informações do usuário anônimo ou removidas
         const reservaData = {
-            usuario: usuario,
+            // Remova ou comente a linha do usuário se o backend não exigir
+            // usuario: { id: null, nome: "Anônimo" },
             evento: { id: evento.id, titulo: evento.titulo },
             confirmado: false
         };
