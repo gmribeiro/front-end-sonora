@@ -94,7 +94,6 @@ function MeuPerfil() {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                // Primeiro, cadastrar o gênero
                 const genreResponse = await axios.post('/genres', { nomeGenero }, {
                     headers: {
                         'Content-Type': 'application/json',
@@ -103,7 +102,6 @@ function MeuPerfil() {
                 });
                 const genreData = genreResponse.data;
 
-                // Segundo, cadastrar o local
                 const placeResponse = await axios.post('/places', { local: localEventoNome }, {
                     headers: {
                         'Content-Type': 'application/json',

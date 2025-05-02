@@ -1,8 +1,9 @@
 import './acessar.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import SelectorRole from "../../pages/select-roles/Selector-Role.jsx";
 
 const Acessar = () => {
     const [formData, setFormData] = useState({
@@ -14,7 +15,34 @@ const Acessar = () => {
         message: '',
         success: false
     });
+    const [showRoleSelector, setShowRoleSelector] = useState(false);
+    const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
+
+    // Check authentication status on component mount
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            checkAuthStatus();
+        }
+    }, []);
+
+    const checkAuthStatus = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:8080/auth/user/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (response.data.role && response.data.role !== 'CLIENT') {
+                navigate('/perfil');
+            }
+        } catch (error) {
+            console.log('User not authenticated or error:', error);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -31,24 +59,28 @@ const Acessar = () => {
         try {
             const response = await axios.post('http://localhost:8080/auth/login', formData);
 
-            // Store both token and user data if available
-            if (response.data.token) {
-                localStorage.setItem('token', response.data.token);
-                if (response.data.user) {
-                    localStorage.setItem('user', JSON.stringify(response.data.user));
-                }
-            } else {
-                // Fallback for older API versions
-                localStorage.setItem('token', response.data);
-            }
+            localStorage.setItem('token', response.data.token);
 
-            setStatus({
-                loading: false,
-                message: 'Login realizado com sucesso!',
-                success: true
+            // Get complete user data after login
+            const userResponse = await axios.get('http://localhost:8080/auth/user/me', {
+                headers: {
+                    'Authorization': `Bearer ${response.data.token}`,
+                },
             });
 
-            navigate('/perfil');
+            localStorage.setItem('user', JSON.stringify(userResponse.data));
+
+            if (userResponse.data.role === 'CLIENT') {
+                setUserId(userResponse.data.id);
+                setShowRoleSelector(true);
+            } else {
+                setStatus({
+                    loading: false,
+                    message: 'Login realizado com sucesso!',
+                    success: true
+                });
+                navigate('/perfil');
+            }
         } catch (error) {
             let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
             if (error.response) {
@@ -69,36 +101,50 @@ const Acessar = () => {
         setStatus({ loading: true, message: '', success: false });
 
         try {
-            const response = await axios.post('http://localhost:8080/auth/google', {
+            // 1. Autenticação com Google
+            const authResponse = await axios.post('http://localhost:8080/auth/google', {
                 token: credentialResponse.credential
             });
 
-            // Handle both token and user data
-            localStorage.setItem('token', response.data.token);
-            if (response.data.user) {
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-            }
+            localStorage.setItem('token', authResponse.data.token);
 
-            setStatus({
-                loading: false,
-                message: 'Login com Google realizado com sucesso!',
-                success: true
+            // 2. Obter dados completos do usuário
+            const userResponse = await axios.get('http://localhost:8080/auth/user/me', {
+                headers: {
+                    'Authorization': `Bearer ${authResponse.data.token}`
+                }
             });
 
-            navigate('/perfil');
-        } catch (error) {
-            console.error('Erro no login com Google:', error);
+            const userData = userResponse.data;
 
-            let errorMessage = 'Erro ao autenticar com Google.';
-            if (error.response?.data) {
-                errorMessage = typeof error.response.data === 'string'
-                    ? error.response.data
-                    : error.response.data.message;
+            // Verificação robusta do ID
+            if (!userData.id) {
+                throw new Error('ID do usuário não retornado pela API');
             }
+
+            localStorage.setItem('user', JSON.stringify(userData));
+
+            // 3. Redirecionamento baseado no role
+            if (userData.role === 'CLIENT') {
+                setUserId(userData.id); // Usando o ID retornado pelo endpoint /me
+                setShowRoleSelector(true);
+            } else {
+                setStatus({
+                    loading: false,
+                    message: 'Login realizado com sucesso!',
+                    success: true
+                });
+                navigate('/perfil');
+            }
+
+        } catch (error) {
+            console.error('Erro no login:', error);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
 
             setStatus({
                 loading: false,
-                message: errorMessage,
+                message: error.response?.data?.message || error.message || 'Erro durante o login',
                 success: false
             });
         }
@@ -113,79 +159,98 @@ const Acessar = () => {
     };
 
     return (
-        <div className='fundo'>
-            <button className='botao-voltar' onClick={() => navigate('/')}>Voltar</button>
-            <img src="images/fundocadastro.png" alt="Fundo" />
-            <div className='area-entrar'>
-                <h1>Bem-vindo de volta!</h1>
-
-                {status.message && (
-                    <div className={`mensagem ${status.success ? 'sucesso' : 'erro'}`}>
-                        {status.message}
-                    </div>
-                )}
-
-                <form className="form-entrar" onSubmit={handleLogin}>
-                    <label htmlFor="email">E-mail</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Digite seu e-mail"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
+        <>
+            {showRoleSelector && (
+                <div className="role-selector-overlay">
+                    <SelectorRole
+                        userId={userId}
+                        onRoleSelected={() => {
+                            setShowRoleSelector(false);
+                            setStatus({
+                                loading: false,
+                                message: 'Perfil configurado com sucesso!',
+                                success: true
+                            });
+                            navigate('/perfil');
+                        }}
                     />
-
-                    <label htmlFor="senha">Senha</label>
-                    <input
-                        type="password"
-                        id="senha"
-                        name="senha"
-                        placeholder="Digite sua senha"
-                        value={formData.senha}
-                        onChange={handleChange}
-                        required
-                    />
-
-                    <button
-                        type="submit"
-                        className="botao-entrar"
-                        disabled={status.loading}
-                    >
-                        {status.loading ? 'Carregando...' : 'Entrar'}
-                    </button>
-                </form>
-
-                <h3>ou</h3>
-
-                <GoogleLogin
-                    clientId="514141073233-1e9hp32vikk8euh1hgoap2p0otbnvltp.apps.googleusercontent.com"
-                    onSuccess={handleGoogleLoginSuccess}
-                    onError={handleGoogleLoginError}
-                    className="botao-google"
-                    render={renderProps => (
-                        <button
-                            onClick={renderProps.onClick}
-                            disabled={status.loading || renderProps.disabled}
-                            className="botao-google-custom"
-                        >
-                            <img src="images/google-logo.png" alt="Google" className="google-icon" />
-                            Entrar com Google
-                        </button>
-                    )}
-                />
-
-                <div className='sem-conta'>
-                    Não tem uma conta?
-                    <Link className='link' to="/cadastro"> Cadastrar</Link>
                 </div>
+            )}
 
-                <div className='esqueci-senha'>
-                    <Link className='link' to="/esqueci-senha">Esqueci a senha</Link>
+            <div className='fundo'>
+                <button className='botao-voltar' onClick={() => navigate('/')}>Voltar</button>
+                <img src="images/fundocadastro.png" alt="Fundo" />
+                <div className='area-entrar'>
+                    <h1>Bem-vindo de volta!</h1>
+
+                    {status.message && (
+                        <div className={`mensagem ${status.success ? 'sucesso' : 'erro'}`}>
+                            {status.message}
+                        </div>
+                    )}
+
+                    <form className="form-entrar" onSubmit={handleLogin}>
+                        <label htmlFor="email">E-mail</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Digite seu e-mail"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                        />
+
+                        <label htmlFor="senha">Senha</label>
+                        <input
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            placeholder="Digite sua senha"
+                            value={formData.senha}
+                            onChange={handleChange}
+                            required
+                        />
+
+                        <button
+                            type="submit"
+                            className="botao-entrar"
+                            disabled={status.loading}
+                        >
+                            {status.loading ? 'Carregando...' : 'Entrar'}
+                        </button>
+                    </form>
+
+                    <h3>ou</h3>
+
+                    <GoogleLogin
+                        clientId="514141073233-1e9hp32vikk8euh1hgoap2p0otbnvltp.apps.googleusercontent.com"
+                        onSuccess={handleGoogleLoginSuccess}
+                        onError={handleGoogleLoginError}
+                        className="botao-google"
+                        render={renderProps => (
+                            <button
+                                onClick={renderProps.onClick}
+                                disabled={status.loading || renderProps.disabled}
+                                className="botao-google-custom"
+                            >
+                                <img src="images/google-logo.png" alt="Google" className="google-icon" />
+                                Entrar com Google
+                            </button>
+                        )}
+                    />
+
+                    <div className='sem-conta'>
+                        Não tem uma conta?
+                        <Link className='link' to="/cadastro"> Cadastrar</Link>
+                    </div>
+
+                    <div className='esqueci-senha'>
+                        <Link className='link' to="/esqueci-senha">Esqueci a senha</Link>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
