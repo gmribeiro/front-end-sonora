@@ -5,62 +5,111 @@ import { GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 
 const Acessar = () => {
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
-    const [mensagem, setMensagem] = useState('');
-    const [carregando, setCarregando] = useState(false);
+    const [formData, setFormData] = useState({
+        email: '',
+        senha: ''
+    });
+    const [status, setStatus] = useState({
+        loading: false,
+        message: '',
+        success: false
+    });
     const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setCarregando(true);
+        setStatus({ loading: true, message: '', success: false });
 
         try {
-            const response = await axios.post('http://localhost:8080/auth/login', {
-                email,
-                senha
+            const response = await axios.post('http://localhost:8080/auth/login', formData);
+
+            // Store both token and user data if available
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                if (response.data.user) {
+                    localStorage.setItem('user', JSON.stringify(response.data.user));
+                }
+            } else {
+                // Fallback for older API versions
+                localStorage.setItem('token', response.data);
+            }
+
+            setStatus({
+                loading: false,
+                message: 'Login realizado com sucesso!',
+                success: true
             });
 
-            localStorage.setItem('token', response.data);
-
-            setMensagem('Login realizado com sucesso!');
-            setTimeout(() => {
-                navigate('/perfil');
-            }, 1000);
+            navigate('/perfil');
         } catch (error) {
-            setMensagem(error.response?.data || 'Erro ao fazer login. Verifique suas credenciais.');
-        } finally {
-            setCarregando(false);
+            let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
+            if (error.response) {
+                errorMessage = error.response.data.message || error.response.data;
+            } else if (error.request) {
+                errorMessage = 'Sem resposta do servidor.';
+            }
+
+            setStatus({
+                loading: false,
+                message: errorMessage,
+                success: false
+            });
         }
     };
 
     const handleGoogleLoginSuccess = async (credentialResponse) => {
-        console.log('Credencial do Google:', credentialResponse);
-        const token = credentialResponse.credential;
+        setStatus({ loading: true, message: '', success: false });
 
-        if (token) {
-            setCarregando(true);
-            try {
-                const response = await axios.post('http://localhost:8080/auth/google', { token });
-                localStorage.setItem('token', response.data);
-                setMensagem('Login com Google realizado com sucesso!');
-                setTimeout(() => {
-                    navigate('/perfil');
-                }, 1000);
-            } catch (error) {
-                console.error('Erro ao fazer login com Google:', error);
-                setMensagem(error.response?.data || 'Erro ao autenticar com Google.');
-            } finally {
-                setCarregando(false);
+        try {
+            const response = await axios.post('http://localhost:8080/auth/google', {
+                token: credentialResponse.credential
+            });
+
+            // Handle both token and user data
+            localStorage.setItem('token', response.data.token);
+            if (response.data.user) {
+                localStorage.setItem('user', JSON.stringify(response.data.user));
             }
-        } else {
-            setMensagem('Falha ao obter credencial do Google.');
+
+            setStatus({
+                loading: false,
+                message: 'Login com Google realizado com sucesso!',
+                success: true
+            });
+
+            navigate('/perfil');
+        } catch (error) {
+            console.error('Erro no login com Google:', error);
+
+            let errorMessage = 'Erro ao autenticar com Google.';
+            if (error.response?.data) {
+                errorMessage = typeof error.response.data === 'string'
+                    ? error.response.data
+                    : error.response.data.message;
+            }
+
+            setStatus({
+                loading: false,
+                message: errorMessage,
+                success: false
+            });
         }
     };
 
-    const handleGoogleLoginError = (error) => {
-        console.error('Login com Google falhou:', error);
-        setMensagem('Falha ao fazer login com o Google.');
+    const handleGoogleLoginError = () => {
+        setStatus({
+            loading: false,
+            message: 'Falha ao conectar com o Google. Tente novamente.',
+            success: false
+        });
     };
 
     return (
@@ -70,7 +119,11 @@ const Acessar = () => {
             <div className='area-entrar'>
                 <h1>Bem-vindo de volta!</h1>
 
-                {mensagem && <div className={`mensagem ${mensagem.includes('sucesso') ? 'sucesso' : 'erro'}`}>{mensagem}</div>}
+                {status.message && (
+                    <div className={`mensagem ${status.success ? 'sucesso' : 'erro'}`}>
+                        {status.message}
+                    </div>
+                )}
 
                 <form className="form-entrar" onSubmit={handleLogin}>
                     <label htmlFor="email">E-mail</label>
@@ -79,8 +132,8 @@ const Acessar = () => {
                         id="email"
                         name="email"
                         placeholder="Digite seu e-mail"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={formData.email}
+                        onChange={handleChange}
                         required
                     />
 
@@ -90,23 +143,22 @@ const Acessar = () => {
                         id="senha"
                         name="senha"
                         placeholder="Digite sua senha"
-                        value={senha}
-                        onChange={(e) => setSenha(e.target.value)}
+                        value={formData.senha}
+                        onChange={handleChange}
                         required
                     />
 
                     <button
                         type="submit"
                         className="botao-entrar"
-                        disabled={carregando}
+                        disabled={status.loading}
                     >
-                        {carregando ? 'Carregando...' : 'Entrar'}
+                        {status.loading ? 'Carregando...' : 'Entrar'}
                     </button>
                 </form>
 
                 <h3>ou</h3>
 
-                {/* Implementação do Login com Google */}
                 <GoogleLogin
                     clientId="514141073233-1e9hp32vikk8euh1hgoap2p0otbnvltp.apps.googleusercontent.com"
                     onSuccess={handleGoogleLoginSuccess}
@@ -115,7 +167,7 @@ const Acessar = () => {
                     render={renderProps => (
                         <button
                             onClick={renderProps.onClick}
-                            disabled={carregando || renderProps.disabled}
+                            disabled={status.loading || renderProps.disabled}
                             className="botao-google-custom"
                         >
                             <img src="images/google-logo.png" alt="Google" className="google-icon" />

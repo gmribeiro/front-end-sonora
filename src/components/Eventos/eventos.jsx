@@ -4,7 +4,7 @@ import './eventos.css';
 
 const Eventos = () => {
     const [reservando, setReservando] = useState(null);
-    const [mensagemReserva, setMensagemReserva] = useState('');
+    const [mensagensReserva, setMensagensReserva] = useState({}); // Objeto para armazenar mensagens por ID de evento
     const [eventosIniciais] = useState([
         { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00", imagem: "../images/evento1.png", genero: "Rock" },
         { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00", imagem: "../images/evento2.png", genero: "Hip Hop" },
@@ -35,19 +35,19 @@ const Eventos = () => {
 
     const handleReservarClick = async (eventoExibido) => {
         setReservando(eventoExibido.id);
-        setMensagemReserva('');
+        setMensagensReserva(prev => ({ ...prev, [eventoExibido.id]: '' })); // Limpa a mensagem para este evento
 
         try {
             const token = localStorage.getItem('token');
 
             if (!usuarioLogado || !token) {
-                setMensagemReserva('Você precisa estar logado para reservar.');
+                setMensagensReserva(prev => ({ ...prev, [eventoExibido.id]: 'Você precisa estar logado para reservar.' }));
                 setReservando(null);
                 return;
             }
 
             if (!usuarioLogado.id) {
-                setMensagemReserva('Erro: ID do usuário não encontrado.');
+                setMensagensReserva(prev => ({ ...prev, [eventoExibido.id]: 'Erro: ID do usuário não encontrado.' }));
                 setReservando(null);
                 return;
             }
@@ -68,13 +68,13 @@ const Eventos = () => {
             });
 
             if (responseReserva.status === 201) {
-                setMensagemReserva(`Reserva para "${eventoExibido.titulo}" realizada com sucesso!`);
+                setMensagensReserva(prev => ({ ...prev, [eventoExibido.id]: `Reserva para "${eventoExibido.titulo}" realizada com sucesso!` }));
             } else {
-                setMensagemReserva(`Erro ao reservar "${eventoExibido.titulo}". Tente novamente.`);
+                setMensagensReserva(prev => ({ ...prev, [eventoExibido.id]: `Erro ao reservar "${eventoExibido.titulo}". Tente novamente.` }));
             }
         } catch (error) {
             console.error("Erro ao reservar:", error.response?.data || error.message);
-            setMensagemReserva(`Erro ao reservar "${eventoExibido.titulo}". ${error.response?.data?.message || error.message}`);
+            setMensagensReserva(prev => ({ ...prev, [eventoExibido.id]: `Erro ao reservar "${eventoExibido.titulo}". ${error.response?.data?.message || error.message}` }));
         } finally {
             setReservando(null);
         }
@@ -95,14 +95,11 @@ const Eventos = () => {
                         >
                             {reservando === evento.id ? 'Reservando...' : 'Reservar'}
                         </button>
-                        {mensagemReserva && reservando !== evento.id && (
-                            <p className="mensagem-reserva">{mensagemReserva}</p>
+                        {mensagensReserva[evento.id] && (
+                            <p className="mensagem-reserva">{mensagensReserva[evento.id]}</p>
                         )}
                     </div>
                 ))}
-                {mensagemReserva && reservando === null && (
-                    <p className="mensagem-reserva global-mensagem">{mensagemReserva}</p>
-                )}
             </div>
         </div>
     );
