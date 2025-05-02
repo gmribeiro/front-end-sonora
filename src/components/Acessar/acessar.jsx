@@ -21,9 +21,7 @@ const Acessar = () => {
                 senha
             });
 
-            // Armazena o token JWT
-            localStorage.setItem('token', response.data); // response.data é o token JWT como String
-
+            localStorage.setItem('token', response.data);
 
             setMensagem('Login realizado com sucesso!');
             setTimeout(() => {
@@ -34,6 +32,35 @@ const Acessar = () => {
         } finally {
             setCarregando(false);
         }
+    };
+
+    const handleGoogleLoginSuccess = async (credentialResponse) => {
+        console.log('Credencial do Google:', credentialResponse);
+        const token = credentialResponse.credential;
+
+        if (token) {
+            setCarregando(true);
+            try {
+                const response = await axios.post('http://localhost:8080/auth/google', { token });
+                localStorage.setItem('token', response.data);
+                setMensagem('Login com Google realizado com sucesso!');
+                setTimeout(() => {
+                    navigate('/perfil');
+                }, 1000);
+            } catch (error) {
+                console.error('Erro ao fazer login com Google:', error);
+                setMensagem(error.response?.data || 'Erro ao autenticar com Google.');
+            } finally {
+                setCarregando(false);
+            }
+        } else {
+            setMensagem('Falha ao obter credencial do Google.');
+        }
+    };
+
+    const handleGoogleLoginError = (error) => {
+        console.error('Login com Google falhou:', error);
+        setMensagem('Falha ao fazer login com o Google.');
     };
 
     return (
@@ -79,18 +106,22 @@ const Acessar = () => {
 
                 <h3>ou</h3>
 
-                {/* Parte do Google mantida exatamente como estava */}
+                {/* Implementação do Login com Google */}
                 <GoogleLogin
                     clientId="514141073233-1e9hp32vikk8euh1hgoap2p0otbnvltp.apps.googleusercontent.com"
-                    onSuccess={credentialResponse => {
-                        console.log(credentialResponse);
-                        // login bem-sucedido - implementação futura
-                    }}
-                    onError={() => {
-                        console.log('Login Failed');
-                        // login falho - implementação futura
-                    }}
+                    onSuccess={handleGoogleLoginSuccess}
+                    onError={handleGoogleLoginError}
                     className="botao-google"
+                    render={renderProps => (
+                        <button
+                            onClick={renderProps.onClick}
+                            disabled={carregando || renderProps.disabled}
+                            className="botao-google-custom"
+                        >
+                            <img src="images/google-logo.png" alt="Google" className="google-icon" />
+                            Entrar com Google
+                        </button>
+                    )}
                 />
 
                 <div className='sem-conta'>

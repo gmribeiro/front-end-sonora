@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 import './eventos.css';
 
 const Eventos = () => {
     const [reservando, setReservando] = useState(null);
     const [mensagemReserva, setMensagemReserva] = useState('');
-    const [eventos, setEventos] = useState([
-        { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00", imagem: "../images/evento1.png" },
-        { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00", imagem: "../images/evento2.png" },
-        { id: 3, titulo: "Show Rock na Praça", local: "Campinas", hora: "14:30", imagem: "../images/evento3.png" },
-        { id: 4, titulo: "Sunset Eletrônico", local: "Indaiatuba", hora: "12:00", imagem: "../images/evento4.png" },
-        { id: 5, titulo: "Festival Indie", local: "Jundiaí", hora: "17:00", imagem: "../images/evento5.png" },
-        { id: 6, titulo: "Techno Waves", local: "Itupeva", hora: "23:00", imagem: "../images/evento6.png" },
+    const [eventosIniciais] = useState([
+        { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00", imagem: "../images/evento1.png", genero: "Rock" },
+        { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00", imagem: "../images/evento2.png", genero: "Hip Hop" },
+        { id: 3, titulo: "Show Rock na Praça", local: "Campinas", hora: "14:30", imagem: "../images/evento3.png", genero: "Rock" },
+        { id: 4, titulo: "Sunset Eletrônico", local: "Indaiatuba", hora: "12:00", imagem: "../images/evento4.png", genero: "Eletrônica" },
+        { id: 5, titulo: "Festival Indie", local: "Jundiaí", hora: "17:00", imagem: "../images/evento5.png", genero: "Indie" },
+        { id: 6, titulo: "Techno Waves", local: "Itupeva", hora: "23:00", imagem: "../images/evento6.png", genero: "Techno" },
     ]);
+    const [eventosExibidos, setEventosExibidos] = useState([...eventosIniciais]);
     const [usuarioLogado, setUsuarioLogado] = useState(null);
 
     useEffect(() => {
@@ -25,13 +25,16 @@ const Eventos = () => {
                 },
             })
                 .then(response => response.json())
-                .then(data => setUsuarioLogado(data)) // Armazena o objeto completo do usuário
+                .then(data => {
+                    setUsuarioLogado(data);
+                    console.log("Dados do usuário logado:", data);
+                })
                 .catch(error => console.error('Erro ao buscar informações do usuário:', error));
         }
     }, []);
 
-    const handleReservarClick = async (evento) => {
-        setReservando(evento.id);
+    const handleReservarClick = async (eventoExibido) => {
+        setReservando(eventoExibido.id);
         setMensagemReserva('');
 
         try {
@@ -43,30 +46,35 @@ const Eventos = () => {
                 return;
             }
 
-            const idReserva = uuidv4();
+            if (!usuarioLogado.id) {
+                setMensagemReserva('Erro: ID do usuário não encontrado.');
+                setReservando(null);
+                return;
+            }
 
             const reservaData = {
-                idReserva: idReserva,
-                usuario: { id: usuarioLogado.id }, // Usa o 'id' do objeto usuarioLogado
-                evento: { idEvento: evento.id },
+                usuario: { id: usuarioLogado.id },
+                evento: { idEvento: eventoExibido.id },
                 confirmado: false
             };
 
-            const response = await axios.post('http://localhost:8080/reservas', reservaData, {
+            console.log("Payload da reserva:", reservaData);
+
+            const responseReserva = await axios.post('http://localhost:8080/reservas', reservaData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
 
-            if (response.status === 201) {
-                setMensagemReserva(`Reserva para "${evento.titulo}" realizada com sucesso!`);
+            if (responseReserva.status === 201) {
+                setMensagemReserva(`Reserva para "${eventoExibido.titulo}" realizada com sucesso!`);
             } else {
-                setMensagemReserva(`Erro ao reservar "${evento.titulo}". Tente novamente.`);
+                setMensagemReserva(`Erro ao reservar "${eventoExibido.titulo}". Tente novamente.`);
             }
         } catch (error) {
-            console.error("Erro ao reservar:", error);
-            setMensagemReserva(`Erro ao reservar "${evento.titulo}". Verifique sua conexão.`);
+            console.error("Erro ao reservar:", error.response?.data || error.message);
+            setMensagemReserva(`Erro ao reservar "${eventoExibido.titulo}". ${error.response?.data?.message || error.message}`);
         } finally {
             setReservando(null);
         }
@@ -75,11 +83,11 @@ const Eventos = () => {
     return (
         <div className='espaco-eventos'>
             <div className="container-eventos">
-                {eventos.map(evento => (
+                {eventosExibidos.map(evento => (
                     <div key={evento.id} className="evento">
                         <img src={evento.imagem} alt={evento.titulo} />
                         <h3>{evento.titulo}</h3>
-                        <p>{evento.local} - {evento.hora}</p>
+                        <p>{evento.local} - {evento.hora} ({evento.genero})</p>
                         <button
                             className="btn-reservar"
                             onClick={() => handleReservarClick(evento)}

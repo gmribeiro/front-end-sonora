@@ -6,6 +6,28 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.meu-perfil-container > .voltar-home-btn {
+    align-self: flex-start;
+    margin-bottom: 20px;
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.meu-perfil-container > .voltar-home-btn:hover {
+    background-color: #e0e0e0;
 }
 
 h1, h2, h3 {
@@ -18,27 +40,129 @@ h1, h2, h3 {
     margin-bottom: 30px;
 }
 
-.alterar-senha-container {
+.cadastrar-evento-container {
     margin-top: 30px;
+    margin-bottom: 30px; /* Adiciona margem abaixo do botão de cadastrar evento */
+    text-align: center; /* Centraliza o botão */
+    width: 100%; /* Ocupa a largura total do container pai */
+}
+
+.cadastrar-evento-btn {
+    background-color: #28a745; /* Cor verde para destacar */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    display: inline-block; /* Para aplicar margens e padding corretamente */
+    text-decoration: none; /* Remove sublinhado se estilizado como link */
+}
+
+.cadastrar-evento-btn:hover {
+    background-color: #1e7e34;
+}
+
+.formulario-evento {
+    margin-top: 20px;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
+    text-align: left; /* Alinha o texto do formulário à esquerda */
+    width: 100%; /* Ocupa a largura total do container pai */
+    box-sizing: border-box; /* Garante que padding e border não aumentem a largura */
 }
 
-.form-group {
+.formulario-evento h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.formulario-evento .form-group {
     margin-bottom: 15px;
 }
 
-label {
+.formulario-evento label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
     color: #555;
 }
 
-input[type='password'] {
+.formulario-evento input[type='text'],
+.formulario-evento input[type='datetime-local'],
+.formulario-evento textarea {
     width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.formulario-evento textarea {
+    resize: vertical; /* Permite redimensionamento vertical */
+    min-height: 100px;
+}
+
+.formulario-evento .cadastrar-evento-submit-btn,
+.formulario-evento .cancelar-evento-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    margin-right: 10px; /* Espaçamento entre os botões */
+}
+
+.formulario-evento .cadastrar-evento-submit-btn:hover {
+    background-color: #0056b3;
+}
+
+.formulario-evento .cancelar-evento-btn {
+    background-color: #dc3545; /* Cor vermelha para cancelar */
+}
+
+.formulario-evento .cancelar-evento-btn:hover {
+    background-color: #c82333;
+}
+
+.alterar-senha-container {
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    width: 100%; /* Ocupa a largura total do container pai */
+    box-sizing: border-box;
+}
+
+.alterar-senha-container h3 {
+    text-align: left; /* Alinha o título à esquerda dentro do container */
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.alterar-senha-container .form-group {
+    margin-bottom: 15px;
+}
+
+.alterar-senha-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.alterar-senha-container input[type='password'] {
+    width: calc(100% - 22px); /* Considera o padding e a borda */
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -46,7 +170,7 @@ input[type='password'] {
     font-size: 16px;
 }
 
-.alterar-senha-btn {
+.alterar-senha-container .alterar-senha-btn {
     background-color: #007bff;
     color: white;
     padding: 10px 15px;
@@ -57,7 +181,7 @@ input[type='password'] {
     transition: background-color 0.3s ease;
 }
 
-.alterar-senha-btn:hover {
+.alterar-senha-container .alterar-senha-btn:hover {
     background-color: #0056b3;
 }
 
@@ -80,36 +204,19 @@ input[type='password'] {
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
-/* ... outros estilos ... */
 
-.voltar-home-btn {
-    background-color: #f0f0f0; /* Cor de fundo clara */
-    color: #333; /* Cor do texto */
+.logout-btn {
+    background-color: #dc3545; /* Cor vermelha para sair */
+    color: white;
     padding: 10px 15px;
-    border: 1px solid #ccc;
+    border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    margin-bottom: 20px; /* Espaçamento abaixo do botão */
-    text-decoration: none; /* Remove o sublinhado padrão de links */
     transition: background-color 0.3s ease;
-    display: inline-block; /* Para aplicar margens corretamente */
+    margin-top: 20px; /* Adiciona margem acima do botão de sair */
 }
 
-.voltar-home-btn:hover {
-    background-color: #e0e0e0; /* Cor de fundo um pouco mais escura ao passar o mouse */
+.logout-btn:hover {
+    background-color: #c82333;
 }
-
-.meu-perfil-container {
-    /* ... outros estilos ... */
-    display: flex; /* Para alinhar o botão voltar */
-    flex-direction: column; /* Coloca os elementos em coluna */
-    align-items: center; /* Centraliza os itens horizontalmente */
-}
-
-.meu-perfil-container > .voltar-home-btn {
-    align-self: flex-start; /* Alinha o botão voltar à esquerda */
-    margin-bottom: 20px; /* Adiciona margem abaixo do botão voltar */
-}
-
-/* ... outros estilos ... */

@@ -1,42 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Importe Link
-import './meuperfil.css'; // Importe o arquivo de estilos CSS
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+import './meuperfil.css';
 
 function MeuPerfil() {
     const [nomeUsuario, setNomeUsuario] = useState('');
+    const [userRole, setUserRole] = useState('');
     const [senhaAtual, setSenhaAtual] = useState('');
     const [novaSenha, setNovaSenha] = useState('');
     const [confirmarNovaSenha, setConfirmarNovaSenha] = useState('');
     const [mensagem, setMensagem] = useState('');
+    const [exibirFormularioEvento, setExibirFormularioEvento] = useState(false);
+    const [nomeEvento, setNomeEvento] = useState('');
+    const [dataHora, setDataHora] = useState('');
+    const [descricao, setDescricao] = useState('');
+    const [nomeGenero, setNomeGenero] = useState('');
+    const [localEventoNome, setLocalEventoNome] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
-        const buscarNomeUsuario = async () => {
+        const buscarInformacoesUsuario = async () => {
             try {
                 const token = localStorage.getItem('token');
                 if (token) {
-                    const response = await fetch('/auth/user/me', {
+                    const response = await axios.get('/auth/user/me', {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         },
                     });
-                    if (response.ok) {
-                        const data = await response.json();
-                        setNomeUsuario(data.nome || 'Usuário');
-                    } else {
-                        setMensagem('Erro ao buscar informações do usuário.');
-                        navigate('/acesso');
-                    }
+                    setNomeUsuario(response.data.nome || 'Usuário');
+                    setUserRole(response.data.role);
+                    console.log("User Role:", response.data.role);
                 } else {
                     setMensagem('Usuário não autenticado.');
                     navigate('/acesso');
                 }
             } catch (error) {
-                setMensagem('Erro de conexão ao buscar informações do usuário.');
+                setMensagem('Erro ao buscar informações do usuário.');
+                navigate('/acesso');
             }
         };
 
-        buscarNomeUsuario();
+        buscarInformacoesUsuario();
     }, [navigate]);
 
     const handleAlterarSenha = async (event) => {
@@ -51,32 +56,22 @@ function MeuPerfil() {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                const response = await fetch('/auth/change-password', {
-                    method: 'POST',
+                const response = await axios.post('/auth/change-password', {
+                    currentPassword: senhaAtual,
+                    newPassword: novaSenha,
+                }, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
                     },
-                    body: JSON.stringify({
-                        currentPassword: senhaAtual,
-                        newPassword: novaSenha,
-                    }),
                 });
 
-                const data = await response.text();
-
-                if (response.ok) {
-                    setMensagem(data || 'Senha alterada com sucesso!');
-                    setSenhaAtual('');
-                    setNovaSenha('');
-                    setConfirmarNovaSenha('');
-                } else {
-                    setMensagem(data || 'Erro ao alterar a senha.');
-                }
+                setMensagem(response.data || 'Senha alterada com sucesso!');
+                setSenhaAtual('');
+                setNovaSenha('');
+                setConfirmarNovaSenha('');
             } else {
                 setMensagem('Usuário não autenticado.');
-                // Opcional: redirecionar para a página de login
-                // navigate('/login');
             }
         } catch (error) {
             setMensagem('Erro de conexão ao alterar a senha.');
@@ -88,15 +83,144 @@ function MeuPerfil() {
         navigate('/acesso');
     };
 
+    const handleCadastrarEventoClick = () => {
+        setExibirFormularioEvento(true);
+    };
+
+    const handleCadastrarEventoSubmit = async (event) => {
+        event.preventDefault();
+        setMensagem('');
+
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Primeiro, cadastrar o gênero
+                const genreResponse = await axios.post('/genres', { nomeGenero }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const genreData = genreResponse.data;
+
+                // Segundo, cadastrar o local
+                const placeResponse = await axios.post('/places', { local: localEventoNome }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const placeData = placeResponse.data;
+
+                // Terceiro, cadastrar o evento
+                const eventResponse = await axios.post('/eventos', {
+                    nomeEvento,
+                    dataHora,
+                    descricao,
+                    generoMusical: { idGeneroMusical: genreData.idGeneroMusical },
+                    localEvento: { idLocalEvento: placeData.idLocalEvento },
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                setMensagem('Evento cadastrado com sucesso!');
+                setExibirFormularioEvento(false);
+                setNomeEvento('');
+                setDataHora('');
+                setDescricao('');
+                setNomeGenero('');
+                setLocalEventoNome('');
+            } else {
+                setMensagem('Usuário não autenticado.');
+            }
+        } catch (error) {
+            setMensagem(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
+        }
+    };
+
     return (
         <div className="meu-perfil-container">
-            <Link to="/" className="voltar-home-btn"> {/* Adicionado o Link */}
+            <Link to="/" className="voltar-home-btn">
                 Voltar para Home
             </Link>
             <h1>Meu Perfil</h1>
             <div className="bem-vindo">
                 <h2>Bem-vindo(a), {nomeUsuario}!</h2>
             </div>
+
+            {userRole === 'HOST' && (
+                <div className="cadastrar-evento-container">
+                    <button onClick={handleCadastrarEventoClick} className="cadastrar-evento-btn">
+                        Cadastrar Evento
+                    </button>
+
+                    {exibirFormularioEvento && (
+                        <div className="formulario-evento">
+                            <h3>Cadastrar Novo Evento</h3>
+                            <form onSubmit={handleCadastrarEventoSubmit}>
+                                <div className="form-group">
+                                    <label htmlFor="nomeEvento">Nome do Evento:</label>
+                                    <input
+                                        type="text"
+                                        id="nomeEvento"
+                                        value={nomeEvento}
+                                        onChange={(e) => setNomeEvento(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="dataHora">Data e Hora:</label>
+                                    <input
+                                        type="datetime-local"
+                                        id="dataHora"
+                                        value={dataHora}
+                                        onChange={(e) => setDataHora(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="descricao">Descrição:</label>
+                                    <textarea
+                                        id="descricao"
+                                        value={descricao}
+                                        onChange={(e) => setDescricao(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="generoMusical">Gênero:</label>
+                                    <input
+                                        type="text"
+                                        id="generoMusical"
+                                        value={nomeGenero}
+                                        onChange={(e) => setNomeGenero(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="localEvento">Local do Evento:</label>
+                                    <input
+                                        type="text"
+                                        id="localEvento"
+                                        value={localEventoNome}
+                                        onChange={(e) => setLocalEventoNome(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <button type="submit" className="cadastrar-evento-submit-btn">
+                                    Cadastrar Evento
+                                </button>
+                                <button type="button" onClick={() => setExibirFormularioEvento(false)} className="cancelar-evento-btn">
+                                    Cancelar
+                                </button>
+                            </form>
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div className="alterar-senha-container">
                 <h3>Alterar Senha</h3>

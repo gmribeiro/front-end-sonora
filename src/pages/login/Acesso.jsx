@@ -6,9 +6,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 function Acesso() {
     return (
         <GoogleOAuthProvider clientId="514141073233-1e9hp32vikk8euh1hgoap2p0otbnvltp.apps.googleusercontent.com">
-            <>
-                <Acessar />
-            </>
+            <Acessar />
         </GoogleOAuthProvider>
     );
 }
