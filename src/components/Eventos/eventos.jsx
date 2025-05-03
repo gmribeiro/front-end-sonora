@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './eventos.css';
 
 const Eventos = () => {
-    const [eventos] = useState([
+    const navigate = useNavigate();
+    const [eventos, setEventos] = useState([
         { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00:00", data: "15/11/2023", imagem: "../images/evento1.png", genero: "Rock" },
         { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00:00", data: "20/11/2023", imagem: "../images/evento2.png", genero: "Hip Hop" },
         { id: 3, titulo: "Show Rock na Praça", local: "Campinas", hora: "14:30:00", data: "25/11/2023", imagem: "../images/evento3.png", genero: "Rock" },
@@ -28,7 +30,10 @@ const Eventos = () => {
     });
     const [formMessage, setFormMessage] = useState('');
 
-    // Format date to dd/MM/yyyy HH:mm:ss
+    const handleEventoClick = (eventoId) => {
+        navigate(`/detalhes/${eventoId}`);
+    };
+
     const formatDateTime = (dateStr, timeStr) => {
         const [day, month, year] = dateStr.split('/');
         const [hours, minutes, seconds] = timeStr.split(':');
@@ -176,22 +181,35 @@ const Eventos = () => {
 
             const dataHoraFormatada = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 
-            // Monta o objeto do evento com o objeto Genre completo
+            // Monta o objeto do evento
             const eventoData = {
                 nomeEvento: eventoForm.nomeEvento,
                 dataHora: dataHoraFormatada,
                 descricao: eventoForm.descricao,
-                generoMusical: genre,  // Envia o objeto Genre completo
-                localEvento: place      // Envia o objeto Place completo
+                generoMusical: genre,
+                localEvento: place
             };
 
-            // Envia para a API de eventos
-            await axios.post('/eventos', eventoData, {
+            // Envia para a API de eventos e obtém a resposta
+            const response = await axios.post('/eventos', eventoData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
+
+            // Adiciona o novo evento à lista
+            const novoEvento = {
+                id: response.data.id, // Supondo que a API retorne o ID do novo evento
+                titulo: eventoForm.nomeEvento,
+                local: place.local || place.nome || eventoForm.local,
+                hora: `${hours}:${minutes}:${seconds}`,
+                data: `${day}/${month}/${year}`,
+                imagem: "../images/evento-default.png", // Imagem padrão ou você pode adicionar um campo no formulário
+                genero: genre.nomeGenero || eventoForm.genero
+            };
+
+            setEventos([...eventos, novoEvento]);
 
             setFormMessage('Event created successfully!');
             setEventoForm({
@@ -294,13 +312,21 @@ const Eventos = () => {
                     const dataHoraFormatada = formatDateTime(evento.data, evento.hora);
 
                     return (
-                        <div key={evento.id} className="evento">
+                        <div
+                            key={evento.id}
+                            className="evento"
+                            onClick={() => handleEventoClick(evento.id)}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <img src={evento.imagem} alt={evento.titulo} />
                             <h3>{evento.titulo}</h3>
                             <p>{evento.local} - {dataHoraFormatada} ({evento.genero})</p>
                             <button
                                 className="btn-reservar"
-                                onClick={() => handleReservar(evento)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReservar(evento);
+                                }}
                                 disabled={reservando === evento.id}
                             >
                                 {reservando === evento.id ? 'Processing...' : 'Reserve'}

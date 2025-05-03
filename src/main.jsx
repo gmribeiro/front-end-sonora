@@ -12,6 +12,8 @@ import Notificacao from './pages/perfil/Notificacao'
 import SobreNos from './pages/genericos/SobreNos'
 import Termos from './pages/genericos/Termos'
 import SelectorRole from "./pages/select-roles/Selector-Role.jsx";
+import DetalhesEvento from "./pages/detalhes-evento/DetalhesEvento.jsx";
+import Eventos from "./components/Eventos/eventos.jsx";
 
 
 createRoot(document.getElementById('root')).render(
@@ -24,6 +26,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/cadastro" element={<Cadastro/>} />
         <Route path="/perfil" element={<Meuperfil/>} />
         <Route path="/roleSelector" element={<SelectorRole/>} />
+        <Route path="/detalhes/:id" element={<DetalhesEvento/>} />
         <Route path="/esquecisenha" element={<EsqueciSenha/>} />
         <Route path="/notificacao" element={<Notificacao/>} />
         <Route path="/sobrenos" element={<SobreNos/>} />
