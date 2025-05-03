@@ -42,6 +42,15 @@
   opacity: 0;
   transform: translateX(20px);
   animation: slideIn 0.5s ease-out forwards;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.categoria.ativo {
+  background: #C5B6D2;
+  color: #564a72;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(197, 182, 210, 0.8);
 }
 
 @keyframes slideIn {

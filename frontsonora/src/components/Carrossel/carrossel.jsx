@@ -21,14 +21,15 @@ const categorias = [
     { nome: "Infantil", icone: <TbHorseToy /> },
     { nome: "Eletrônica", icone: <CgMusicSpeaker /> },
     { nome: "Funk", icone: <GiCigar /> },
-    { nome: "Reggae", icone: <FaCannabis  /> },
-    { nome: "Clássica", icone: <GiGrandPiano  /> },
+    { nome: "Reggae", icone: <FaCannabis /> },
+    { nome: "Clássica", icone: <GiGrandPiano /> },
 ];
 
-const Carrossel = () => {
+const Carrossel = ({ onGeneroSelecionado }) => {
     const carrosselRef = useRef(null);
     const [startIndex, setStartIndex] = useState(0);
     const [animate, setAnimate] = useState(false);
+    const [generoAtivo, setGeneroAtivo] = useState(null);
     const visibleItems = 5;
 
     useEffect(() => {
@@ -53,6 +54,16 @@ const Carrossel = () => {
         carrosselRef.current.scrollLeft = newIndex * itemWidth;
     };
 
+    const handleGeneroClick = (genero) => {
+        if (genero === generoAtivo) {
+            setGeneroAtivo(null);
+            onGeneroSelecionado(null);
+        } else {
+            setGeneroAtivo(genero);
+            onGeneroSelecionado(genero);
+        }
+    };
+
     return (
         <div className="carrossel-container">
             <button 
@@ -67,11 +78,12 @@ const Carrossel = () => {
                 {categorias.slice(startIndex, startIndex + visibleItems).map((categoria, index) => (
                     <div 
                         key={startIndex + index} 
-                        className="categoria"
+                        className={`categoria ${generoAtivo === categoria.nome ? 'ativo' : ''}`}
                         style={{ 
                             animationDelay: `${index * 0.1}s`,
                             opacity: animate ? 0 : 1 
                         }}
+                        onClick={() => handleGeneroClick(categoria.nome)}
                     >
                         <span className="icone">{categoria.icone}</span>
                         <p>{categoria.nome}</p>
