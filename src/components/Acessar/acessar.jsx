@@ -57,45 +57,45 @@ const Acessar = () => {
         setStatus({ loading: true, message: '', success: false });
 
         try {
-            const response = await axios.post('http://localhost:8080/auth/login', formData);
+            // 1. Faz login (recebe apenas o token string)
+            const { data: token } = await axios.post('http://localhost:8080/auth/login', formData);
 
-            localStorage.setItem('token', response.data.token);
+            // 2. Validação básica do token
+            if (!token || typeof token !== 'string') {
+                throw new Error('Token inválido');
+            }
 
-            // Get complete user data after login
-            const userResponse = await axios.get('http://localhost:8080/auth/user/me', {
-                headers: {
-                    'Authorization': `Bearer ${response.data.token}`,
-                },
+            // 3. Armazena token e configura axios
+            localStorage.setItem('token', token);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+            // 4. Mostra mensagem de sucesso
+            setStatus({
+                loading: false,
+                message: 'Login realizado com sucesso!',
+                success: true
             });
 
-            localStorage.setItem('user', JSON.stringify(userResponse.data));
-
-            if (userResponse.data.role === 'CLIENT') {
-                setUserId(userResponse.data.id);
-                setShowRoleSelector(true);
-            } else {
-                setStatus({
-                    loading: false,
-                    message: 'Login realizado com sucesso!',
-                    success: true
-                });
+            // 5. Redireciona após 1.5 segundos (tempo para ver a mensagem)
+            setTimeout(() => {
                 navigate('/perfil');
-            }
+            }, 1500);
+
         } catch (error) {
-            let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
-            if (error.response) {
-                errorMessage = error.response.data.message || error.response.data;
-            } else if (error.request) {
-                errorMessage = 'Sem resposta do servidor.';
-            }
+            console.error('Erro no login:', error);
+            localStorage.removeItem('token');
+            delete axios.defaults.headers.common['Authorization'];
 
             setStatus({
                 loading: false,
-                message: errorMessage,
+                message: error.response?.status === 401
+                    ? 'Email ou senha incorretos'
+                    : 'Erro no servidor',
                 success: false
             });
         }
     };
+
 
     const handleGoogleLoginSuccess = async (credentialResponse) => {
         setStatus({ loading: true, message: '', success: false });

@@ -9,8 +9,8 @@ const RoleSelector = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        nome_artistico: '', // Corrigido para snake_case como no Postman
-        redes_sociais: ''   // Corrigido para snake_case como no Postman
+        nome_artistico: '',
+        redes_sociais: ''
     });
 
     const handleChange = (e) => {
@@ -31,40 +31,57 @@ const RoleSelector = () => {
             });
             const userId = userResponse.data.id;
 
-            // Preparar payload EXATAMENTE como no Postman
-            const payload = {
-                role: selectedRole || 'CLIENT',
-                nome_artistico: formData.nome_artistico.trim(), // Mantido snake_case
-                redes_sociais: formData.redes_sociais.trim(),   // Mantido snake_case
-                id_usuario: userId                              // Adicionado como no Postman
-            };
-
-            // Requisição PUT como no exemplo do Postman
-            const response = await axios.put(
-                `http://localhost:8080/users/${userId}`, // URL com ID como no Postman
-                payload,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+            // Atualiza o role (apenas se não for CLIENT)
+            if (selectedRole) {
+                await axios.put(
+                    `http://localhost:8080/users/${userId}`,
+                    {
+                        role: selectedRole,
+                        id_usuario: userId
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
                     }
-                }
-            );
+                );
 
-            // Verificar resposta (opcional)
-            console.log('Resposta do servidor:', response.data);
+                // Se for ARTISTA, cria o registro de Músico
+                if (selectedRole === 'ARTISTA') {
+                    await axios.post(
+                        'http://localhost:8080/musicos',
+                        {
+                            nomeArtistico: formData.nome_artistico.trim(),
+                            redesSociais: formData.redes_sociais.trim(),
+                            idUsuario: userId
+                        },
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                }
+            }
 
             navigate('/perfil');
         } catch (err) {
-            console.error('Erro detalhado:', {
-                message: err.message,
-                response: err.response?.data,
-                request: err.config
-            });
-            setError(err.response?.data?.message || 'Erro ao atualizar perfil');
+            console.error('Erro:', err);
+            setError(err.response?.data?.message || err.message || 'Erro ao atualizar perfil');
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleRoleSelect = (role) => {
+        setSelectedRole(role);
+        setError('');
+    };
+
+    const handleContinueAsClient = () => {
+        navigate('/perfil');
     };
 
     return (
@@ -74,16 +91,20 @@ const RoleSelector = () => {
 
             <form onSubmit={handleSubmit}>
                 <div className="role-options">
-                    <div className={`role-option ${selectedRole === 'HOST' ? 'selected' : ''}`}
-                         onClick={() => setSelectedRole('HOST')}>
+                    <div
+                        className={`role-option ${selectedRole === 'HOST' ? 'selected' : ''}`}
+                        onClick={() => handleRoleSelect('HOST')}
+                    >
                         <div className="role-icon">🎪</div>
                         <div className="role-details">
                             <h4>Sou Organizador</h4>
                             <p>Quero criar e gerenciar eventos</p>
                         </div>
                     </div>
-                    <div className={`role-option ${selectedRole === 'ARTISTA' ? 'selected' : ''}`}
-                         onClick={() => setSelectedRole('ARTISTA')}>
+                    <div
+                        className={`role-option ${selectedRole === 'ARTISTA' ? 'selected' : ''}`}
+                        onClick={() => handleRoleSelect('ARTISTA')}
+                    >
                         <div className="role-icon">🎵</div>
                         <div className="role-details">
                             <h4>Sou Artista</h4>
@@ -102,7 +123,7 @@ const RoleSelector = () => {
                                 name="nome_artistico"
                                 value={formData.nome_artistico}
                                 onChange={handleChange}
-                                placeholder="Nome Artístico do Músico" // Igual ao exemplo
+                                placeholder="Seu nome artístico"
                                 required
                             />
                         </div>
@@ -114,7 +135,7 @@ const RoleSelector = () => {
                                 name="redes_sociais"
                                 value={formData.redes_sociais}
                                 onChange={handleChange}
-                                placeholder="instagram.com/artista" // Igual ao exemplo
+                                placeholder="@seuinstagram"
                             />
                         </div>
                     </div>
@@ -123,20 +144,20 @@ const RoleSelector = () => {
                 {error && <div className="error-message">{error}</div>}
 
                 <div className="action-buttons">
-                    <button type="button"
-                            className="client-button"
-                            onClick={() => {
-                                setSelectedRole(null);
-                                handleSubmit();
-                            }}
-                            disabled={loading}>
-                        {loading ? 'Salvando...' : 'Continuar como Cliente'}
+                    <button
+                        type="button"
+                        className="client-button"
+                        onClick={handleContinueAsClient}
+                    >
+                        Continuar como Cliente
                     </button>
 
                     {selectedRole && (
-                        <button type="submit"
-                                className="confirm-button"
-                                disabled={loading}>
+                        <button
+                            type="submit"
+                            className="confirm-button"
+                            disabled={loading}
+                        >
                             {loading ? 'Salvando...' : 'Confirmar Perfil'}
                         </button>
                     )}
