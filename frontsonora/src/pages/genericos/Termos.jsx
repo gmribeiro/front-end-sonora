@@ -15,7 +15,7 @@ function Termos() {
           height="100%"
         />
       </div>
-      <button className="botao-voltar" onClick={() => window.history.back()}>
+      <button className="botao-voltar" onClick={() => window.location.href = '/'}>
         Voltar
       </button>
     </div>
