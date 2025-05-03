@@ -1,22 +1,28 @@
 import "./carrossel.css";
 import { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { GiCarnivalMask } from "react-icons/gi";
 import { GiCowboyBoot } from "react-icons/gi";
-import { IoMdMicrophone } from "react-icons/io";
 import { GiThunderSkull } from "react-icons/gi";
 import { GiBrazilFlag } from "react-icons/gi";
 import { TbHorseToy } from "react-icons/tb";
+import { CgMusicSpeaker } from "react-icons/cg";
+import { PiMicrophoneStageDuotone } from "react-icons/pi";
+import { GiCigar } from "react-icons/gi";
+import { FaCannabis } from "react-icons/fa6";
+import { LuGuitar } from "react-icons/lu";
+import { GiGrandPiano } from "react-icons/gi";
 
 const categorias = [
-    { nome: "Carnaval", icone: <GiCarnivalMask /> },
+    { nome: "POP", icone: <PiMicrophoneStageDuotone /> },
     { nome: "Sertanejo", icone: <GiCowboyBoot /> },
-    { nome: "Indie", icone: <IoMdMicrophone /> },
+    { nome: "Indie", icone: <LuGuitar /> },
     { nome: "Rock'n roll", icone: <GiThunderSkull /> },
     { nome: "MPB", icone: <GiBrazilFlag /> },
     { nome: "Infantil", icone: <TbHorseToy /> },
-    { nome: "Eletrônica", icone: <IoMdMicrophone /> },
-    { nome: "Funk", icone: <GiCowboyBoot /> },
+    { nome: "Eletrônica", icone: <CgMusicSpeaker /> },
+    { nome: "Funk", icone: <GiCigar /> },
+    { nome: "Reggae", icone: <FaCannabis  /> },
+    { nome: "Clássica", icone: <GiGrandPiano  /> },
 ];
 
 const Carrossel = () => {
