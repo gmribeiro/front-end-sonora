@@ -149,6 +149,12 @@ function MeuPerfil() {
                 <h2>Bem-vindo(a), {nomeUsuario}!</h2>
             </div>
 
+            {userRole === 'CLIENT' && (
+                <Link to="/avaliacoes" className="avaliacoes-btn">
+                    Avaliações
+                </Link>
+            )}
+
             {userRole === 'HOST' && (
                 <div className="cadastrar-evento-container">
                     <button onClick={handleCadastrarEventoClick} className="cadastrar-evento-btn">

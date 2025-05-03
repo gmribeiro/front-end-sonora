@@ -54,7 +54,7 @@ const Notificacao = () => {
             }
         };
 
-        const intervalId = setInterval(enviarNotificacaoInterval,5 * 60 * 10000); // 10 segundos para teste
+        const intervalId = setInterval(enviarNotificacaoInterval,10 * 60 * 10000);
 
         return () => clearInterval(intervalId);
     }, [currentIndex, usuarioLogadoId]);
