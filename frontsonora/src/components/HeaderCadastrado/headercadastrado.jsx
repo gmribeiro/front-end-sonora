@@ -34,9 +34,11 @@ function HeaderCadastrado() {
           <FaUserCircle className="perfil-icon" />
           <span className="perfil-nome">MF_SPINULA</span>
         </Link>
+        <Link to="/notificacao" className="perfil-link">
         <div className="icon-button">
           <FaBell className="search-icon" />
         </div>
+        </Link>
       </div>
     </header>
   );
