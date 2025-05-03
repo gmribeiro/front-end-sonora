@@ -76,10 +76,9 @@ const Acessar = () => {
                 success: true
             });
 
-            // 5. Redireciona após 1.5 segundos (tempo para ver a mensagem)
             setTimeout(() => {
                 navigate('/perfil');
-            }, 1500);
+            }, 1000);
 
         } catch (error) {
             console.error('Erro no login:', error);

@@ -1,162 +1,249 @@
 .espaco-eventos {
-    background-color: #EDE6F2;
-    padding: 1.5rem 0; /* Adicionei um padding vertical para respiro */
-  }
-  
+  background-color: #EDE6F2;
+  padding: 1.5rem 0;
+  min-height: 100vh;
+}
+
+.container-eventos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.evento {
+  width: 100%;
+  max-width: 320px;
+  min-width: 250px;
+  height: auto;
+  background: linear-gradient(to bottom, #2E284E, #5A4E75, #8B7EA2, #C5B6D2, #E8DFEC);
+  border-radius: 12px;
+  text-align: center;
+  padding: 1rem;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.evento:hover {
+  transform: translateY(-5px);
+}
+
+.evento img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.evento h3 {
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 0.3rem;
+}
+
+.evento p {
+  font-size: 1rem;
+  color: #E8DFEC;
+  margin-bottom: 0.8rem;
+}
+
+.btn-reservar {
+  background-color: #5A4E75;
+  color: #ffffff;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  width: 80%;
+}
+
+.btn-reservar:hover {
+  background-color: #2E284E;
+}
+
+.btn-reservar:disabled {
+  background-color: #8B7EA2;
+  cursor: not-allowed;
+}
+
+.mensagem-reserva {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #E8DFEC;
+}
+
+/* Host actions styles */
+.host-actions {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 0 1.5rem;
+  text-align: left;
+}
+
+.btn-cadastrar-evento {
+  background-color: #5A4E75;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-cadastrar-evento:hover {
+  background-color: #2E284E;
+}
+
+.evento-form-container {
+  background: white;
+  padding: 20px;
+  margin-top: 15px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.evento-form-container h3 {
+  margin-top: 0;
+  color: #2E284E;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #5A4E75;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+  color: black;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #C5B6D2;
+  border-radius: 8px;
+  background-color: #F8F5FC;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.form-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.form-buttons button[type="submit"] {
+  background-color: #5A4E75;
+  color: white;
+}
+
+.form-buttons button[type="submit"]:hover {
+  background-color: #2E284E;
+}
+
+.btn-cancelar {
+  background-color: #8B7EA2;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background-color: #5A4E75;
+}
+
+.form-message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.form-message.success {
+  background-color: #D4EDDA;
+  color: #155724;
+}
+
+.form-message.error {
+  background-color: #F8D7DA;
+  color: #721C24;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
   .container-eventos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Ajustei o minmax para um valor um pouco menor */
-    gap: 2rem; /* Reduzi o gap entre os eventos */
-    padding: 1.5rem; /* Reduzi o padding interno do container */
-    max-width: 1200px;
-    margin: 0 auto; /* Centralizei o container */
-    justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
   }
-  
+
   .evento {
-    width: 100%;
-    max-width: 320px;
-    min-width: 250px; /* Reduzi o min-width do evento */
-    height: auto;
-    background: linear-gradient(to bottom, #2E284E, #5A4E75, #8B7EA2, #C5B6D2, #E8DFEC);
-    border-radius: 12px;
-    text-align: center;
-    padding: 1rem; /* Reduzi o padding interno do evento */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 8rem; /* Reduzi a margem inferior */
+    max-width: 280px;
   }
-  
+}
+
+@media (max-width: 768px) {
+  .container-eventos {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.2rem;
+    padding: 1rem;
+  }
+
+  .evento {
+    max-width: 240px;
+    padding: 0.8rem;
+  }
+
   .evento img {
-    width: 100%;
-    max-width: 200px; /* Reduzi a largura máxima da imagem do evento */
-    height: auto;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 0.8rem; /* Reduzi a margem inferior da imagem */
+    max-width: 180px;
   }
-  
-  .evento h3 {
-    font-size: 1.2rem; /* Reduzi o tamanho da fonte do título */
-    margin-bottom: 0.3rem; /* Reduzi a margem inferior do título */
+}
+
+@media (max-width: 480px) {
+  .container-eventos {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-  
-  .evento p {
-    font-size: 1rem; /* Reduzi o tamanho da fonte do parágrafo */
-    color: #5A4E75;
-    margin-bottom: 0.8rem; /* Reduzi a margem inferior do parágrafo */
+
+  .evento {
+    max-width: 100%;
+    margin: 0 auto 1.5rem;
   }
-  
-  .btn-reservar {
-    background-color: #5A4E75;
-    color: #ffffff;
-    padding: 8px 16px; /* Reduzi o padding do botão */
-    font-size: 0.9rem; /* Reduzi o tamanho da fonte do botão */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s ease;
+
+  .host-actions {
+    padding: 0 1rem;
   }
-  
-  .btn-reservar:hover {
-    background-color: #2E284E;
+
+  .evento-form-container {
+    margin: 15px 1rem;
   }
-  
-  @media (max-width: 1024px) {
-    .container-eventos {
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Ajustei o minmax */
-      gap: 1.5rem; /* Reduzi o gap */
-      padding: 1rem; /* Reduzi o padding */
-    }
-  
-    .evento {
-      max-width: 280px; /* Mantive o max-width */
-      padding: 0.8rem; /* Reduzi o padding interno */
-      margin-bottom: 1.5rem; /* Reduzi a margem inferior */
-    }
-  
-    .evento img {
-      max-width: 180px; /* Reduzi a largura máxima da imagem */
-      margin-bottom: 0.6rem; /* Reduzi a margem inferior */
-    }
-  
-    .evento h3 {
-      font-size: 1.1rem; /* Reduzi a fonte */
-    }
-  
-    .evento p {
-      font-size: 0.95rem; /* Reduzi a fonte */
-    }
-  
-    .btn-reservar {
-      padding: 7px 14px; /* Reduzi o padding */
-      font-size: 0.85rem; /* Reduzi a fonte */
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .container-eventos {
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Ajustei o minmax */
-      gap: 1rem; /* Reduzi o gap */
-      padding: 0.8rem; /* Reduzi o padding */
-    }
-  
-    .evento {
-      max-width: 250px; /* Mantive o max-width */
-      padding: 0.6rem; /* Reduzi o padding interno */
-      margin-bottom: 1rem; /* Reduzi a margem inferior */
-    }
-  
-    .evento img {
-      max-width: 150px; /* Reduzi a largura máxima da imagem */
-      margin-bottom: 0.5rem; /* Reduzi a margem inferior */
-    }
-  
-    .evento h3 {
-      font-size: 1rem; /* Reduzi a fonte */
-    }
-  
-    .evento p {
-      font-size: 0.9rem; /* Reduzi a fonte */
-    }
-  
-    .btn-reservar {
-      padding: 6px 12px; /* Reduzi o padding */
-      font-size: 0.8rem; /* Reduzi a fonte */
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .container-eventos {
-      grid-template-columns: 1fr; 
-      gap: 1.5rem; 
-      padding: 1rem; 
-    }
-  
-    .evento {
-      max-width: 100%; 
-      min-width: auto; 
-      padding: 0.8rem; 
-      margin-bottom: 1.5rem; 
-    }
-  
-    .evento img {
-      max-width: 70%; 
-      margin-bottom: 0.6rem; 
-    }
-  
-    .evento h3 {
-      font-size: 1rem; 
-    }
-  
-    .evento p {
-      font-size: 0.85rem; 
-    }
-  
-    .btn-reservar {
-      padding: 7px 14px; 
-      font-size: 0.8rem; 
-    }
-  }
+}
