@@ -11,7 +11,7 @@ const SobreNos = () => {
           <div className="text-content">
             <h1>Sobre o Sonora</h1>
           </div>
-          <img src="logosobre.png" alt="Pessoas conversando sorrindo" />
+          <img src="../images/logosobre.png" alt="Pessoas conversando sorrindo" />
         </section>
 
         <section className="sobre-nos-content">

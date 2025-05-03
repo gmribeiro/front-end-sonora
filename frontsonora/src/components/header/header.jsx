@@ -1,33 +1,37 @@
-import './header.css';
-import { Link } from 'react-router-dom';
 import React from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import './Header.css';
 
 function Header() {
   return (
-      <header>
-        <div className='cima'>
-          <Link className="link logo-link" to="/">
-            <img src="../images/logosemfundo.png" alt="Logo" className="logo"/>
-          </Link>
-
-          <input type="search" name="search" className='search' placeholder='Encontre seu estilo favorito'/>
-
-          <nav className='links'>
-            <Link className='link' to="/">
-              <span>HOME</span>
-              <div className='underline'></div>
-            </Link>
-            <Link className='link' to="/MeusConvites">
-              <span>MEUS CONVITES</span>
-              <div className='underline'></div>
-            </Link>
-            <Link id='btn-entrar' to="/Acesso">
-              <span>ENTRAR</span>
-              <div className='underline'></div>
-            </Link>
-          </nav>
+    <header className="header">
+      <div className="header-left">
+        <img 
+          src="../images/logosemfundo.png" 
+          alt="Logo" 
+          className="logo" 
+          style={{ maxHeight: '60px' }}
+        />
+        <div className="search-container">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Pesquisar eventos, shows, teatros, cursos"
+            className="search-input"
+          />
         </div>
-      </header>
+      </div>
+
+      <div className="header-right">
+        <div className="divider"></div>
+        <nav className="nav">
+          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/meusconvites" className="nav-link">Meus Convites</Link>
+        </nav>
+        <Link to="/acesso" className="login-button">Entrar</Link>
+      </div>
+    </header>
   );
 }
 

@@ -41,7 +41,7 @@ body, html {
   }
   
   .area-entrar h1 {
-    margin-bottom: 0.8rem; /* Reduzi a margem inferior */
+    margin-bottom: 0.8rem; 
     color: #1F1536;
     text-align: center;
   }
@@ -55,17 +55,17 @@ body, html {
   
   .form-entrar label {
     font-weight: bold;
-    margin-bottom: 0.2rem; /* Reduzi a margem inferior */
+    margin-bottom: 0.2rem; 
     color: #1F1536;
-    font-size: 1.4rem; /* Reduzi o tamanho da fonte */
+    font-size: 1.4rem; 
   }
   
   .form-entrar input {
     width: 95%;
-    padding: 1rem; /* Reduzi o padding */
+    padding: 1rem;
     border: 1px solid #1F1536;
-    font-size: 1rem; /* Reduzi o tamanho da fonte */
-    margin-bottom: 1rem; /* Reduzi a margem inferior */
+    font-size: 1rem; 
+    margin-bottom: 1rem; 
     background-color: white;
     color: #1F1536;
   }

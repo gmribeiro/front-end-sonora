@@ -130,33 +130,33 @@
   
   @media (max-width: 480px) {
     .container-eventos {
-      grid-template-columns: 1fr; /* Força uma coluna em telas muito pequenas */
-      gap: 1.5rem; /* Aumentei um pouco o gap para melhor separação */
-      padding: 1rem; /* Ajustei o padding */
+      grid-template-columns: 1fr; 
+      gap: 1.5rem; 
+      padding: 1rem; 
     }
   
     .evento {
-      max-width: 100%; /* O evento ocupa toda a largura disponível */
-      min-width: auto; /* Permite que a largura se ajuste */
-      padding: 0.8rem; /* Ajustei o padding interno */
-      margin-bottom: 1.5rem; /* Ajustei a margem inferior */
+      max-width: 100%; 
+      min-width: auto; 
+      padding: 0.8rem; 
+      margin-bottom: 1.5rem; 
     }
   
     .evento img {
-      max-width: 70%; /* A imagem ocupa uma porcentagem da largura */
-      margin-bottom: 0.6rem; /* Ajustei a margem inferior */
+      max-width: 70%; 
+      margin-bottom: 0.6rem; 
     }
   
     .evento h3 {
-      font-size: 1rem; /* Mantive a fonte */
+      font-size: 1rem; 
     }
   
     .evento p {
-      font-size: 0.85rem; /* Reduzi um pouco a fonte */
+      font-size: 0.85rem; 
     }
   
     .btn-reservar {
-      padding: 7px 14px; /* Ajustei o padding */
-      font-size: 0.8rem; /* Mantive a fonte */
+      padding: 7px 14px; 
+      font-size: 0.8rem; 
     }
   }

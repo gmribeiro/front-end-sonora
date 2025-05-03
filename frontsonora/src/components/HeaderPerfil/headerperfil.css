@@ -1,48 +1,70 @@
-.header-perfil {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: #5a4a72;
-  padding: 15px;
+.header-container {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto; /* Logo, Perfil, Espaço Flexível, Botões */
+  align-items: center; /* Alinha verticalmente ao centro */
+  gap: 20px;
+  background-color: #5a4a72; /* Mantendo a cor original */
+  padding: 15px 30px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
   color: white;
+  position: relative;
+  overflow: visible;
 }
 
-.logo-container {
+/* Logo */
+.cima {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  margin-right: 20px;
+}
+
+.logo-link {
+  display: inline-block;
 }
 
 .logo {
   height: 50px;
-  margin-left: 20px;
+  transition: transform 0.3s ease;
 }
 
-.foto-container {
-  width: 160px; /* Aumentando o tamanho */
-  height: 160px;
-  background-color: #c8a2c8;
-  border-radius: 50%;
-  position: absolute;
-  left: 200px;
-  top: 200%;
-  transform: translateY(-100%); /* descer bolinha roxa */
+.logo:hover {
+  transform: scale(1.1);
 }
 
-.info-perfil {
+/* Perfil */
+.profile-section {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
   display: flex;
-  flex-direction: row;
   align-items: center;
   gap: 15px;
-  margin-left: 220px; /* mover */
+  margin-left: -30px; /* Para sair da borda esquerda */
 }
 
-h1 {
+.profile-image-container {
+  position: relative;
+  top: 0px; /* Ajuste conforme necessário para o alinhamento vertical */
+  /* margin-left: -40px; /* Ajuste conforme necessário para o alinhamento horizontal */
+}
+
+.profile-circle {
+  width: 160px; /* Aumentei o tamanho da bolota */
+  height: 160px; /* Aumentei o tamanho da bolota */
+  background-color: #c8a2c8;
+  border-radius: 50%;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.username {
   font-size: 20px;
+  margin: 0;
 }
 
 .input-nome {
@@ -50,50 +72,95 @@ h1 {
   padding: 5px;
   border-radius: 8px;
   border: none;
+  outline: none;
 }
 
-.btn-editar {
-  background-color: white;
-  color: #5a4a72;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
+/* Botão Editar */
+.edit-name {
+  font-size: 14px;
+  color: #e0c3fc;
   cursor: pointer;
-  font-weight: bold;
 }
 
-.btn-editar:hover {
-  background-color: #ddd;
+.edit-name:hover {
+  text-decoration: underline;
 }
 
+/* Botões à direita */
+.buttons-top {
+  grid-column: 4 / 5; /* Colocado na última coluna */
+  grid-row: 1 / 2;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centraliza os botões horizontalmente */
+  gap: 15px;
+  justify-self: end; /* Alinha o grupo de botões à direita */
+}
 
-.btn-notifications {
+.notification-button,
+.settings-button,
+.logout-button {
   background: none;
   border: none;
-  color: white;
   font-size: 24px;
   cursor: pointer;
-  margin-right: 15px;
-  position: absolute;
-  right: 150px; 
-}
-
-.btn-notifications:hover {
-  color: #ddd;
-}
-
-.btn-sair {
-  background-color: white;
-  color: #5a4a72;
-  border: none;
+  color: white;
   padding: 8px 12px;
   border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  position: absolute;
-  right: 20px;
+  transition: transform 0.2s ease;
 }
 
-.btn-sair:hover {
+.notification-button:hover,
+.settings-button:hover,
+.logout-button:hover {
+  transform: scale(1.2);
+}
+
+/* Estilo específico para o botão de logout */
+.logout-button {
+  background-color: white;
+  color: #5a4a72;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.logout-button:hover {
   background-color: #ddd;
+}
+
+/* POPUP Notificações */
+.notificacoes-popup {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  background-color: #f3e8ff;
+  color: #5a4a72;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 250px;
+  z-index: 1000;
+}
+
+.fechar-notificacao {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #5a4a72;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.notificacoes-popup ul {
+  margin-top: 30px;
+  list-style: none;
+  padding: 0;
+}
+
+.notificacoes-popup li {
+  margin-bottom: 10px;
+  font-size: 14px;
 }
