@@ -1,10 +1,12 @@
-import HeaderCadastrado from '../../components/HeaderCadastrado/headercadastrado.jsx'
-import Footer from '../../components/Footer/footer.jsx'
-import '../css/global.css'
-import React from 'react'
-import Notificacao from '../../components/Notificacao/notificacao.jsx'
+import HeaderCadastrado from '../../components/HeaderCadastrado/headercadastrado.jsx';
+import Footer from '../../components/Footer/footer.jsx';
+import '../css/global.css';
+import React from 'react';
+import Notificacao from '../../components/Notificacao/notificacao.jsx';
+import useTitle from '../../hooks/useTitle.js';
 
 function Meusconvites() {
+  useTitle('Notificações - Sonora');
   return (
     <>
         <HeaderCadastrado/>
@@ -14,4 +16,4 @@ function Meusconvites() {
   )
 }
 
-export default Meusconvites
+export default Meusconvites;

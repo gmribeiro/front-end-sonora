@@ -1,8 +1,10 @@
 import HeaderGenericos from "../../components/HeaderGenericos/headergenericos";
 import "../css/sobrenos.css";
 import React from "react";
+import useTitle from '../../hooks/useTitle.js';
 
 const SobreNos = () => {
+  useTitle('Sobre Nós');
   return (
     <>
       <HeaderGenericos />
