@@ -12,6 +12,7 @@ const EventoDetalhes = () => {
     const [usuarioLogado, setUsuarioLogado] = useState(null);
     const [reservando, setReservando] = useState(false);
     const [mensagemReserva, setMensagemReserva] = useState('');
+    const [carregandoUsuarioReserva, setCarregandoUsuarioReserva] = useState(false);
 
     useEffect(() => {
         const carregarDados = async () => {
@@ -57,7 +58,7 @@ const EventoDetalhes = () => {
         try {
             const [data, tempo] = dataHora.split(' ');
             const [dia, mes, ano] = data.split('/');
-            return `${dia}/${mes}/${ano} ${tempo}`; // Formato "dd/MM/yyyy HH:mm:ss"
+            return `${dia}/${mes}/${ano} ${tempo}`;
         } catch (error) {
             console.error('Erro ao formatar data/hora para reserva:', error);
             return null;
@@ -65,9 +66,33 @@ const EventoDetalhes = () => {
     };
 
     const handleReservar = async () => {
-        if (!evento?.idEvento) { // Use idEvento para consistência com o backend
+        if (!evento?.idEvento) {
             alert('Dados do evento incompletos');
             return;
+        }
+
+        if (!usuarioLogado?.id) {
+            setCarregandoUsuarioReserva(true);
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const userResponse = await axios.get('/auth/user/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    setUsuarioLogado(userResponse.data);
+                } catch (error) {
+                    console.error('Erro ao carregar usuário para reserva:', error);
+                    setMensagemReserva('Erro ao carregar informações do usuário.');
+                    setCarregandoUsuarioReserva(false);
+                    return;
+                } finally {
+                    setCarregandoUsuarioReserva(false);
+                }
+            } else {
+                navigate('/acesso', { state: { from: `/detalhes/${id}` } });
+                return;
+            }
+            return; // Importante: sair da função após tentar carregar o usuário
         }
 
         setReservando(true);
@@ -80,24 +105,15 @@ const EventoDetalhes = () => {
                 return;
             }
 
-            // Verifica se o usuário está carregado
-            if (!usuarioLogado?.id) {
-                const userResponse = await axios.get('/auth/user/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                setUsuarioLogado(userResponse.data);
-            }
-
-
             const reservaData = {
                 usuario: { id: usuarioLogado.id },
                 evento: {
-                    idEvento: evento.idEvento, // Use idEvento
+                    idEvento: evento.idEvento,
                 },
                 confirmado: false
             };
 
-            console.log('Enviando reserva:', reservaData); // Para debug
+            console.log('Enviando reserva:', reservaData);
 
             const response = await axios.post('http://localhost:8080/reservas', reservaData, {
                 headers: {
@@ -200,9 +216,9 @@ const EventoDetalhes = () => {
                     <div className="acoes-section">
                         <button
                             onClick={handleReservar}
-                            disabled={reservando}
+                            disabled={reservando || carregandoUsuarioReserva}
                         >
-                            {reservando ? 'Processando...' : 'Reservar Ingresso'}
+                            {carregandoUsuarioReserva ? 'Carregando informações...' : (reservando ? 'Processando...' : 'Reservar Ingresso')}
                         </button>
                         {mensagemReserva && (
                             <p className={`mensagem-reserva ${mensagemReserva.includes('sucesso') ? 'sucesso' : 'erro'}`}>
