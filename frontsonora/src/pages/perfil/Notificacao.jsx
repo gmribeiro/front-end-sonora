@@ -1,4 +1,4 @@
-import HeaderCadastrado from '../../components/HeaderCadastrado/headercadastrado.jsx';
+import Header from '../../components/Header/header.jsx';
 import Footer from '../../components/Footer/footer.jsx';
 import '../css/global.css';
 import React from 'react';
@@ -9,7 +9,7 @@ function Meusconvites() {
   useTitle('Notificações - Sonora');
   return (
     <>
-        <HeaderCadastrado/>
+        <Header/>
         <Notificacao/>
         <Footer/>
     </>

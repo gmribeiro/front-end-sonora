@@ -9,7 +9,6 @@ function Meusconvites() {
   return (
     <>
         <HeaderCadastrado/>
-        <Footer/>
     </>
   )
 }
