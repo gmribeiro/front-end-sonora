@@ -44,7 +44,6 @@ const Eventos = () => {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
 
-    // Load logged in user data and check for "MAIO MUSICAL" notification
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -53,42 +52,6 @@ const Eventos = () => {
             })
                 .then(response => {
                     setUsuarioLogado(response.data);
-                    if (response.data?.role === 'CLIENT') {
-                        // Check if the notification has already been shown
-                        const notificationShown = localStorage.getItem('maioMusicalNotificationShown');
-                        if (!notificationShown) {
-                            // Create the notification on the backend
-                            axios.post('/api/notifications', {
-                                usuarioId: response.data.idUsuario,
-                                mensagem: 'Novo evento: MAIO MUSICAL no Parque Ecológico de 01/05 a 31/05 a partir das 19:00.'
-                            }, {
-                                headers: { 'Authorization': `Bearer ${token}` }
-                            })
-                                .then(notificationResponse => {
-                                    setMaioMusicalNotification(notificationResponse.data);
-                                    localStorage.setItem('maioMusicalNotificationShown', 'true');
-                                    // Clear the notification after 5 seconds
-                                    setTimeout(() => {
-                                        setMaioMusicalNotification(null);
-                                    }, 5000);
-                                })
-                                .catch(error => console.error('Error creating notification:', error));
-                        } else {
-                            // Fetch any existing unread "MAIO MUSICAL" notification
-                            axios.get(`/api/notifications/user/${response.data.idUsuario}/unread`, {
-                                headers: { 'Authorization': `Bearer ${token}` }
-                            })
-                                .then(unreadNotifications => {
-                                    const maioMusical = unreadNotifications.find(n =>
-                                        n.mensagem === 'Novo evento: MAIO MUSICAL no Parque Ecológico de 01/05 a 31/05 a partir das 19:00.'
-                                    );
-                                    if (maioMusical) {
-                                        setMaioMusicalNotification(maioMusical);
-                                    }
-                                })
-                                .catch(error => console.error('Error fetching unread notifications:', error));
-                        }
-                    }
                 })
                 .catch(error => console.error('Error loading user:', error));
         }
