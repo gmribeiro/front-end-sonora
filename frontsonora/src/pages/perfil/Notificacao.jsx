@@ -11,7 +11,6 @@ function Meusconvites() {
     <>
         <Header/>
         <Notificacao/>
-        <Footer/>
     </>
   )
 }
