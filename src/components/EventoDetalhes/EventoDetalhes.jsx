@@ -13,11 +13,13 @@ const EventoDetalhes = () => {
     const [reservando, setReservando] = useState(false);
     const [mensagemReserva, setMensagemReserva] = useState('');
 
-    // Configuração do Axios para a API
-    const api = axios.create({
-        baseURL: 'http://localhost:8080',
-        timeout: 5000,
+    // Estados para avaliação
+    const [mostrarFormAvaliacao, setMostrarFormAvaliacao] = useState(false);
+    const [avaliacao, setAvaliacao] = useState({
+        nota: 0,
+        mensagem: ''
     });
+    const [mensagemAvaliacao, setMensagemAvaliacao] = useState('');
 
     useEffect(() => {
         const carregarDados = async () => {
@@ -25,26 +27,16 @@ const EventoDetalhes = () => {
                 setCarregando(true);
                 setErro(null);
 
-                // Verifica se temos um ID válido
-                if (!id) {
-                    throw new Error('ID do evento não fornecido');
-                }
-
-                // Carrega evento e usuário em paralelo
                 const [eventoResponse, usuarioResponse] = await Promise.all([
-                    api.get(`/eventos/${id}`),
+                    axios.get(`/eventos/${id}`),
                     verificarUsuarioLogado()
                 ]);
-
-                if (!eventoResponse.data) {
-                    throw new Error('Evento não encontrado');
-                }
 
                 setEvento(eventoResponse.data);
                 setUsuarioLogado(usuarioResponse?.data || null);
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
-                setErro(error.response?.data?.message || error.message || 'Erro ao carregar evento');
+                setErro(error.response?.data?.message || 'Erro ao carregar evento');
             } finally {
                 setCarregando(false);
             }
@@ -55,7 +47,7 @@ const EventoDetalhes = () => {
             if (!token) return null;
 
             try {
-                const response = await api.get('/auth/user/me', {
+                const response = await axios.get('/auth/user/me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 return response.data;
@@ -67,6 +59,18 @@ const EventoDetalhes = () => {
 
         carregarDados();
     }, [id]);
+
+    const formatarDataHoraParaReserva = (dataHora) => {
+        if (!dataHora) return null;
+        try {
+            const [data, tempo] = dataHora.split(' ');
+            const [dia, mes, ano] = data.split('/');
+            return `${dia}/${mes}/${ano} ${tempo}`; // Formato "dd/MM/yyyy HH:mm:ss"
+        } catch (error) {
+            console.error('Erro ao formatar data/hora para reserva:', error);
+            return null;
+        }
+    };
 
     const handleReservar = async () => {
         if (!evento?.id) {
@@ -86,39 +90,39 @@ const EventoDetalhes = () => {
 
             // Verifica se o usuário está carregado
             if (!usuarioLogado?.id) {
-                const userResponse = await api.get('/auth/user/me', {
+                const userResponse = await axios.get('/auth/user/me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setUsuarioLogado(userResponse.data);
             }
 
-            // Formata os dados para o padrão esperado pelo backend
+            const dataHoraFormatadaParaBackend = formatarDataHoraParaReserva(evento.dataHora);
+
             const reservaData = {
                 usuario: { id: usuarioLogado.id },
                 evento: {
                     idEvento: evento.id,
-                    // Inclua outros campos necessários aqui
+                    nomeEvento: evento.nomeEvento,
+                    dataHora: dataHoraFormatadaParaBackend,
+                    descricao: evento.descricao,
+                    generoMusical: evento.generoMusical,
+                    localEvento: evento.localEvento
                 },
                 confirmado: false
             };
 
             console.log('Enviando reserva:', reservaData); // Para debug
 
-            const response = await api.post('/reservas', reservaData, {
+            const response = await axios.post('/reservas', reservaData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
 
-            setMensagemReserva(`Reserva para "${evento.nomeEvento}" realizada com sucesso!`);
+            setMensagemReserva(`Reserva para "${evento.nomeEvento || evento.titulo}" realizada com sucesso!`);
         } catch (error) {
-            console.error('Erro completo:', {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status
-            });
-
+            console.error('Erro ao processar reserva:', error);
             let errorMessage = 'Erro ao processar reserva';
             if (error.response?.status === 401) {
                 errorMessage = 'Sessão expirada. Faça login novamente.';
@@ -127,10 +131,56 @@ const EventoDetalhes = () => {
             } else if (error.response?.data?.message) {
                 errorMessage = error.response.data.message;
             }
-
             setMensagemReserva(errorMessage);
         } finally {
             setReservando(false);
+        }
+    };
+
+    const handleAvaliarChange = (e) => {
+        const { name, value } = e.target;
+        setAvaliacao(prev => ({
+            ...prev,
+            [name]: name === 'nota' ? parseInt(value) : value
+        }));
+    };
+
+    const handleSubmitAvaliacao = async (e) => {
+        e.preventDefault();
+        setMensagemAvaliacao('');
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token || !usuarioLogado) {
+                navigate('/acesso');
+                return;
+            }
+
+            const avaliacaoData = {
+                nota: avaliacao.nota,
+                mensagem: avaliacao.mensagem,
+                usuario: usuarioLogado.id, // Envia apenas o ID
+                evento: evento.id // Assumindo que o backend espera id
+            };
+
+            const response = await axios.post('/avaliacoes', avaliacaoData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            setMensagemAvaliacao('Avaliação enviada com sucesso!');
+            setAvaliacao({ nota: 0, mensagem: '' });
+            setMostrarFormAvaliacao(false);
+
+            // Recarregar os dados do evento para atualizar as avaliações (se necessário)
+            const eventoResponse = await axios.get(`/eventos/${id}`);
+            setEvento(eventoResponse.data);
+
+        } catch (error) {
+            console.error('Erro ao enviar avaliação:', error);
+            setMensagemAvaliacao(error.response?.data?.message || 'Erro ao enviar avaliação');
         }
     };
 
@@ -176,14 +226,6 @@ const EventoDetalhes = () => {
             </div>
 
             <div className="conteudo-principal">
-                <div className="imagem-container">
-                    <img
-                        src={evento.imagem || '/images/evento-default.jpg'}
-                        alt={`Banner ${evento.nomeEvento}`}
-                        onError={(e) => e.target.src = '/images/evento-default.jpg'}
-                    />
-                </div>
-
                 <div className="detalhes-content">
                     <div className="info-section">
                         <div className="info-item">
@@ -229,6 +271,68 @@ const EventoDetalhes = () => {
                             </p>
                         )}
                     </div>
+
+                    {/* Seção de Avaliação */}
+                    {usuarioLogado?.role === 'CLIENT' && (
+                        <div className="form-avaliacao-container">
+                            {!mostrarFormAvaliacao ? (
+                                <button
+                                    onClick={() => setMostrarFormAvaliacao(true)}
+                                    className="btn-avaliar"
+                                >
+                                    Avaliar este evento
+                                </button>
+                            ) : (
+                                <form onSubmit={handleSubmitAvaliacao} className="form-avaliacao">
+                                    <h4>Avaliar Evento</h4>
+
+                                    <div className="form-group">
+                                        <label>Nota (1-5):</label>
+                                        <select
+                                            name="nota"
+                                            value={avaliacao.nota}
+                                            onChange={handleAvaliarChange}
+                                            required
+                                        >
+                                            <option value="0">Selecione uma nota</option>
+                                            <option value="1">1 ★</option>
+                                            <option value="2">2 ★★</option>
+                                            <option value="3">3 ★★★</option>
+                                            <option value="4">4 ★★★★</option>
+                                            <option value="5">5 ★★★★★</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Comentário (opcional):</label>
+                                        <textarea
+                                            name="mensagem"
+                                            value={avaliacao.mensagem}
+                                            onChange={handleAvaliarChange}
+                                            rows="3"
+                                        />
+                                    </div>
+
+                                    <div className="form-buttons">
+                                        <button type="submit" className="btn-enviar">Enviar Avaliação</button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setMostrarFormAvaliacao(false)}
+                                            className="btn-cancelar"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+
+                                    {mensagemAvaliacao && (
+                                        <p className={`mensagem ${mensagemAvaliacao.includes('sucesso') ? 'sucesso' : 'erro'}`}>
+                                            {mensagemAvaliacao}
+                                        </p>
+                                    )}
+                                </form>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
