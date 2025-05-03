@@ -13,14 +13,6 @@ const EventoDetalhes = () => {
     const [reservando, setReservando] = useState(false);
     const [mensagemReserva, setMensagemReserva] = useState('');
 
-    // Estados para avaliação
-    const [mostrarFormAvaliacao, setMostrarFormAvaliacao] = useState(false);
-    const [avaliacao, setAvaliacao] = useState({
-        nota: 0,
-        mensagem: ''
-    });
-    const [mensagemAvaliacao, setMensagemAvaliacao] = useState('');
-
     useEffect(() => {
         const carregarDados = async () => {
             try {
@@ -73,7 +65,7 @@ const EventoDetalhes = () => {
     };
 
     const handleReservar = async () => {
-        if (!evento?.id) {
+        if (!evento?.idEvento) { // Use idEvento para consistência com o backend
             alert('Dados do evento incompletos');
             return;
         }
@@ -96,24 +88,18 @@ const EventoDetalhes = () => {
                 setUsuarioLogado(userResponse.data);
             }
 
-            const dataHoraFormatadaParaBackend = formatarDataHoraParaReserva(evento.dataHora);
 
             const reservaData = {
                 usuario: { id: usuarioLogado.id },
                 evento: {
-                    idEvento: evento.id,
-                    nomeEvento: evento.nomeEvento,
-                    dataHora: dataHoraFormatadaParaBackend,
-                    descricao: evento.descricao,
-                    generoMusical: evento.generoMusical,
-                    localEvento: evento.localEvento
+                    idEvento: evento.idEvento, // Use idEvento
                 },
                 confirmado: false
             };
 
             console.log('Enviando reserva:', reservaData); // Para debug
 
-            const response = await axios.post('/reservas', reservaData, {
+            const response = await axios.post('http://localhost:8080/reservas', reservaData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -134,53 +120,6 @@ const EventoDetalhes = () => {
             setMensagemReserva(errorMessage);
         } finally {
             setReservando(false);
-        }
-    };
-
-    const handleAvaliarChange = (e) => {
-        const { name, value } = e.target;
-        setAvaliacao(prev => ({
-            ...prev,
-            [name]: name === 'nota' ? parseInt(value) : value
-        }));
-    };
-
-    const handleSubmitAvaliacao = async (e) => {
-        e.preventDefault();
-        setMensagemAvaliacao('');
-
-        try {
-            const token = localStorage.getItem('token');
-            if (!token || !usuarioLogado) {
-                navigate('/acesso');
-                return;
-            }
-
-            const avaliacaoData = {
-                nota: avaliacao.nota,
-                mensagem: avaliacao.mensagem,
-                usuario: usuarioLogado.id, // Envia apenas o ID
-                evento: evento.id // Assumindo que o backend espera id
-            };
-
-            const response = await axios.post('/avaliacoes', avaliacaoData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            setMensagemAvaliacao('Avaliação enviada com sucesso!');
-            setAvaliacao({ nota: 0, mensagem: '' });
-            setMostrarFormAvaliacao(false);
-
-            // Recarregar os dados do evento para atualizar as avaliações (se necessário)
-            const eventoResponse = await axios.get(`/eventos/${id}`);
-            setEvento(eventoResponse.data);
-
-        } catch (error) {
-            console.error('Erro ao enviar avaliação:', error);
-            setMensagemAvaliacao(error.response?.data?.message || 'Erro ao enviar avaliação');
         }
     };
 
@@ -271,68 +210,6 @@ const EventoDetalhes = () => {
                             </p>
                         )}
                     </div>
-
-                    {/* Seção de Avaliação */}
-                    {usuarioLogado?.role === 'CLIENT' && (
-                        <div className="form-avaliacao-container">
-                            {!mostrarFormAvaliacao ? (
-                                <button
-                                    onClick={() => setMostrarFormAvaliacao(true)}
-                                    className="btn-avaliar"
-                                >
-                                    Avaliar este evento
-                                </button>
-                            ) : (
-                                <form onSubmit={handleSubmitAvaliacao} className="form-avaliacao">
-                                    <h4>Avaliar Evento</h4>
-
-                                    <div className="form-group">
-                                        <label>Nota (1-5):</label>
-                                        <select
-                                            name="nota"
-                                            value={avaliacao.nota}
-                                            onChange={handleAvaliarChange}
-                                            required
-                                        >
-                                            <option value="0">Selecione uma nota</option>
-                                            <option value="1">1 ★</option>
-                                            <option value="2">2 ★★</option>
-                                            <option value="3">3 ★★★</option>
-                                            <option value="4">4 ★★★★</option>
-                                            <option value="5">5 ★★★★★</option>
-                                        </select>
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label>Comentário (opcional):</label>
-                                        <textarea
-                                            name="mensagem"
-                                            value={avaliacao.mensagem}
-                                            onChange={handleAvaliarChange}
-                                            rows="3"
-                                        />
-                                    </div>
-
-                                    <div className="form-buttons">
-                                        <button type="submit" className="btn-enviar">Enviar Avaliação</button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setMostrarFormAvaliacao(false)}
-                                            className="btn-cancelar"
-                                        >
-                                            Cancelar
-                                        </button>
-                                    </div>
-
-                                    {mensagemAvaliacao && (
-                                        <p className={`mensagem ${mensagemAvaliacao.includes('sucesso') ? 'sucesso' : 'erro'}`}>
-                                            {mensagemAvaliacao}
-                                        </p>
-                                    )}
-                                </form>
-                            )}
-                        </div>
-                    )}
                 </div>
             </div>
         </div>
