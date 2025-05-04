@@ -1,8 +1,10 @@
 import HeaderGenericos from "../../components/HeaderGenericos/headergenericos";
 import "../css/sobrenos.css";
 import React from "react";
+import useTitle from '../../hooks/useTitle.js';
 
 const SobreNos = () => {
+  useTitle('Sobre Nós');
   return (
     <>
       <HeaderGenericos />
@@ -11,11 +13,11 @@ const SobreNos = () => {
           <div className="text-content">
             <h1>Sobre o Sonora</h1>
           </div>
-          <img src="logosobre.png" alt="Pessoas conversando sorrindo" />
+          <img src="../images/logosobre.png" alt="Pessoas conversando sorrindo" />
         </section>
 
         <section className="sobre-nos-content">
-        <p>
+          <p>
             O Sonora é mais do que uma simples plataforma de reservas musicais — é uma expressão do amor pela música e do desejo de transformar a cena musical brasileira. Criado em 2024 por seis jovens desenvolvedores — Luisa Helias de Melo, Gabriel de Melo Ribeiro, Maria Fernanda Spinula, Gabriel Henrique Mariotto, Vitor Conde Falcão e Lucas de Moraes Marçoli — o projeto nasceu dentro da Fundação Indaiatubana de Educação e Cultura (FIEC), na cidade de Indaiatuba, São Paulo.
           </p>
 

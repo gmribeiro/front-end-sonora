@@ -1,8 +1,11 @@
 import '../css/global.css';
 import '../css/esquecisenha.css';
 import React, { useState } from 'react';
+import useTitle from '../../hooks/useTitle.js';
 
 function EsqueciSenha() {
+    useTitle('Recuperar Senha - Sonora');
+
     const [email, setEmail] = useState('');
 
     const handleSubmit = (event) => {

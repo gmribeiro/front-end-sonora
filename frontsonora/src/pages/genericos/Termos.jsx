@@ -1,47 +1,25 @@
 import HeaderGenericos from '../../components/HeaderGenericos/headergenericos';
-import '../css/global.css';
+import '../css/termos.css';
 import React from 'react';
+import useTitle from '../../hooks/useTitle.js';
 
-const Termos = () => {
-  const notificacoes = [
-    {
-      image: 'show1.jpg',
-      title: 'Show do João Rock',
-      date: '20/04/2025',
-    },
-    {
-      image: 'evento2.jpg',
-      title: 'Festival de Jazz',
-      date: '05/05/2025',
-    },
-    {
-      image: 'banda3.jpg',
-      title: 'Banda Tributo Queen',
-      date: '15/05/2025',
-    },
-  ];
-
+function Termos() {
+  useTitle('Termos de Uso Sonora');
   return (
-    <>
-      <HeaderGenericos />
-      <main className="notifications-container">
-        <h2 className="notifications-title">Notificações</h2>
-        <div className="notifications-grid">
-          {notificacoes.map((event, index) => (
-            <div className="notification-card" key={index}>
-              <img
-                src={`/images/${event.image}`}
-                alt={event.title}
-                className="notification-image"
-              />
-              <h3>{event.title}</h3>
-              <p>Data: {event.date}</p>
-            </div>
-          ))}
-        </div>
-      </main>
-    </>
+    <div className="termos-container">
+      <div className="termos-pdf-container">
+        <iframe
+          src="../pdfs/termos.pdf"
+          title="Termos de Uso"
+          width="90%"
+          height="100%"
+        />
+      </div>
+      <button className="botao-voltar" onClick={() => window.location.href = '/'}>
+        Voltar
+      </button>
+    </div>
   );
-};
+}
 
 export default Termos;

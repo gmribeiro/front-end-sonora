@@ -1,32 +1,48 @@
-import './headercadastrado.css';
-import { Link } from 'react-router-dom';
 import React from 'react';
-import { CgProfile } from "react-icons/cg";
-import { MdNotifications } from "react-icons/md";
+import { FaSearch, FaBell } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa';
+import './headercadastrado.css';
 
 function HeaderCadastrado() {
   return (
-      <header>
-        <div className='cima'>
-          <Link className="link logo-link" to="/">
-            <img src="../images/logosemfundo.png" alt="Logo" className="logo"/>
-          </Link>
-
-          <input type="search" name="search" className='search' placeholder='Encontre seu estilo favorito'/>
-
-          <nav className='links'>
-            <Link className='link' to="/">HOME</Link>
-            <Link className='link' to="/MeusConvites">MEUS CONVITES</Link>
-            <div className="perfil">
-            <div className="btn-notifications"><Link className='link' to="/notificacao"><MdNotifications size={28} /></Link></div>
-              <Link className='link perfil-item' to="/Meuperfil">
-                <CgProfile className="icone-perfil" />
-                <span className='nome-perfil'>MF_SPINULA</span>
-              </Link> 
-            </div>
-          </nav>
+    <header className="header">
+      <div className="header-left">
+      <Link to="/" className="nav-link">
+        <img 
+          src="../images/logosemfundo.png" 
+          alt="Logo" 
+          className="logo"
+          style={{ maxHeight: '60px' }}
+        />
+      </Link>
+        <div className="search-container">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Pesquisar eventos, shows, teatros"
+            className="search-input"
+          />
         </div>
-      </header>
+      </div>
+
+      <div className="header-right">
+        <div className="divider"></div>
+        <nav className="nav">
+          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/meusconvites" className="nav-link">Meus Convites</Link>
+        </nav>
+        <Link to="/meuperfil" className="perfil-link">
+          <FaUserCircle className="perfil-icon" />
+          <span className="perfil-nome">MF_SPINULA</span>
+        </Link>
+        <Link to="/notificacao" className="perfil-link">
+        <div className="icon-button">
+          <FaBell className="search-icon" />
+        </div>
+        </Link>
+      </div>
+    </header>
   );
 }
 

@@ -1,27 +1,32 @@
-import './headergenericos.css';
-import { Link } from 'react-router-dom';
 import React from 'react';
+import { Link } from 'react-router-dom';
+import './headergenericos.css';
 
 function HeaderGenericos() {
   return (
-    <header>
-      <div className="cima">
-        <Link className="logo-link" to="/">
-          <img src="../images/logosemfundo.png" alt="Logo" className="logo" />
+    <header className="header-generic">
+      <div className="header-left">
+        <Link to="/" className="logo-link">
+          <img 
+            src="../images/logosemfundo.png" 
+            alt="Logo" 
+            className="logo" 
+            style={{ maxHeight: '60px' }}
+          />
         </Link>
+      </div>
 
-        <nav className="links">
-          <Link className="link" to="/">
+      <div className="header-right">
+        <div className="divider"></div>
+        <nav className="nav">
+          <Link to="/" className="nav-link">
             <span>Home</span>
-            <div className="underline"></div>
           </Link>
-          <Link className="link" to="/sobrenos">
+          <Link to="/sobrenos" className="nav-link">
             <span>Sobre Nós</span>
-            <div className="underline"></div>
           </Link>
-          <Link className="link" to="/termos">
+          <Link to="/termos" className="nav-link">
             <span>Termos de Uso</span>
-            <div className="underline"></div>
           </Link>
         </nav>
       </div>

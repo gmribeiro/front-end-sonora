@@ -5,7 +5,7 @@ const Footer = () => {
     return (
         <footer className='footer'>
             <div className='footer-section'>
-                <p>Email: Sonora@email.com</p>
+                <p>Email: suporte.sonora@email.com</p>
                 <p>Telefone: (11) 99509-5897</p>
             </div>
 
