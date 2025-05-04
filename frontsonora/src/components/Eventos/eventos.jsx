@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import './eventos.css';
 
 const Eventos = ({ eventosFiltrados }) => {
-    // Dados padrão caso não sejam passados eventos filtrados
-    const eventosPadrao = [
+    const [currentPage, setCurrentPage] = useState(0);
+    const eventosPorPagina = 6; // 2 linhas de 3 eventos cada
+    
+    const eventos = eventosFiltrados || [
         { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00", imagem: "../images/evento1.png", genero: "POP" },
         { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00", imagem: "../images/evento2.png", genero: "Rock'n roll" },
         { id: 3, titulo: "Show Rock na Praça", local: "Campinas", hora: "14:30", imagem: "../images/evento3.png", genero: "Rock'n roll" },
@@ -13,12 +16,24 @@ const Eventos = ({ eventosFiltrados }) => {
         { id: 8, titulo: "MPB ao Vivo", local: "Indaiatuba", hora: "18:30", imagem: "../images/evento8.png", genero: "MPB" },
     ];
 
-    const eventos = eventosFiltrados || eventosPadrao;
+    const totalPages = Math.ceil(eventos.length / eventosPorPagina);
+    const eventosAtuais = eventos.slice(
+        currentPage * eventosPorPagina,
+        (currentPage + 1) * eventosPorPagina
+    );
+
+    const handlePrevious = () => {
+        setCurrentPage((prev) => Math.max(prev - 1, 0));
+    };
+
+    const handleNext = () => {
+        setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+    };
 
     return (
         <div className='espaco-eventos'>
             <div className="container-eventos">
-                {eventos.map(evento => (
+                {eventosAtuais.map(evento => (
                     <div key={evento.id} className="evento">
                         <img src={evento.imagem} alt={evento.titulo} />
                         <h3>{evento.titulo}</h3>
@@ -26,6 +41,24 @@ const Eventos = ({ eventosFiltrados }) => {
                         <button className="btn-reservar">Reservar</button>
                     </div>
                 ))}
+            </div>
+            
+            <div className="paginacao">
+                <button 
+                    onClick={handlePrevious} 
+                    disabled={currentPage === 0}
+                    className="btn-paginacao"
+                >
+                    &lt;
+                </button>
+                <span>Página {currentPage + 1} de {totalPages}</span>
+                <button 
+                    onClick={handleNext} 
+                    disabled={currentPage === totalPages - 1}
+                    className="btn-paginacao"
+                >
+                    &gt;
+                </button>
             </div>
         </div>
     );
