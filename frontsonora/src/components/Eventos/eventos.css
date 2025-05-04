@@ -1,162 +1,112 @@
 .espaco-eventos {
-    background-color: #EDE6F2;
-    padding: 1.5rem 0; /* Adicionei um padding vertical para respiro */
-  }
-  
+  background-color: #EDE6F2;
+  padding: 2rem 0;
+  min-height: 70vh;
+}
+
+.container-eventos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  padding: 0 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-bottom: 3rem;
+}
+
+.evento {
+  background: linear-gradient(to bottom, #2E284E, #5A4E75, #8B7EA2, #C5B6D2, #E8DFEC);
+  border-radius: 12px;
+  text-align: center;
+  padding: 1.5rem;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.evento img {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.evento h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.evento p {
+  font-size: 1rem;
+  color: #E8DFEC;
+  margin-bottom: 1rem;
+}
+
+.btn-reservar {
+  background-color: #5A4E75;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.btn-reservar:hover {
+  background-color: #2E284E;
+}
+
+.paginacao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.btn-paginacao {
+  background-color: #5A4E75;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.paginacao span {
+  color: #2E284E;
+}
+
+.btn-paginacao:hover {
+  background-color: #2E284E;
+}
+
+.btn-paginacao:disabled {
+  background-color: #8B7EA2;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
   .container-eventos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Ajustei o minmax para um valor um pouco menor */
-    gap: 2rem; /* Reduzi o gap entre os eventos */
-    padding: 1.5rem; /* Reduzi o padding interno do container */
-    max-width: 1200px;
-    margin: 0 auto; /* Centralizei o container */
-    justify-content: center;
+      grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .container-eventos {
+      grid-template-columns: 1fr;
+      max-width: 500px;
   }
   
-  .evento {
-    width: 100%;
-    max-width: 320px;
-    min-width: 250px; /* Reduzi o min-width do evento */
-    height: auto;
-    background: linear-gradient(to bottom, #2E284E, #5A4E75, #8B7EA2, #C5B6D2, #E8DFEC);
-    border-radius: 12px;
-    text-align: center;
-    padding: 1rem; /* Reduzi o padding interno do evento */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 8rem; /* Reduzi a margem inferior */
+  .paginacao {
+      gap: 1.5rem;
   }
-  
-  .evento img {
-    width: 100%;
-    max-width: 200px; /* Reduzi a largura máxima da imagem do evento */
-    height: auto;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 0.8rem; /* Reduzi a margem inferior da imagem */
-  }
-  
-  .evento h3 {
-    font-size: 1.2rem; /* Reduzi o tamanho da fonte do título */
-    margin-bottom: 0.3rem; /* Reduzi a margem inferior do título */
-  }
-  
-  .evento p {
-    font-size: 1rem; /* Reduzi o tamanho da fonte do parágrafo */
-    color: #5A4E75;
-    margin-bottom: 0.8rem; /* Reduzi a margem inferior do parágrafo */
-  }
-  
-  .btn-reservar {
-    background-color: #5A4E75;
-    color: #ffffff;
-    padding: 8px 16px; /* Reduzi o padding do botão */
-    font-size: 0.9rem; /* Reduzi o tamanho da fonte do botão */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s ease;
-  }
-  
-  .btn-reservar:hover {
-    background-color: #2E284E;
-  }
-  
-  @media (max-width: 1024px) {
-    .container-eventos {
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Ajustei o minmax */
-      gap: 1.5rem; /* Reduzi o gap */
-      padding: 1rem; /* Reduzi o padding */
-    }
-  
-    .evento {
-      max-width: 280px; /* Mantive o max-width */
-      padding: 0.8rem; /* Reduzi o padding interno */
-      margin-bottom: 1.5rem; /* Reduzi a margem inferior */
-    }
-  
-    .evento img {
-      max-width: 180px; /* Reduzi a largura máxima da imagem */
-      margin-bottom: 0.6rem; /* Reduzi a margem inferior */
-    }
-  
-    .evento h3 {
-      font-size: 1.1rem; /* Reduzi a fonte */
-    }
-  
-    .evento p {
-      font-size: 0.95rem; /* Reduzi a fonte */
-    }
-  
-    .btn-reservar {
-      padding: 7px 14px; /* Reduzi o padding */
-      font-size: 0.85rem; /* Reduzi a fonte */
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .container-eventos {
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Ajustei o minmax */
-      gap: 1rem; /* Reduzi o gap */
-      padding: 0.8rem; /* Reduzi o padding */
-    }
-  
-    .evento {
-      max-width: 250px; /* Mantive o max-width */
-      padding: 0.6rem; /* Reduzi o padding interno */
-      margin-bottom: 1rem; /* Reduzi a margem inferior */
-    }
-  
-    .evento img {
-      max-width: 150px; /* Reduzi a largura máxima da imagem */
-      margin-bottom: 0.5rem; /* Reduzi a margem inferior */
-    }
-  
-    .evento h3 {
-      font-size: 1rem; /* Reduzi a fonte */
-    }
-  
-    .evento p {
-      font-size: 0.9rem; /* Reduzi a fonte */
-    }
-  
-    .btn-reservar {
-      padding: 6px 12px; /* Reduzi o padding */
-      font-size: 0.8rem; /* Reduzi a fonte */
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .container-eventos {
-      grid-template-columns: 1fr; 
-      gap: 1.5rem; 
-      padding: 1rem; 
-    }
-  
-    .evento {
-      max-width: 100%; 
-      min-width: auto; 
-      padding: 0.8rem; 
-      margin-bottom: 1.5rem; 
-    }
-  
-    .evento img {
-      max-width: 70%; 
-      margin-bottom: 0.6rem; 
-    }
-  
-    .evento h3 {
-      font-size: 1rem; 
-    }
-  
-    .evento p {
-      font-size: 0.85rem; 
-    }
-  
-    .btn-reservar {
-      padding: 7px 14px; 
-      font-size: 0.8rem; 
-    }
-  }
+}
