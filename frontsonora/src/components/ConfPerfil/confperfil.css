@@ -1,0 +1,159 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f3e1f0;
+    color: #2d1c38;
+  }
+  
+  /* Tela geral */
+  .tela-config {
+    width: 100vw;
+    min-height: 100vh;
+    background-color: #f3e1f0;
+  }
+  
+  /* Header ocupa 100% da largura */
+  .conf-usuario-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #5b3b6f; /* Roxo sólido */
+    color: #fff;
+    padding: 20px 40px;
+    box-sizing: border-box;
+  }
+  
+  .logo-small {
+    max-height: 50px;
+  }
+  
+  .conf-title {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+  }
+  
+  .header-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .button-secondary {
+    background-color: #c79bdc;
+    color: #3e2b4c;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  
+  .button-secondary:hover {
+    background-color: #b88bc9;
+  }
+  
+  /* Container principal */
+  .conf-usuario-container {
+    padding: 30px 60px;
+    box-sizing: border-box;
+  }
+  
+  /* Seções */
+  .conf-usuario-section {
+    margin-top: 25px;
+    background-color: #dac0e3; /* Roxo claro sólido */
+    padding: 20px 30px;
+    border-radius: 10px;
+  }
+  
+  .conf-usuario-section h3 {
+    margin-bottom: 10px;
+    color: #2d1c38;
+  }
+  
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  /* Placeholder da foto */
+  .profile-placeholder {
+    background-color: #916eaa;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+  }
+  
+  /* Botões principais */
+  .button-primary {
+    background-color: #f3d1f0;
+    color: #3e2b4c;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  
+  .button-primary:hover {
+    background-color: #e6bfe1;
+  }
+  
+  /* Responsivo */
+  @media (max-width: 768px) {
+    .conf-usuario-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  
+    .conf-title {
+      text-align: left;
+    }
+  
+    .conf-usuario-container {
+      padding: 20px;
+    }
+  
+    .item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .header-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+  
+    .profile-placeholder {
+      margin-bottom: 10px;
+    }
+  }
+
+  .voltar-container {
+    padding: 20px 60px 0;
+  }
+  
+  .voltar-button {
+    background-color: #c79bdc;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+  }
+  
+  .voltar-button:hover {
+    background-color: #b88bc9;
+  }
+  
+  

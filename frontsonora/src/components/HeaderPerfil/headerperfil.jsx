@@ -26,7 +26,7 @@ const HeaderPerfil = () => {
       {/* Botões no topo */}
       <div className="buttons-top">
         <button className="notification-button" onClick={toggleNotificacoes}>🔔</button>
-        <button className="settings-button">⚙️</button>
+        <Link to="/configuracoes-usuario" className="settings-button">⚙️</Link>
         <button className="logout-button" onClick={handleLogout}>Sair da conta</button>
       </div>
 
