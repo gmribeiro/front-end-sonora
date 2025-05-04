@@ -1,105 +1,32 @@
-.header-container {
-  display: grid;
-  grid-template-columns: auto auto 1fr auto; /* Logo, Perfil, Espaço Flexível, Botões */
-  align-items: center; /* Alinha verticalmente ao centro */
-  gap: 20px;
-  background-color: #5a4a72; /* Mantendo a cor original */
-  padding: 15px 30px;
+.header-perfil-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #5a4a72;
+  padding: 10px 30px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   color: white;
   position: relative;
-  overflow: visible;
+  height: 80px; /* Altura reduzida */
 }
 
 /* Logo */
-.cima {
-  grid-column: 1 / 2;
-  grid-row: 1 / 2;
-  display: flex;
-  align-items: center;
-}
-
-.logo-link {
-  display: inline-block;
-}
-
-.logo {
+.logo-wrapper .logo-img {
   height: 50px;
   transition: transform 0.3s ease;
 }
-
-.logo:hover {
+.logo-img:hover {
   transform: scale(1.1);
 }
 
-/* Perfil */
-.profile-section {
-  grid-column: 2 / 3;
-  grid-row: 1 / 2;
+/* Botões */
+.action-buttons {
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-left: -30px; /* Para sair da borda esquerda */
 }
-
-.profile-image-container {
-  position: relative;
-  top: 0px; /* Ajuste conforme necessário para o alinhamento vertical */
-  /* margin-left: -40px; /* Ajuste conforme necessário para o alinhamento horizontal */
-}
-
-.profile-circle {
-  width: 160px; /* Aumentei o tamanho da bolota */
-  height: 160px; /* Aumentei o tamanho da bolota */
-  background-color: #c8a2c8;
-  border-radius: 50%;
-}
-
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.username {
-  font-size: 20px;
-  margin: 0;
-}
-
-.input-nome {
-  font-size: 18px;
-  padding: 5px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-}
-
-/* Botão Editar */
-.edit-name {
-  font-size: 14px;
-  color: #e0c3fc;
-  cursor: pointer;
-}
-
-.edit-name:hover {
-  text-decoration: underline;
-}
-
-/* Botões à direita */
-.buttons-top {
-  grid-column: 4 / 5; /* Colocado na última coluna */
-  grid-row: 1 / 2;
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Centraliza os botões horizontalmente */
-  gap: 15px;
-  justify-self: end; /* Alinha o grupo de botões à direita */
-}
-
-.notification-button,
-.settings-button,
-.logout-button {
+.icon-button {
   background: none;
   border: none;
   font-size: 24px;
@@ -109,30 +36,58 @@
   border-radius: 8px;
   transition: transform 0.2s ease;
 }
-
-.notification-button:hover,
-.settings-button:hover,
-.logout-button:hover {
+.icon-button:hover {
   transform: scale(1.2);
 }
-
-/* Estilo específico para o botão de logout */
 .logout-button {
   background-color: white;
   color: #5a4a72;
   font-weight: bold;
   padding: 8px 16px;
   border-radius: 8px;
+  cursor: pointer;
 }
-
 .logout-button:hover {
   background-color: #ddd;
 }
 
-/* POPUP Notificações */
+/* Perfil ajustado para fora da header */
+.profile-wrapper {
+  position: absolute;
+  bottom: -90px; /* ajustado para o novo tamanho */
+  left: 20%;      /* menor valor = mais à esquerda */
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Informações do perfil */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* mantém alinhado à esquerda */
+  justify-content: flex-start; /* empurra o conteúdo para cima */
+  margin-top: -100px; /* 🔼 sobe o nome */
+}
+
+.username {
+  font-size: 20px;
+  margin: 0;
+}
+.edit-name {
+  font-size: 14px;
+  color: #e0c3fc;
+  cursor: pointer;
+}
+.edit-name:hover {
+  text-decoration: underline;
+}
+
+/* Notificações */
 .notificacoes-popup {
   position: absolute;
-  top: 70px;
+  top: 90px;
   right: 20px;
   background-color: #f3e8ff;
   color: #5a4a72;
@@ -142,7 +97,6 @@
   width: 250px;
   z-index: 1000;
 }
-
 .fechar-notificacao {
   background: none;
   border: none;
@@ -153,13 +107,11 @@
   right: 10px;
   cursor: pointer;
 }
-
 .notificacoes-popup ul {
   margin-top: 30px;
   list-style: none;
   padding: 0;
 }
-
 .notificacoes-popup li {
   margin-bottom: 10px;
   font-size: 14px;
