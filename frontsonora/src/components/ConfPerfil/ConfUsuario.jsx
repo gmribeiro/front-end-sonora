@@ -22,6 +22,13 @@ const ConfUsuario = () => {
         </div>
       </div>
 
+      {/* BOTÃO DE VOLTAR */}
+      <div className="voltar-container">
+        <Link to="/headerperfil" className="voltar-button">
+          ← Voltar
+        </Link>
+      </div>
+
       <div className="conf-usuario-container">
         <div className="conf-usuario-section">
           <h3>Foto do perfil</h3>
