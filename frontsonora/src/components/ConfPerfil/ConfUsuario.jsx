@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ConfPerfil.css';
 import { Link, useNavigate } from 'react-router-dom';
 
 const ConfUsuario = () => {
   const navigate = useNavigate();
 
+  const [preview, setPreview] = useState(null);
+
+  const [username, setUsername] = useState('MariaSpinula');
+  const [editUsername, setEditUsername] = useState(false);
+
+  const [idioma, setIdioma] = useState('Português');
+  const [editIdioma, setEditIdioma] = useState(false);
+
+  const [privacidade, setPrivacidade] = useState('Perfil público');
+  const [editPrivacidade, setEditPrivacidade] = useState(false);
+
   const handleLogout = () => {
     navigate('/acesso');
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -22,30 +44,54 @@ const ConfUsuario = () => {
         </div>
       </div>
 
-      {/* BOTÃO DE VOLTAR */}
       <div className="voltar-container">
-      <Link to="/meuperfil" className="voltar-button">
-      ← Voltar
-        </Link>
+        <Link to="/meuperfil" className="voltar-button">← Voltar</Link>
       </div>
 
       <div className="conf-usuario-container">
+        {/* Foto do perfil */}
         <div className="conf-usuario-section">
           <h3>Foto do perfil</h3>
           <div className="item">
-            <div className="profile-placeholder">ALTERAR</div>
-            <button className="button-primary">Alterar</button>
+            <div className="profile-placeholder-container">
+              {preview ? (
+                <img src={preview} alt="Preview" className="preview-foto" />
+              ) : (
+                <div className="profile-placeholder">ALTERAR</div>
+              )}
+              <input
+                type="file"
+                id="upload-foto"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+              <button className="button-primary" onClick={() => document.getElementById('upload-foto').click()}>
+                Escolher foto
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* Nome de usuário */}
         <div className="conf-usuario-section">
           <h3>Nome de usuário</h3>
           <div className="item">
-            <span>MariaSpinula</span>
-            <button className="button-primary">Editar</button>
+            {editUsername ? (
+              <>
+                <input value={username} onChange={(e) => setUsername(e.target.value)} />
+                <button className="button-primary" onClick={() => setEditUsername(false)}>Salvar</button>
+              </>
+            ) : (
+              <>
+                <span>{username}</span>
+                <button className="button-primary" onClick={() => setEditUsername(true)}>Editar</button>
+              </>
+            )}
           </div>
         </div>
 
+        {/* Email */}
         <div className="conf-usuario-section">
           <h3>Email</h3>
           <div className="item">
@@ -53,42 +99,42 @@ const ConfUsuario = () => {
           </div>
         </div>
 
-        <div className="conf-usuario-section">
-          <h3>Telefone</h3>
-          <div className="item">
-            <span>19 99999-9999</span>
-          </div>
-        </div>
-
+        {/* Idioma */}
         <div className="conf-usuario-section">
           <h3>Idioma</h3>
           <div className="item">
-            <span>Português</span>
-            <button className="button-primary">Editar</button>
+            {editIdioma ? (
+              <>
+                <input value={idioma} onChange={(e) => setIdioma(e.target.value)} />
+                <button className="button-primary" onClick={() => setEditIdioma(false)}>Salvar</button>
+              </>
+            ) : (
+              <>
+                <span>{idioma}</span>
+                <button className="button-primary" onClick={() => setEditIdioma(true)}>Editar</button>
+              </>
+            )}
           </div>
         </div>
 
-        <div className="conf-usuario-section">
-          <h3>Notificações</h3>
-          <div className="item">
-            <span>Sim</span>
-            <button className="button-primary">Editar</button>
-          </div>
-        </div>
-
-        <div className="conf-usuario-section">
-          <h3>Interação</h3>
-          <div className="item">
-            <span>Não</span>
-            <button className="button-primary">Editar</button>
-          </div>
-        </div>
-
+        {/* Privacidade */}
         <div className="conf-usuario-section">
           <h3>Privacidade</h3>
           <div className="item">
-            <span>Perfil público</span>
-            <button className="button-primary">Editar</button>
+            {editPrivacidade ? (
+              <>
+                <select value={privacidade} onChange={(e) => setPrivacidade(e.target.value)}>
+                  <option>Perfil público</option>
+                  <option>Perfil privado</option>
+                </select>
+                <button className="button-primary" onClick={() => setEditPrivacidade(false)}>Salvar</button>
+              </>
+            ) : (
+              <>
+                <span>{privacidade}</span>
+                <button className="button-primary" onClick={() => setEditPrivacidade(true)}>Editar</button>
+              </>
+            )}
           </div>
         </div>
       </div>
