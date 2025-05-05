@@ -5,7 +5,6 @@ import ProfileImage from './ProfileImage'; // componente novo
 import { GoGear } from "react-icons/go";
 import { MdNotifications } from "react-icons/md";
 
-
 const HeaderPerfil = () => {
   const [mostrarNotificacoes, setMostrarNotificacoes] = useState(false);
   const navigate = useNavigate();
@@ -46,7 +45,9 @@ const HeaderPerfil = () => {
       {mostrarNotificacoes && (
         <div className="notificacoes-popup">
           <button className="fechar-notificacao" onClick={toggleNotificacoes}>X</button>
-          <h3>Notificações</h3>
+          <Link to="/perfil/notificacao">
+            <h3>Notificações</h3>
+          </Link>
           <ul>
             <li>Evento novo perto de você!</li>
             <li>Seu artista favorito postou um show!</li>

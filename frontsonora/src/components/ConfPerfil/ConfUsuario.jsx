@@ -24,8 +24,8 @@ const ConfUsuario = () => {
 
       {/* BOTÃO DE VOLTAR */}
       <div className="voltar-container">
-        <Link to="/headerperfil" className="voltar-button">
-          ← Voltar
+      <Link to="/meuperfil" className="voltar-button">
+      ← Voltar
         </Link>
       </div>
 
