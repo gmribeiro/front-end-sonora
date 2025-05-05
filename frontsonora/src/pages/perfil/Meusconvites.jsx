@@ -10,7 +10,7 @@ function Meusconvites() {
   return (
     <>
         <HeaderCadastrado/>
-        <Eventos/>
+      
         <Footer/>
     </>
   )
