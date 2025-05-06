@@ -45,7 +45,7 @@ const HeaderPerfil = () => {
       {mostrarNotificacoes && (
         <div className="notificacoes-popup">
           <button className="fechar-notificacao" onClick={toggleNotificacoes}>X</button>
-          <Link to="/perfil/notificacao">
+          <Link to="/notificacao">
             <h3>Notificações</h3>
           </Link>
           <ul>
