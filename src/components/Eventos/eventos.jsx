@@ -75,11 +75,8 @@ const Eventos = () => {
             const dataHoraFormatada = formatDateTime(evento.data, evento.hora);
 
             const reservaData = {
-                usuario: { id: usuarioLogado.id },
-                evento: {
-                    idEvento: evento.id,
-                    dataHora: dataHoraFormatada
-                },
+                usuarioId: usuarioLogado.id,
+                eventoId: evento.id,
                 confirmado: false
             };
 
@@ -174,7 +171,6 @@ const Eventos = () => {
             throw error;
         }
     };
-
     const handleCadastrarEvento = async (e) => {
         e.preventDefault();
         setFormMessage('');
@@ -183,13 +179,11 @@ const Eventos = () => {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('Not authenticated');
 
-            // Primeiro cria/obtém o gênero
             const genre = await createGenre(eventoForm.genero);
-
-            // Cria/obtém o local
             const place = await createPlace(eventoForm.local);
 
-            // Formata a data/hora
+            console.log("Valor de eventoForm.dataHora:", eventoForm.dataHora);
+
             const date = new Date(eventoForm.dataHora);
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -200,7 +194,8 @@ const Eventos = () => {
 
             const dataHoraFormatada = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 
-            // Monta o objeto do evento
+            console.log("Data/Hora Formatada:", dataHoraFormatada); // INSPEÇÃO
+
             const eventoData = {
                 nomeEvento: eventoForm.nomeEvento,
                 dataHora: dataHoraFormatada,
@@ -209,7 +204,6 @@ const Eventos = () => {
                 localEvento: place
             };
 
-            // Envia para a API de eventos e obtém a resposta
             const response = await axios.post('/eventos', eventoData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -269,7 +263,64 @@ const Eventos = () => {
                         <div className="evento-form-container">
                             <h3>Cadastrar Novo Evento</h3>
                             <form onSubmit={handleCadastrarEvento}>
-                                {/* ... Event form fields ... */}
+                                <div className="form-group">
+                                    <label htmlFor="nomeEvento">Nome do Evento:</label>
+                                    <input
+                                        type="text"
+                                        id="nomeEvento"
+                                        value={eventoForm.nomeEvento}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, nomeEvento: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="dataHora">Data e Hora:</label>
+                                    <input
+                                        type="datetime-local"
+                                        id="dataHora"
+                                        value={eventoForm.dataHora}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, dataHora: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="descricao">Descrição:</label>
+                                    <textarea
+                                        id="descricao"
+                                        value={eventoForm.descricao}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, descricao: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="genero">Gênero Musical:</label>
+                                    <input
+                                        type="text"
+                                        id="genero"
+                                        value={eventoForm.genero}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, genero: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="local">Local:</label>
+                                    <input
+                                        type="text"
+                                        id="local"
+                                        value={eventoForm.local}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, local: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-buttons">
+                                    <button type="submit" className="btn-cadastrar">Cadastrar</button>
+                                    <button type="button" className="btn-cancelar" onClick={() => setShowEventForm(false)}>Cancelar</button>
+                                </div>
+                                {formMessage && <p className={`form-message ${formMessage.startsWith('Error') ? 'error' : 'success'}`}>{formMessage}</p>}
                             </form>
                         </div>
                     )}

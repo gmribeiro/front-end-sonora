@@ -44,6 +44,18 @@ function MeuPerfil() {
         buscarInformacoesUsuario();
     }, [navigate]);
 
+    const formatDateTime = (dateTimeString) => {
+        if (!dateTimeString) return '';
+        const date = new Date(dateTimeString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
+
     const handleAlterarSenha = async (event) => {
         event.preventDefault();
         setMensagem('');
@@ -110,10 +122,12 @@ function MeuPerfil() {
                 });
                 const placeData = placeResponse.data;
 
+                const formattedDataHora = formatDateTime(dataHora);
+
                 // Terceiro, cadastrar o evento
                 const eventResponse = await axios.post('/eventos', {
                     nomeEvento,
-                    dataHora,
+                    dataHora: formattedDataHora,
                     descricao,
                     generoMusical: { idGeneroMusical: genreData.idGeneroMusical },
                     localEvento: { idLocalEvento: placeData.idLocalEvento },
