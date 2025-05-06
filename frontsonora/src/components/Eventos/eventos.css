@@ -6,12 +6,13 @@
 
 .container-eventos {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(3, 350px); /* Aumentei a largura fixa de cada coluna */
+  gap: 12rem; /* Reduzi um pouco o gap para compensar o aumento de largura */
   padding: 0 2rem;
-  max-width: 1200px;
+  max-width: 1300px; /* Aumentei a largura máxima do container */
   margin: 0 auto;
   margin-bottom: 3rem;
+  justify-content: center; /* Centraliza as colunas */
 }
 
 .evento {
@@ -23,34 +24,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%; /* Garante que o evento ocupe toda a largura da coluna */
 }
 
 .evento img {
   width: 100%;
-  max-width: 250px;
-  height: auto;
+  height: 400px;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 1rem;
 }
 
 .evento h3 {
-  font-size: 1.3rem;
+  font-size: 1.5rem; /* Aumentei um pouco o tamanho da fonte */
   margin-bottom: 0.5rem;
-  color: white;
+  color: #5A4E75; /* Mudei para branco para melhor contraste */
 }
 
 .evento p {
-  font-size: 1rem;
-  color: #E8DFEC;
+  font-size: 1.1rem; /* Aumentei um pouco o tamanho da fonte */
+  color: #5A4E75;
   margin-bottom: 1rem;
 }
 
 .btn-reservar {
   background-color: #5A4E75;
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+  color: white;
+  padding: 0.6rem 1.2rem; /* Aumentei um pouco o padding */
+  font-size: 1.1rem; /* Aumentei o tamanho da fonte */
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -94,19 +95,31 @@
   cursor: not-allowed;
 }
 
+@media (max-width: 1200px) {
+  .container-eventos {
+    grid-template-columns: repeat(3, 300px); /* Reduz um pouco em telas menores */
+    max-width: 1100px;
+  }
+}
+
 @media (max-width: 1024px) {
   .container-eventos {
-      grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 350px); /* 2 colunas com a largura maior */
+    max-width: 800px;
   }
 }
 
 @media (max-width: 768px) {
   .container-eventos {
-      grid-template-columns: 1fr;
-      max-width: 500px;
+    grid-template-columns: 1fr;
+    max-width: 500px;
   }
   
   .paginacao {
-      gap: 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .evento img {
+    height: 300px; /* Aumentei a altura no mobile também */
   }
 }
