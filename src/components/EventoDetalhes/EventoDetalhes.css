@@ -1,282 +1,318 @@
 /* Estilos base para o container principal */
 .evento-detalhes-container {
-    max-width: 960px; /* Largura um pouco menor para melhor leitura em telas menores */
-    margin: 2rem auto; /* Centraliza e adiciona margem vertical */
-    padding: 2rem;
-    font-family: 'Arial', sans-serif; /* Fonte mais comum e legível */
-    background-color: #f9f9f9; /* Fundo levemente acinzentado */
-    border-radius: 8px; /* Bordas arredondadas */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 3rem; /* Aumentei o padding para mais espaço interno */
+    font-family: 'Nunito', sans-serif; /* Fonte moderna e amigável */
+    background-color: #f4f4f4; /* Fundo levemente mais escuro */
+    border-radius: 15px; /* Bordas ainda mais arredondadas */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Sombra mais pronunciada e suave */
+    border: none; /* Removi a borda sutil anterior */
 }
 
 /* Estilos para o cabeçalho */
 .cabecalho {
     display: flex;
     align-items: center;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #eee; /* Linha divisória suave */
-    padding-bottom: 1.5rem;
+    margin-bottom: 3rem; /* Mais espaço abaixo do cabeçalho */
+    border-bottom: 3px solid #ddd; /* Linha divisória mais destacada */
+    padding-bottom: 2rem;
 }
 
+/* Botão de Voltar - Estilizado e Chamativo */
 .btn-voltar {
-    background: #e0f7fa; /* Azul bem claro */
-    border: 1px solid #b2ebf2;
-    color: #00acc1; /* Azul mais escuro */
-    font-size: 0.9rem;
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); /* Gradiente roxo vibrante */
+    border: none;
+    color: #fff;
+    font-size: 1.1rem; /* Fonte ligeiramente maior */
     cursor: pointer;
-    padding: 0.6rem 1.2rem;
-    margin-right: 1.5rem;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
+    padding: 1rem 2rem; /* Aumentei o padding */
+    margin-right: 2.5rem; /* Mais espaço do título */
+    border-radius: 15px; /* Bordas bem arredondadas */
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+    font-weight: 600; /* Texto em negrito */
 }
 
 .btn-voltar:hover {
-    background-color: #b2ebf2;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); /* Gradiente roxo mais escuro no hover */
+    transform: translateY(-3px); /* Elevação maior no hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior no hover */
 }
 
 .titulo-evento {
     margin: 0;
-    color: #37474f; /* Cinza azulado escuro */
-    font-size: 2.2rem;
-    font-weight: 700;
+    color: #374151; /* Cinza escuro moderno */
+    font-size: 3rem; /* Título ainda maior */
+    font-weight: 700; /* Título bem negrito */
+    letter-spacing: -0.02em;
 }
 
 /* Estilos para o conteúdo principal */
 .conteudo-principal {
     display: grid;
-    grid-template-columns: 1fr; /* Uma coluna por enquanto, já que não tem imagem */
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 3rem; /* Mais espaço entre as seções */
 }
 
 .detalhes-content {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2.5rem; /* Mais espaço entre os elementos */
 }
 
 /* Estilos para a seção de informações */
 .info-section {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Layout responsivo para as informações */
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Largura mínima maior */
+    gap: 1.5rem; /* Mais espaço entre os itens */
+    margin-bottom: 2.5rem;
 }
 
 .info-item {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    padding: 0.8rem;
-    background-color: #fff;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    gap: 1.2rem;
+    padding: 1.5rem; /* Mais padding interno */
+    background-color: #fff; /* Fundo branco */
+    border-radius: 15px; /* Bordas bem arredondadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    border: none; /* Removi a borda */
 }
 
 .info-icone {
-    font-size: 1.2rem;
-    color: #1e88e5; /* Azul mais vibrante para os ícones */
+    font-size: 1.6rem; /* Ícones maiores */
+    color: #6366f1; /* Azul arroxeado vibrante */
 }
 
 .info-item h3 {
-    margin: 0 0 0.3rem 0;
-    color: #546e7a; /* Cinza azulado médio */
-    font-size: 1rem;
+    margin: 0 0 0.5rem 0;
+    color: #4b5563; /* Cinza médio moderno */
+    font-size: 1.2rem; /* Título maior */
     font-weight: 600;
 }
 
 .info-item p {
     margin: 0;
-    color: #263238; /* Cinza azulado bem escuro */
-    font-size: 1.1rem;
+    color: #1e293b; /* Cinza bem escuro */
+    font-size: 1.3rem; /* Texto maior */
+    line-height: 1.7;
 }
 
 /* Estilos para a seção de descrição */
 .descricao-section {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    margin-bottom: 1.5rem;
+    background-color: #fff; /* Fundo branco */
+    padding: 2.5rem; /* Mais padding */
+    border-radius: 15px; /* Bordas bem arredondadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    margin-bottom: 2.5rem;
+    border: none; /* Removi a borda */
 }
 
 .descricao-section h3 {
     margin-top: 0;
-    color: #546e7a;
-    font-size: 1.2rem;
+    color: #4b5563;
+    font-size: 1.4rem; /* Título maior */
     font-weight: 600;
-    margin-bottom: 0.8rem;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.5rem;
+    margin-bottom: 1.2rem;
+    border-bottom: 3px solid #ddd; /* Linha divisória mais destacada */
+    padding-bottom: 0.8rem;
 }
 
 .descricao-section p {
-    line-height: 1.7;
-    color: #263238;
+    line-height: 1.9; /* Melhor legibilidade */
+    color: #1e293b;
+    font-size: 1.2rem;
 }
 
-/* Estilos para a seção de ações (botão de reservar) */
+/* Estilos para a seção de ações (botão de reservar) - Estilizado e Chamativo */
 .acoes-section {
-    margin-top: 2rem;
+    margin-top: 3rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .btn-reservar {
     width: 100%;
-    padding: 1.2rem;
-    background-color: #43a047; /* Verde mais vibrante */
+    padding: 1.5rem; /* Aumentei o padding */
+    background: linear-gradient(135deg, #6ee7b7 0%, #34d399 100%); /* Gradiente verde vibrante */
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 1.1rem;
+    border-radius: 15px; /* Bordas bem arredondadas */
+    font-size: 1.3rem; /* Fonte maior */
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+    font-weight: 600; /* Texto em negrito */
 }
 
 .btn-reservar:hover {
-    background-color: #388e3c;
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%); /* Gradiente verde mais escuro no hover */
+    transform: translateY(-3px); /* Elevação maior */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior */
 }
 
 .btn-reservar:disabled {
-    background-color: #a5d6a7;
+    background: #e5e7eb; /* Cinza claro */
+    color: #9ca3af; /* Cinza médio */
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
 .btn-reservar.reservando {
-    background-color: #81c784;
+    background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%); /* Tom mais claro */
     cursor: progress;
+    color: #1e293b; /* Cor do texto mais escura */
 }
 
 .mensagem-reserva {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 6px;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 15px; /* Bordas bem arredondadas */
     text-align: center;
-    font-weight: 500;
+    font-weight: 600; /* Texto em negrito */
+    font-size: 1.1rem;
 }
 
 .mensagem-reserva.sucesso {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
+    background-color: #d1fae5;
+    color: #10b981;
+    border: 2px solid #a7f3d0;
 }
 
 .mensagem-reserva.erro {
-    background-color: #ffebee;
-    color: #c62828;
-    border: 1px solid #ef9a9a;
+    background-color: #fee2e2;
+    color: #ef4444;
+    border: 2px solid #fca5a5;
 }
 
 /* Estilos para a seção de avaliação */
 .form-avaliacao-container {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background-color: #fff;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-top: 3rem;
+    padding: 2.5rem; /* Mais padding */
+    background-color: #fff; /* Fundo branco */
+    border-radius: 15px; /* Bordas bem arredondadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    border: none; /* Removi a borda */
 }
 
+/* Botão de Avaliar - Estilizado e Chamativo */
 .btn-avaliar {
-    background-color: #1e88e5;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); /* Gradiente azul vibrante */
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
+    border-radius: 15px; /* Bordas bem arredondadas */
+    padding: 1rem 2rem; /* Aumentei o padding */
+    font-size: 1.1rem; /* Fonte ligeiramente maior */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+    font-weight: 600; /* Texto em negrito */
 }
 
 .btn-avaliar:hover {
-    background-color: #1565c0;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); /* Gradiente azul mais escuro no hover */
+    transform: translateY(-3px); /* Elevação maior */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior */
 }
 
 .form-avaliacao {
-    margin-top: 1rem;
+    margin-top: 2rem; /* Mais espaço abaixo do botão */
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem; /* Mais espaço entre os elementos */
 }
 
 .form-avaliacao h4 {
-    color: #546e7a;
-    font-size: 1.1rem;
+    color: #4b5563;
+    font-size: 1.3rem; /* Título maior */
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    color: #1e293b;
+    font-size: 1.1rem; /* Fonte maior */
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
-.form-group label {
-    color: #263238;
-    font-size: 0.95rem;
-    font-weight: 500;
-}
-
 .form-group select,
 .form-group textarea {
-    padding: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
+    padding: 1.2rem; /* Mais padding */
+    border: 2px solid #ccc; /* Borda mais grossa */
+    border-radius: 12px; /* Bordas mais arredondadas */
+    font-size: 1.1rem;
+    background-color: #f9f9f9; /* Fundo levemente acinzentado */
 }
 
 .form-buttons {
     display: flex;
-    gap: 0.8rem;
-    margin-top: 1rem;
+    gap: 1.5rem; /* Mais espaço entre os botões */
+    margin-top: 2rem; /* Mais espaço acima dos botões */
 }
 
-.btn-enviar,
-.btn-cancelar {
-    padding: 0.8rem 1.2rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
+/* Botão de Enviar Avaliação - Estilizado e Chamativo */
 .btn-enviar {
-    background-color: #43a047;
+    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%); /* Gradiente azul arroxeado vibrante */
     color: white;
     border: none;
+    border-radius: 15px; /* Bordas bem arredondadas */
+    padding: 1.1rem 2.2rem; /* Padding maior */
+    font-size: 1.1rem; /* Fonte ligeiramente maior */
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+    font-weight: 600; /* Texto em negrito */
 }
 
 .btn-enviar:hover {
-    background-color: #388e3c;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); /* Gradiente mais escuro */
+    transform: translateY(-3px); /* Elevação maior */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior */
 }
 
+/* Botão de Cancelar Avaliação - Estilizado e Chamativo */
 .btn-cancelar {
-    background-color: #e0e0e0;
-    color: #263238;
-    border: 1px solid #bdbdbd;
+    background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%); /* Gradiente vermelho vibrante */
+    color: white;
+    border: none;
+    border-radius: 15px; /* Bordas bem arredondadas */
+    padding: 1.1rem 2.2rem; /* Padding maior */
+    font-size: 1.1rem; /* Fonte ligeiramente maior */
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+    font-weight: 600; /* Texto em negrito */
 }
 
 .btn-cancelar:hover {
-    background-color: #d1d1d1;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); /* Gradiente mais escuro */
+    transform: translateY(-3px); /* Elevação maior */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior */
 }
 
 .mensagem {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 6px;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 15px; /* Bordas bem arredondadas */
     text-align: center;
-    font-weight: 500;
+    font-weight: 600; /* Texto em negrito */
+    font-size: 1.1rem;
 }
 
 .mensagem.sucesso {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
+    background-color: #d1fae5;
+    color: #10b981;
+    border: 2px solid #a7f3d0;
 }
 
 .mensagem.erro {
-    background-color: #ffebee;
-    color: #c62828;
-    border: 1px solid #ef9a9a;
+    background-color: #fee2e2;
+    color: #ef4444;
+    border: 2px solid #fca5a5;
 }
 
 /* Estilos para estados de carregamento e erro */
@@ -287,45 +323,53 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 30vh;
-    gap: 1rem;
+    height: 40vh;
+    gap: 1.5rem;
     text-align: center;
-    color: #78909c; /* Cinza azulado claro */
+    color: #718096; /* Cinza mais escuro */
 }
 
 .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
+    border: 5px solid rgba(0, 0, 0, 0.15); /* Borda mais grossa */
     border-radius: 50%;
-    border-top: 4px solid #43a047;
-    width: 50px;
-    height: 50px;
+    border-top: 5px solid #48bb78; /* Verde mais chamativo */
+    width: 70px; /* Spinner maior */
+    height: 70px; /* Spinner maior */
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    100% { transform: rotate rotate(360deg); }
 }
 
 .erro-mensagem {
-    color: #d32f2f;
-    margin-bottom: 0.5rem;
+    color: #e53e3e; /* Vermelho mais chamativo */
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
+/* Botões de Tentar Novamente e Voltar à Lista - Estilizados e Chamativos */
 .btn-tentar-novamente,
 .btn-voltar-lista {
-    padding: 0.8rem 1.5rem;
-    background-color: #fbe9e7; /* Laranja bem claro */
-    color: #d84315; /* Laranja mais escuro */
-    border: 1px solid #ffccbc;
-    border-radius: 6px;
+    background: linear-gradient(135deg, #fbb6ce 0%, #f768a1 100%); /* Gradiente rosa vibrante */
+    color: white;
+    border: none;
+    border-radius: 15px; /* Bordas bem arredondadas */
+    padding: 1.1rem 2.2rem; /* Padding maior */
+    font-size: 1.1rem; /* Fonte ligeiramente maior */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+    font-weight: 600; /* Texto em negrito */
 }
 
 .btn-tentar-novamente:hover,
 .btn-voltar-lista:hover {
-    background-color: #ffccbc;
+    background: linear-gradient(135deg, #f768a1 0%, #ed64a6 100%); /* Gradiente rosa mais escuro no hover */
+    transform: translateY(-3px); /* Elevação maior */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior */
 }
 
 /* Media query para telas menores */
@@ -333,19 +377,42 @@
     .cabecalho {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
+        gap: 1.5rem; /* Mais espaço no cabeçalho em telas menores */
     }
 
     .conteudo-principal {
         grid-template-columns: 1fr;
+        gap: 2.5rem; /* Reduzi um pouco o gap em telas menores */
     }
 
     .info-section {
         grid-template-columns: 1fr;
+        gap: 1rem; /* Reduzi um pouco o gap em telas menores */
     }
 
     .info-item {
         flex-direction: column;
         align-items: flex-start;
+        padding: 1.2rem; /* Reduzi um pouco o padding em telas menores */
+        gap: 0.8rem; /* Reduzi um pouco o gap interno em telas menores */
+    }
+
+    .btn-voltar,
+    .btn-reservar,
+    .btn-avaliar,
+    .btn-enviar,
+    .btn-cancelar,
+    .btn-tentar-novamente,
+    .btn-voltar-lista {
+        width: 100%; /* Botões ocupam a largura total */
+        margin-right: 0;
+        padding: 1.2rem 2.5rem; /* Ajustei o padding para melhor toque em mobile */
+        font-size: 1.1rem; /* Reduzi um pouco a fonte em mobile */
+        border-radius: 12px; /* Bordas ainda arredondadas */
+    }
+
+    .form-buttons {
+        flex-direction: column; /* Botões do formulário em coluna */
+        gap: 1rem;
     }
 }

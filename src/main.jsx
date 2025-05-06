@@ -14,6 +14,8 @@ import SelectorRole from "./pages/select-roles/Selector-Role.jsx";
 import DetalhesEvento from "./pages/detalhes-evento/DetalhesEvento.jsx";
 import Notificacao from './components/Notificacao/notificacao.jsx';
 import Avaliacoes from "./components/Avaliacoes/Avaliacoes.jsx";
+import Artista from "./pages/artistas/Artista.jsx";
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -27,7 +29,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/avaliacoes" element={<Avaliacoes/>} />
         <Route path="/roleSelector" element={<SelectorRole/>} />
         <Route path="/detalhes/:id" element={<DetalhesEvento/>} />
-        <Route path="/notificacao" element={<Notificacao />} />
+        <Route path="/notificacao" element={<Notificacao/>} />
+        <Route path="/artistas" element={<Artista/>} />
         <Route path="/roleSelector" element={<SelectorRole/>} />
         <Route path="/esquecisenha" element={<EsqueciSenha/>} />
         <Route path="/sobrenos" element={<SobreNos/>} />

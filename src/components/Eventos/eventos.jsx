@@ -30,9 +30,6 @@ const Eventos = () => {
     });
     const [formMessage, setFormMessage] = useState('');
 
-    // State for the "MAIO MUSICAL" notification
-    const [maioMusicalNotification, setMaioMusicalNotification] = useState(null);
-
     const handleEventoClick = (eventoId) => {
         navigate(`/detalhes/${eventoId}`);
     };
@@ -75,8 +72,12 @@ const Eventos = () => {
             const dataHoraFormatada = formatDateTime(evento.data, evento.hora);
 
             const reservaData = {
-                usuarioId: usuarioLogado.id,
-                eventoId: evento.id,
+                usuario: {
+                    id: usuarioLogado.id
+                },
+                evento: {
+                    idEvento: evento.id
+                },
                 confirmado: false
             };
 
@@ -104,21 +105,6 @@ const Eventos = () => {
         }
     };
 
-    // Handle marking the notification as read
-    const handleMarkNotificationAsRead = () => {
-        const token = localStorage.getItem('token');
-        if (token && maioMusicalNotification?.idNotificacao) {
-            axios.put(`/notifications/${maioMusicalNotification.idNotificacao}/read`, {}, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-                .then(() => {
-                    setMaioMusicalNotification(null);
-                    localStorage.removeItem('maioMusicalNotificationShown'); // Allow it to show again on next visit
-                })
-                .catch(error => console.error('Error marking notification as read:', error));
-        }
-    };
-
     // Handle genre creation
     const createGenre = async (genreName) => {
         try {
@@ -138,7 +124,6 @@ const Eventos = () => {
         } catch (error) {
             console.error('Error creating genre:', error);
             if (error.response?.status === 409) {
-                // Se o gênero já existe, buscar o existente
                 const existingGenre = await axios.get(`/genres?nomeGenero=${encodeURIComponent(genreName)}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -182,8 +167,6 @@ const Eventos = () => {
             const genre = await createGenre(eventoForm.genero);
             const place = await createPlace(eventoForm.local);
 
-            console.log("Valor de eventoForm.dataHora:", eventoForm.dataHora);
-
             const date = new Date(eventoForm.dataHora);
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -193,8 +176,6 @@ const Eventos = () => {
             const seconds = String(date.getSeconds()).padStart(2, '0');
 
             const dataHoraFormatada = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-
-            console.log("Data/Hora Formatada:", dataHoraFormatada); // INSPEÇÃO
 
             const eventoData = {
                 nomeEvento: eventoForm.nomeEvento,
@@ -211,14 +192,13 @@ const Eventos = () => {
                 }
             });
 
-            // Adiciona o novo evento à lista
             const novoEvento = {
-                id: response.data.id, // Supondo que a API retorne o ID do novo evento
+                id: response.data.id,
                 titulo: eventoForm.nomeEvento,
                 local: place.local || place.nome || eventoForm.local,
                 hora: `${hours}:${minutes}:${seconds}`,
                 data: `${day}/${month}/${year}`,
-                imagem: "../images/evento-default.png", // Imagem padrão ou você pode adicionar um campo no formulário
+                imagem: "../images/evento-default.png",
                 genero: genre.nomeGenero || eventoForm.genero
             };
 
@@ -242,14 +222,6 @@ const Eventos = () => {
 
     return (
         <div className='espaco-eventos'>
-            {/* "MAIO MUSICAL" Notification */}
-            {maioMusicalNotification && (
-                <div className="notification-banner">
-                    <p>{maioMusicalNotification.mensagem}</p>
-                    <button onClick={handleMarkNotificationAsRead}>Marcar como lida</button>
-                </div>
-            )}
-
             {usuarioLogado?.role === 'HOST' && (
                 <div className="host-actions">
                     <button

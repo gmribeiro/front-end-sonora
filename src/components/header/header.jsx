@@ -51,6 +51,7 @@ function Header() {
                 <nav className="nav">
                     <Link to="/" className="nav-link">Home</Link>
                     <Link to="/meusconvites" className="nav-link">Meus Convites</Link>
+                    <Link to="/artistas" className="nav-link">Catálogo de Artistas</Link> {/* Link adicionado */}
                 </nav>
                 {nomeUsuario ? (
                     <span className="user-greeting" onClick={handleNomeClick} style={{ cursor: 'pointer' }}>{nomeUsuario}</span>

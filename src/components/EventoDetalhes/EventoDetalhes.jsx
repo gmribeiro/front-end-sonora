@@ -14,6 +14,14 @@ const EventoDetalhes = () => {
     const [mensagemReserva, setMensagemReserva] = useState('');
     const [carregandoUsuarioReserva, setCarregandoUsuarioReserva] = useState(false);
 
+    // State for evaluation form
+    const [showAvaliacaoForm, setShowAvaliacaoForm] = useState(false);
+    const [avaliacaoForm, setAvaliacaoForm] = useState({
+        nota: '3',
+        mensagem: ''
+    });
+    const [avaliacaoMessage, setAvaliacaoMessage] = useState('');
+
     useEffect(() => {
         const carregarDados = async () => {
             try {
@@ -151,6 +159,63 @@ const EventoDetalhes = () => {
         }
     };
 
+    const handleAvaliarClick = () => {
+        setShowAvaliacaoForm(true);
+        setAvaliacaoForm({ nota: '3', mensagem: '' });
+        setAvaliacaoMessage('');
+    };
+
+    const handleNotaChange = (event) => {
+        const value = parseInt(event.target.value, 10);
+        if (!isNaN(value) && value >= 1 && value <= 5) {
+            setAvaliacaoForm(prev => ({ ...prev, nota: value }));
+        }
+    };
+
+    const handleMensagemChange = (event) => {
+        setAvaliacaoForm(prev => ({ ...prev, mensagem: event.target.value }));
+    };
+
+    const handleSubmitAvaliacao = async () => {
+        if (!evento?.idEvento) {
+            alert('Dados do evento incompletos para avaliação');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (token && usuarioLogado?.role === "CLIENT" && usuarioLogado?.id) {
+            try {
+                await axios.post(
+                    "/avaliacoes",
+                    {
+                        nota: parseInt(avaliacaoForm.nota),
+                        mensagem: avaliacaoForm.mensagem,
+                        usuarioId: usuarioLogado.id,
+                        eventoId: evento.idEvento,
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                setAvaliacaoMessage("Avaliação enviada com sucesso!");
+                setShowAvaliacaoForm(false);
+                setTimeout(() => setAvaliacaoMessage(''), 3000);
+            } catch (error) {
+                console.error("Erro ao enviar avaliação:", error);
+                setAvaliacaoMessage("Erro ao enviar avaliação.");
+            }
+        } else if (usuarioLogado?.role !== "CLIENT") {
+            setAvaliacaoMessage("Apenas clientes podem fazer avaliações.");
+        } else if (!usuarioLogado?.id) {
+            setAvaliacaoMessage("Informações do usuário ausentes.");
+        } else {
+            setAvaliacaoMessage("Token de autenticação não encontrado.");
+        }
+    };
+
     if (carregando) {
         return <div className="carregando-container">Carregando...</div>;
     }
@@ -226,6 +291,45 @@ const EventoDetalhes = () => {
                             </p>
                         )}
                     </div>
+
+                    {usuarioLogado?.role === 'CLIENT' && (
+                        <div className="avaliacao-container">
+                            {!showAvaliacaoForm ? (
+                                <button onClick={handleAvaliarClick}>Avaliar Evento</button>
+                            ) : (
+                                <div className="avaliacao-form">
+                                    <h4>Avaliar {evento.nomeEvento || evento.titulo}</h4>
+                                    <div className="form-group">
+                                        <label htmlFor="nota">Nota (1-5):</label>
+                                        <select
+                                            id="nota"
+                                            name="nota"
+                                            value={avaliacaoForm.nota}
+                                            onChange={handleNotaChange}
+                                        >
+                                            <option value="1">★</option>
+                                            <option value="2">★★</option>
+                                            <option value="3">★★★</option>
+                                            <option value="4">★★★★</option>
+                                            <option value="5">★★★★★</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="mensagem">Mensagem (opcional):</label>
+                                        <textarea
+                                            id="mensagem"
+                                            name="mensagem"
+                                            value={avaliacaoForm.mensagem}
+                                            onChange={handleMensagemChange}
+                                        />
+                                    </div>
+                                    <button onClick={handleSubmitAvaliacao}>Enviar Avaliação</button>
+                                    <button onClick={() => setShowAvaliacaoForm(false)}>Cancelar</button>
+                                    {avaliacaoMessage && <p className="avaliacao-message">{avaliacaoMessage}</p>}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

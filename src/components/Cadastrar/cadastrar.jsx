@@ -97,31 +97,7 @@ const Cadastrar = () => {
                         <option value="ARTISTA">Músico</option>
                     </select>
 
-                    {formData.role === 'CLIENT' && (
-                        <>
-                            <label htmlFor="cpf">CPF</label>
-                            <input
-                                type="text"
-                                id="cpf"
-                                name="cpf"
-                                placeholder="000.000.000-00"
-                                value={formData.cpf}
-                                onChange={handleChange}
-                                required
-                            />
 
-                            <label htmlFor="telefone">Telefone</label>
-                            <input
-                                type="tel"
-                                id="telefone"
-                                name="telefone"
-                                placeholder="(00) 00000-0000"
-                                value={formData.telefone}
-                                onChange={handleChange}
-                                required
-                            />
-                        </>
-                    )}
 
                     {formData.role === 'ARTISTA' && (
                         <>
@@ -136,7 +112,7 @@ const Cadastrar = () => {
                                 required
                             />
 
-                            <label htmlFor="redesSociais">Redes Sociais (Opcional)</label>
+                            <label htmlFor="redesSociais">Redes Sociais</label>
                             <input
                                 type="text"
                                 id="redesSociais"
@@ -146,27 +122,6 @@ const Cadastrar = () => {
                                 onChange={handleChange}
                             />
 
-                            <label htmlFor="telefone">Telefone</label>
-                            <input
-                                type="tel"
-                                id="telefone"
-                                name="telefone"
-                                placeholder="(00) 00000-0000"
-                                value={formData.telefone}
-                                onChange={handleChange}
-                                required
-                            />
-
-                            <label htmlFor="genero">Gênero Musical</label>
-                            <input
-                                type="text"
-                                id="genero"
-                                name="genero"
-                                placeholder="Pop, Rock, Sertanejo..."
-                                value={formData.genero}
-                                onChange={handleChange}
-                                required
-                            />
                         </>
                     )}
 
