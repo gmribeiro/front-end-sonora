@@ -67,6 +67,12 @@
   color: #c2a0bb;
   font-weight: 600;
   text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nav-link:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(194, 160, 187, 0.4);
 }
 
 .login-button {
@@ -78,4 +84,20 @@
   cursor: pointer;
   font-size: 15px;
   text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(194, 160, 187, 0.4);
+}
+
+/* Efeito também na logo */
+.logo img {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(194, 160, 187, 0.4);
 }
