@@ -1,3 +1,4 @@
+/* Estilos Gerais */
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
@@ -5,20 +6,20 @@ body {
   color: #2d1c38;
 }
 
-/* Tela geral */
+/* Tela Geral */
 .tela-config {
   width: 100vw;
   min-height: 100vh;
   background-color: #f3e1f0;
 }
 
-/* Header ocupa 100% da largura */
+/* Header */
 .conf-usuario-header {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #5b3b6f; /* Roxo sólido */
+  background-color: #5b3b6f;
   color: #fff;
   padding: 20px 40px;
   box-sizing: border-box;
@@ -52,74 +53,7 @@ body {
   background-color: #b88bc9;
 }
 
-/* Container principal */
-.conf-usuario-container {
-  padding: 30px 60px;
-  box-sizing: border-box;
-}
-
-/* Seções */
-.conf-usuario-section {
-  margin-top: 25px;
-  background-color: #dac0e3; /* Roxo claro sólido */
-  padding: 20px 30px;
-  border-radius: 10px;
-}
-
-.conf-usuario-section h3 {
-  margin-bottom: 10px;
-  color: #2d1c38;
-}
-
-.item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-/* Placeholder da foto */
-.profile-placeholder {
-  background-color: #916eaa;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-}
-
-/* Botões principais */
-.button-primary {
-  background-color: #f3d1f0;
-  color: #3e2b4c;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.button-primary:hover {
-  background-color: #e6bfe1;
-}
-
-/* Inputs e selects nas edições */
-.conf-usuario-section input,
-.conf-usuario-section select {
-  padding: 8px 12px;
-  font-size: 14px;
-  border-radius: 8px;
-  border: 1px solid #c79bdc;
-  outline: none;
-  background-color: #fff;
-  color: #2d1c38;
-  min-width: 180px;
-}
-
-/* Voltar */
+/* Botão de Voltar */
 .voltar-container {
   padding: 20px 60px 0;
 }
@@ -139,19 +73,122 @@ body {
   background-color: #b88bc9;
 }
 
-/* Foto de perfil com preview */
-.preview-foto {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #9933FF;
+/* Conteúdo Principal */
+.conf-usuario-main {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 30px 60px;
+  box-sizing: border-box;
+  gap: 40px;
 }
 
-.profile-placeholder-container {
+/* Coluna Esquerda - Perfil */
+.conf-usuario-left {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* Card de perfil mais bonito */
+.profile-card {
+  background-color: #dac0e3;
+  padding: 50px 30px;
+  border-radius: 25px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.profile-image-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.preview-foto {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #9933FF;
+  background-color: #e8ccee;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-nome {
+  margin-top: 25px;
+  text-align: center;
+}
+
+.profile-nome h3 {
+  margin-bottom: 10px;
+  font-size: 22px;
+}
+
+.nome-display h3 {
+  margin: 0;
+}
+
+.nome-edit {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 10px;
+}
+
+.input-nome {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 200px;
+}
+
+/* Coluna Direita - Configurações */
+.conf-usuario-right {
+  flex: 2;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.conf-usuario-section {
+  background-color: #dac0e3;
+  padding: 20px 30px;
+  border-radius: 10px;
+}
+
+.conf-usuario-section h3 {
+  margin-bottom: 10px;
+  color: #2d1c38;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Botões Principais */
+.button-primary {
+  background-color: #f3d1f0;
+  color: #3e2b4c;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.button-primary:hover {
+  background-color: #e6bfe1;
 }
 
 /* Responsivo */
@@ -166,8 +203,14 @@ body {
     text-align: left;
   }
 
-  .conf-usuario-container {
+  .conf-usuario-main {
+    flex-direction: column;
     padding: 20px;
+  }
+
+  .conf-usuario-left,
+  .conf-usuario-right {
+    width: 100%;
   }
 
   .item {
@@ -183,9 +226,25 @@ body {
   .profile-placeholder {
     margin-bottom: 10px;
   }
-
-  .conf-usuario-section input,
-  .conf-usuario-section select {
-    width: 100%;
-  }
 }
+
+.linha-divisoria {
+  width: 2px;
+  background-color: #b58cc6;
+  margin: 0 30px;
+  height: auto;
+}
+
+.preview-foto {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #9933FF;
+  transition: 0.3s ease;
+}
+
+.preview-foto:hover {
+  transform: scale(1.02);
+}
+

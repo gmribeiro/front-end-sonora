@@ -61,3 +61,24 @@
     color: #5c2c90;
   }
   
+  .voltar-container {
+    padding: 0 0 1rem 0;
+  }
+  
+  .voltar-button {
+    background-color: #c79bdc;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 2rem;
+  }
+  
+  .voltar-button:hover {
+    background-color: #b88bc9;
+  }
+  

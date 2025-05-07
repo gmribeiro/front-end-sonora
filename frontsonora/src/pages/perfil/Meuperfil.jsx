@@ -8,30 +8,6 @@ import useTitle from '../../hooks/useTitle';
 function Meuperfil() {
   useTitle('Meu perfil - Sonora');
 
-  const eventosCurtidos = [
-    {
-      id: 1,
-      titulo: "Indaiatuba Pop Festival",
-      local: "Indaiatuba",
-      hora: "19:00",
-      imagem: "../images/eventopop1.png"
-    },
-    {
-      id: 4,
-      titulo: "Sertanejo Universitário",
-      local: "Campinas",
-      hora: "21:00",
-      imagem: "../images/sertanejo1.png"
-    },
-    {
-      id: 8,
-      titulo: "Underground Sounds",
-      local: "São Paulo",
-      hora: "23:30",
-      imagem: "../images/indie2.png"
-    }
-  ];
-
   const meusConvites = [
     {
       id: 10,
@@ -46,6 +22,13 @@ function Meuperfil() {
     <>
       <Header />
       <div className="meu-perfil-container">
+        
+        {/* Botão de Voltar */}
+        <div className="voltar-container">
+          <button className="voltar-button">← Voltar</button>
+        </div>
+
+        {/* Meus Convites */}
         <section className="perfil-secao">
           <h2>Meus Convites</h2>
           <div className="cards-container">
@@ -69,22 +52,7 @@ function Meuperfil() {
           </div>
         </section>
 
-        <section className="perfil-secao">
-          <h2>Eventos Curtidos</h2>
-          <div className="cards-container">
-            {eventosCurtidos.map(evento => (
-              <div key={evento.id} className="card">
-                <img src={evento.imagem} alt={evento.titulo} className="card-imagem" />
-                <div className="card-info">
-                  <h3>{evento.titulo}</h3>
-                  <p>{evento.local}</p>
-                  <p>{evento.hora}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
+        {/* Artistas Favoritos */}
         <section className="perfil-secao">
           <h2>Artistas Favoritos</h2>
           <div className="cards-container">
@@ -98,6 +66,7 @@ function Meuperfil() {
           </div>
         </section>
 
+        {/* Avaliações */}
         <section className="perfil-secao">
           <h2>Avaliações</h2>
           <div className="cards-container">
