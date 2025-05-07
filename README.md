@@ -8,4 +8,8 @@ PASSO A PASSO DE COMO RODAR:
 4- instale as bibliotecas escrevendo:
 npm install react-icons
 npm install @react-oauth/google
-5- depois npm run dev
+npm install axios
+5- abrir o Docker
+6- abrir o MysqlWorkbench
+7- abrir o inteliJ e rodar backend
+8- depois npm run dev
