@@ -11,8 +11,8 @@ import Meuperfil from './pages/perfil/Meuperfil';
 import Notificacao from './pages/perfil/Notificacao';
 import SobreNos from './pages/genericos/SobreNos';
 import Termos from './pages/genericos/Termos';
-import ConfMusico from './components/ConfPerfil/ConfMusico';
-import ConfUsuario from './components/ConfPerfil/ConfUsuario';
+import ConfMusico from './pages/perfil/ConfMusico';
+import ConfUsuario from './pages/perfil/ConfUsuario';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
