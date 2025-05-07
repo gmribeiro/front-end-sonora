@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import './ConfPerfil.css';
+import '../css/confperfil.css';
 import { Link, useNavigate } from 'react-router-dom';
+import useTitle from '../../hooks/useTitle';
 
 const ConfUsuario = () => {
+  useTitle('Configurações de Usuario - Sonora');
+  
   const navigate = useNavigate();
   const [fotoPreview, setFotoPreview] = useState('/images/default-profile.png');
   const [novoNome, setNovoNome] = useState('MariaSpinula');

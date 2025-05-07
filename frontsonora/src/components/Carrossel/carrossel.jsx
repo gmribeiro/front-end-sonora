@@ -8,9 +8,9 @@ import { TbHorseToy } from "react-icons/tb";
 import { CgMusicSpeaker } from "react-icons/cg";
 import { PiMicrophoneStageDuotone } from "react-icons/pi";
 import { GiCigar } from "react-icons/gi";
-import { FaCannabis } from "react-icons/fa6";
 import { LuGuitar } from "react-icons/lu";
 import { GiGrandPiano } from "react-icons/gi";
+import { GiTumbleweed } from "react-icons/gi";
 
 const categorias = [
     { nome: "POP", icone: <PiMicrophoneStageDuotone /> },
@@ -21,7 +21,7 @@ const categorias = [
     { nome: "Infantil", icone: <TbHorseToy /> },
     { nome: "Eletrônica", icone: <CgMusicSpeaker /> },
     { nome: "Funk", icone: <GiCigar /> },
-    { nome: "Reggae", icone: <FaCannabis /> },
+    { nome: "Reggae", icone: <GiTumbleweed /> },
     { nome: "Clássica", icone: <GiGrandPiano /> },
 ];
 

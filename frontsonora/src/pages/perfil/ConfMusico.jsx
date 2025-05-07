@@ -1,8 +1,10 @@
 import React from 'react';
-import './ConfPerfil.css';
+import '../css/confperfil.css';
 import { Link } from 'react-router-dom';
+import useTitle from '../../hooks/useTitle';
 
 const ConfMusico = () => {
+  useTitle('Configurações de colaborador - Sonora');
   return (
     <div className="conf-usuario-container">
       <div className="conf-usuario-header">

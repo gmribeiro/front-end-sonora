@@ -27,7 +27,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/notificacao" element={<Notificacao />} />
         <Route path="/sobrenos" element={<SobreNos />} />
         <Route path="/termos" element={<Termos />} />
-        <Route path="/configuracoes-usuario" element={<ConfUsuario />} /> {/* Rota para ConfUsuario */}
+        <Route path="/configuracoes-usuario" element={<ConfUsuario />} />
+        <Route path="/configuracoes-musico" element={<ConfMusico />} />
       </Routes>
     </Router>
   </StrictMode>,
