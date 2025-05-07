@@ -4,7 +4,7 @@
     min-height: 70vh;
 }
 
-/* CONFIGURAÇÃO PARA MONITORES GRANDES (PC) - mantém como estava */
+/* CONFIGURAÇÃO PARA MONITORES GRANDES (PC) */
 @media (min-width: 1440px) {
     .container-eventos {
         display: grid;
@@ -26,7 +26,7 @@
     }
 }
 
-/* CONFIGURAÇÃO PARA NOTEBOOKS E TELAS MENORES (novo estilo) */
+/* CONFIGURAÇÃO PARA NOTEBOOKS E TELAS MENORES */
 @media (max-width: 1439px) {
     .container-eventos {
         display: grid;
@@ -56,6 +56,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.3s ease;
     }
 }
 
@@ -70,6 +71,20 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform;
+    backface-visibility: hidden;
+    cursor: pointer;
+}
+
+.evento:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.evento:hover .evento-imagem {
+    transform: scale(1.03);
 }
 
 .evento h3 {
@@ -96,13 +111,14 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: all 0.3s ease;
     width: 80%;
     max-width: 200px;
 }
 
 .btn-reservar:hover {
     background-color: #2E284E;
+    transform: scale(1.05);
 }
 
 .paginacao {
@@ -138,7 +154,7 @@
     cursor: not-allowed;
 }
 
-/* RESPONSIVIDADE PARA TELAS MENORES (comum a ambos) */
+/* RESPONSIVIDADE PARA TELAS MENORES */
 @media (max-width: 1024px) {
     .container-eventos {
         grid-template-columns: repeat(3, minmax(220px, 1fr));
