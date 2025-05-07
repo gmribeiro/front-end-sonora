@@ -1,11 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './eventos.css';
 
 const Eventos = ({ eventosFiltrados }) => {
     const [currentPage, setCurrentPage] = useState(0);
     const eventosPorPagina = 6; // 2 linhas de 3 eventos cada
     
-    const eventos = eventosFiltrados || [ { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00", imagem: "../images/evento1.png", genero: "POP" }, { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00", imagem: "../images/evento2.png", genero: "Rock'n roll" }, { id: 3, titulo: "Show Rock na Praça", local: "Campinas", hora: "14:30", imagem: "../images/evento3.png", genero: "Rock'n roll" }, { id: 4, titulo: "Sunset Eletrônico", local: "Indaiatuba", hora: "12:00", imagem: "../images/evento4.png", genero: "Eletrônica" }, { id: 5, titulo: "Festival Indie", local: "Jundiaí", hora: "17:00", imagem: "../images/evento5.png", genero: "Indie" }, { id: 6, titulo: "Techno Waves", local: "Itupeva", hora: "23:00", imagem: "../images/evento6.png", genero: "Eletrônica" }, { id: 7, titulo: "Sertanejo Universitário", local: "Campinas", hora: "21:00", imagem: "../images/evento7.png", genero: "Sertanejo" }, { id: 8, titulo: "MPB ao Vivo", local: "Indaiatuba", hora: "18:30", imagem: "../images/evento8.png", genero: "MPB" }, ];
+    // Reset da página quando o filtro muda
+    useEffect(() => {
+        setCurrentPage(0);
+    }, [eventosFiltrados]);
+
+    const eventos = eventosFiltrados || [
+        { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00", imagem: "../images/evento1.png", genero: "POP" },
+        { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00", imagem: "../images/evento2.png", genero: "Rock'n roll" },
+        { id: 3, titulo: "Show Rock na Praça", local: "Campinas", hora: "14:30", imagem: "../images/evento3.png", genero: "Rock'n roll" },
+        { id: 4, titulo: "Sunset Eletrônico", local: "Indaiatuba", hora: "12:00", imagem: "../images/evento4.png", genero: "Eletrônica" },
+        { id: 5, titulo: "Festival Indie", local: "Jundiaí", hora: "17:00", imagem: "../images/evento5.png", genero: "Indie" },
+        { id: 6, titulo: "Techno Waves", local: "Itupeva", hora: "23:00", imagem: "../images/evento6.png", genero: "Eletrônica" },
+        { id: 7, titulo: "Sertanejo Universitário", local: "Campinas", hora: "21:00", imagem: "../images/evento7.png", genero: "Sertanejo" },
+        { id: 8, titulo: "MPB ao Vivo", local: "Indaiatuba", hora: "18:30", imagem: "../images/evento8.png", genero: "MPB" },
+    ];
 
     const totalPages = Math.ceil(eventos.length / eventosPorPagina);
     const eventosAtuais = eventos.slice(
