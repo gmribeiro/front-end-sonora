@@ -7,12 +7,14 @@ function Header() {
   return (
     <header className="header">
       <div className="header-left">
+      <Link to="/" className="logo">
         <img 
           src="../images/logosemfundo.png" 
           alt="Logo" 
           className="logo" 
           style={{ maxHeight: '60px' }}
         />
+      </Link>
         <div className="search-container">
           <FaSearch className="search-icon" />
           <input
