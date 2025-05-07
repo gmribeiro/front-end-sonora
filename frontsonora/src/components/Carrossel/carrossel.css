@@ -5,8 +5,9 @@
   position: relative;
   width: 100%;
   padding: 1rem;
-  margin-top: 5rem;
-  margin-bottom: 5rem;
+  margin-top: 5rem; /* Mantém o margin-top */
+  margin-bottom: 5rem; /* Mantém o margin-bottom */
+  background-color: #EDE6F2; /* Cor de fundo igual ao restante */
 }
 
 .carrossel {
@@ -17,7 +18,10 @@
   width: calc(5 * (150px + 1.5rem));
   margin: 0 auto;
   scrollbar-width: none;
+  background-color: transparent; /* Fundo transparente para herdar a cor do container */
 }
+
+/* Mantenha o restante do CSS do carrossel igual */
 
 .carrossel::-webkit-scrollbar {
   display: none;

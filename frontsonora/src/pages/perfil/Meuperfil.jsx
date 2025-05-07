@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import './meuperfil.css';
+import '../css/meuperfil.css';
 
 function MeuPerfil() {
   const [nomeUsuario, setNomeUsuario] = useState('');
