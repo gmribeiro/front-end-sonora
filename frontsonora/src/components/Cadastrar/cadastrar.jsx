@@ -1,74 +1,152 @@
 import './cadastrar.css';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Cadastrar = () => {
-    const [tipoCadastro, setTipoCadastro] = useState(null);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        senha: '',
+        telefone: '',
+        cpf: '',
+        genero: '',
+        role: 'CLIENT', // Valor padrão agora é CLIENT
+        nomeArtistico: '', // Campo específico para Músico
+        redesSociais: ''   // Campo específico para Músico
+    });
+    const [mensagem, setMensagem] = useState('');
+    const navigate = useNavigate();
 
-    const handleTipoCadastro = (tipo) => {
-        setTipoCadastro(tipo);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({...formData, [name]: value});
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await axios.post('http://localhost:8080/auth/register', formData);
+
+            if (response.status === 200) {
+                setMensagem('Cadastro realizado com sucesso!');
+                setTimeout(() => {
+                    navigate('/acesso');
+                }, 2000);
+            }
+        } catch (error) {
+            setMensagem(error.response?.data?.message || 'Erro ao cadastrar. Tente novamente.');
+        }
     };
 
     return (
         <div className='fundo'>
-            <button className='botao-voltar' onClick={() => window.location.href = '/'}>Voltar</button>
+            <button className='botao-voltar' onClick={() => navigate('/')}>Voltar</button>
             <img src="images/fundocadastro.png" alt="Fundo" />
             <div className='area-cadastro'>
                 <h1>Conectamos você à música</h1>
                 <h2>Escolha seu tipo de cadastro</h2>
 
-                {!tipoCadastro && (
-                    <div className="selecao-tipo-cadastro">
-                        <button onClick={() => handleTipoCadastro('cliente')}>Cadastrar como Cliente</button>
-                        <button onClick={() => handleTipoCadastro('musico')}>Cadastrar como Músico</button>
-                    </div>
-                )}
+                {mensagem && <div className="mensagem">{mensagem}</div>}
 
-                {tipoCadastro === 'cliente' && (
-                    <form className="form-cadastro">
-                        <label htmlFor="nome">Nome</label>
-                        <input type="text" id="nome" name="nome" placeholder="João Martins da Silva" required />
+                <form className="form-cadastro" onSubmit={handleSubmit}>
+                    <label htmlFor="name">Nome</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Digite seu nome"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                    />
 
-                        <label htmlFor="cpf">CPF</label>
-                        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required />
+                    <label htmlFor="email">E-mail</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="seu@email.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                    />
 
-                        <label htmlFor="email">E-mail</label>
-                        <input type="email" id="email" name="email" placeholder="joao@gmail.com" required />
+                    <label htmlFor="senha">Senha</label>
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Sua senha"
+                        value={formData.senha}
+                        onChange={handleChange}
+                        required
+                    />
 
-                        <label htmlFor="senha">Senha</label>
-                        <input type="text" id="senha" name="senha" placeholder="js12345" required />
+                    <label htmlFor="role">Tipo de Usuário</label>
+                    <select
+                        id="role"
+                        name="role"
+                        value={formData.role}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="CLIENT">Cliente (Padrão)</option>
+                        <option value="HOST">Anfitrião</option>
+                        <option value="ARTISTA">Músico</option>
+                    </select>
 
-                        <label htmlFor="telefone">Telefone</label>
-                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required />
 
-                        <button type="submit" className="botao-cadastrar">Cadastrar-se como Cliente</button>
-                    </form>
-                )}
 
-                {tipoCadastro === 'musico' && (
-                    <form className="form-cadastro">
-                        <label htmlFor="nome">Nome Artístico</label>
-                        <input type="text" id="nome" name="nome" placeholder="Lady Gaga" required />
+                    {formData.role === 'ARTISTA' && (
+                        <>
+                            <label htmlFor="nomeArtistico">Nome Artístico</label>
+                            <input
+                                type="text"
+                                id="nomeArtistico"
+                                name="nomeArtistico"
+                                placeholder="Nome do Artista"
+                                value={formData.nomeArtistico}
+                                onChange={handleChange}
+                                required
+                            />
 
-                        <label htmlFor="genero">Gênero Musical</label>
-                        <input type="text" id="genero" name="genero" placeholder="Pop" required />
+                            <label htmlFor="redesSociais">Redes Sociais</label>
+                            <input
+                                type="text"
+                                id="redesSociais"
+                                name="redesSociais"
+                                placeholder="Links para suas redes sociais"
+                                value={formData.redesSociais}
+                                onChange={handleChange}
+                            />
 
-                        <label htmlFor="email">E-mail comercial</label>
-                        <input type="email" id="email" name="email" placeholder="gaga@gmail.com" required />
+                        </>
+                    )}
 
-                        <label htmlFor="senha">Senha</label>
-                        <input type="text" id="senha" name="senha" placeholder="abracadabra01" required />
+                    {formData.role === 'HOST' && (
+                        <>
+                            <label htmlFor="telefone">Telefone</label>
+                            <input
+                                type="tel"
+                                id="telefone"
+                                name="telefone"
+                                placeholder="(00) 00000-0000"
+                                value={formData.telefone}
+                                onChange={handleChange}
+                                required
+                            />
+                            {/* Adicione aqui campos específicos para HOST, se necessário */}
+                        </>
+                    )}
 
-                        <label htmlFor="telefone">Telefone</label>
-                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required />
-
-                        <button type="submit" className="botao-cadastrar">Cadastrar-se como Músico</button>
-                    </form>
-                )}
+                    <button type="submit" className="botao-cadastrar">Cadastrar-se</button>
+                </form>
 
                 <div className='sem-conta'>
                     Já tem uma conta?
-                    <Link className='link' to="/Acesso"> Acesse aqui</Link>
+                    <Link className='link' to="/acesso"> Acesse aqui</Link>
                 </div>
             </div>
         </div>
