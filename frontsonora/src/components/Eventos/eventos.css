@@ -90,7 +90,7 @@
 .evento h3 {
     font-size: 1.1rem; /* Reduzido de 1.3rem */
     margin-bottom: 0.4rem; /* Reduzido de 0.5rem */
-    color: #2E284E;
+    color: white;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -99,7 +99,7 @@
 
 .evento p {
     font-size: 0.9rem; /* Reduzido de 1rem */
-    color: #2E284E;
+    color: #E8DFEC;
     margin-bottom: 0.8rem; /* Reduzido de 1rem */
 }
 
@@ -121,14 +121,12 @@
     transform: scale(1.03); /* Reduzido de 1.05 */
 }
 
-/* Adicione ao seu CSS existente */
 .paginacao {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem;
-    margin-top: 2rem;
-    padding: 1rem 0;
+    gap: 1.5rem; /* Reduzido de 2rem */
+    margin-top: 1.5rem; /* Reduzido de 2rem */
 }
 
 .btn-paginacao {
@@ -136,28 +134,25 @@
     color: white;
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
+    width: 36px; /* Reduzido de 40px */
+    height: 36px; /* Reduzido de 40px */
+    font-size: 1.1rem; /* Reduzido de 1.2rem */
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
+}
+
+.paginacao span {
+    color: #2E284E;
+    font-size: 0.9rem; /* Adicionado para reduzir */
 }
 
 .btn-paginacao:hover {
     background-color: #2E284E;
-    transform: scale(1.05);
 }
 
 .btn-paginacao:disabled {
     background-color: #8B7EA2;
     cursor: not-allowed;
-    transform: none;
-}
-
-.paginacao span {
-    font-size: 1rem;
-    color: #2E284E;
-    font-weight: bold;
 }
 
 /* RESPONSIVIDADE PARA TELAS MENORES - COM AJUSTES */
