@@ -18,6 +18,8 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
         imagem: null
     });
     const [formMessage, setFormMessage] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const eventosPorPagina = 6; // 2 colunas x 3 eventos
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -31,6 +33,16 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
                 .catch(error => console.error('Erro ao carregar usuário:', error));
         }
     }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [eventosFiltrados]);
+
+    const totalPages = Math.ceil(eventosFiltrados.length / eventosPorPagina);
+    const currentEvents = eventosFiltrados.slice(
+        (currentPage - 1) * eventosPorPagina,
+        currentPage * eventosPorPagina
+    );
 
     const handleEventoClick = (eventoId) => {
         navigate(`/detalhes/${eventoId}`);
@@ -119,7 +131,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
 
             if (response.status === 201) {
                 setFormMessage('Evento cadastrado com sucesso!');
-                // Opcional: Atualizar a lista de eventos localmente
                 setFormEvento({
                     nomeEvento: '',
                     dataHora: '',
@@ -132,7 +143,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
             } else {
                 setFormMessage('Erro ao cadastrar evento.');
             }
-
         } catch (error) {
             console.error('Erro ao cadastrar evento:', error);
             setFormMessage(`Erro ao cadastrar evento: ${error.response?.data?.message || error.message}`);
@@ -185,7 +195,7 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
             )}
 
             <div className="container-eventos">
-                {eventosFiltrados.map(evento => (
+                {currentEvents.map(evento => (
                     <div
                         key={evento.id}
                         className="evento"
@@ -215,6 +225,26 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
                     </div>
                 ))}
             </div>
+
+            {eventosFiltrados.length > eventosPorPagina && (
+                <div className="paginacao">
+                    <button
+                        className="btn-paginacao"
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                    >
+                        ◀
+                    </button>
+                    <span>Página {currentPage} de {totalPages}</span>
+                    <button
+                        className="btn-paginacao"
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                    >
+                        ▶
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
