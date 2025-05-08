@@ -65,39 +65,43 @@ const Carrossel = ({ onGeneroSelecionado }) => {
     };
 
     return (
-        <div className="carrossel-container">
-            <button 
-                className={`carrossel-btn left ${startIndex === 0 ? 'disabled' : ''}`} 
-                onClick={scrollLeft}
-                disabled={startIndex === 0}
-            >
-                <FaChevronLeft />
-            </button>
-            
-            <div className="carrossel" ref={carrosselRef}>
-                {categorias.slice(startIndex, startIndex + visibleItems).map((categoria, index) => (
-                    <div 
-                        key={startIndex + index} 
-                        className={`categoria ${generoAtivo === categoria.nome ? 'ativo' : ''}`}
-                        style={{ 
-                            animationDelay: `${index * 0.1}s`,
-                            opacity: animate ? 0 : 1 
-                        }}
-                        onClick={() => handleGeneroClick(categoria.nome)}
-                    >
-                        <span className="icone">{categoria.icone}</span>
-                        <p>{categoria.nome}</p>
+        <div className="carrossel-wrapper">
+            <div className="carrossel-container">
+                <button 
+                    className={`carrossel-btn left ${startIndex === 0 ? 'disabled' : ''}`} 
+                    onClick={scrollLeft}
+                    disabled={startIndex === 0}
+                >
+                    <FaChevronLeft />
+                </button>
+                
+                <div className="carrossel-viewport">
+                    <div className="carrossel" ref={carrosselRef}>
+                        {categorias.slice(startIndex, startIndex + visibleItems).map((categoria, index) => (
+                            <div 
+                                key={startIndex + index} 
+                                className={`categoria ${generoAtivo === categoria.nome ? 'ativo' : ''}`}
+                                style={{ 
+                                    animationDelay: `${index * 0.1}s`,
+                                    opacity: animate ? 0 : 1 
+                                }}
+                                onClick={() => handleGeneroClick(categoria.nome)}
+                            >
+                                <span className="icone">{categoria.icone}</span>
+                                <p>{categoria.nome}</p>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
+                </div>
 
-            <button 
-                className={`carrossel-btn right ${startIndex === categorias.length - visibleItems ? 'disabled' : ''}`} 
-                onClick={scrollRight}
-                disabled={startIndex === categorias.length - visibleItems}
-            >
-                <FaChevronRight />
-            </button>
+                <button 
+                    className={`carrossel-btn right ${startIndex === categorias.length - visibleItems ? 'disabled' : ''}`} 
+                    onClick={scrollRight}
+                    disabled={startIndex === categorias.length - visibleItems}
+                >
+                    <FaChevronRight />
+                </button>
+            </div>
         </div>
     );
 };

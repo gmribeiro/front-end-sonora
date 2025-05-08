@@ -56,7 +56,7 @@ function Home() {
   }, [generoSelecionado]);
 
   return (
-    <>
+    <main className='body'>
       <Header />
       <Carrossel onGeneroSelecionado={setGeneroSelecionado} />
       
@@ -78,7 +78,7 @@ function Home() {
       </Routes>
       
       <Footer />
-    </>
+    </main>
   );
 }
 

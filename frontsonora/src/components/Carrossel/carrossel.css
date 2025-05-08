@@ -1,23 +1,34 @@
+.carrossel-wrapper {
+  width: 100%;
+  padding: 2rem 0;
+  background-color: #EDE6F2;
+  margin: 5rem 0;
+  position: relative;
+}
+
 .carrossel-container {
   display: flex;
   align-items: center;
-  justify-content: center;
+  max-width: 1000px;
+  margin: 0 auto;
   position: relative;
+  padding: 0 20px;
+}
+
+.carrossel-viewport {
   width: 100%;
-  padding: 1rem;
-  margin-top: 5rem;
-  margin-bottom: 5rem;
-  background-color: #EDE6F2;
+  overflow: hidden;
+  padding: 0 15px;
 }
 
 .carrossel {
   display: flex;
-  overflow: hidden;
-  gap: 1.5rem;
-  padding: 1rem;
-  width: calc(5 * (150px + 1.5rem));
-  margin: 0 auto;
+  gap: 1.8rem;
+  padding: 1rem 0;
+  scroll-behavior: smooth;
+  width: 100%;
   scrollbar-width: none;
+  justify-content: center;
 }
 
 .carrossel::-webkit-scrollbar {
@@ -38,30 +49,29 @@
   text-align: center;
   font-weight: bold;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s, opacity 0.4s ease-in-out;
+  transition: all 0.3s ease;
   flex-shrink: 0;
+  cursor: pointer;
   opacity: 0;
   transform: translateX(20px);
   animation: slideIn 0.5s ease-out forwards;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .categoria.ativo {
   background: #C5B6D2;
   color: #564a72;
-  transform: scale(1.05);
+  transform: scale(1.05) translateX(0);
   box-shadow: 0 0 15px rgba(197, 182, 210, 0.8);
 }
 
 @keyframes slideIn {
   from {
-      opacity: 0;
-      transform: translateX(20px);
+    opacity: 0;
+    transform: translateX(20px);
   }
   to {
-      opacity: 1;
-      transform: translateX(0);
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -72,7 +82,7 @@
 .categoria:nth-child(5) { animation-delay: 0.5s; }
 
 .categoria:hover {
-  transform: scale(1.05) !important;
+  transform: scale(1.05) translateX(0);
 }
 
 .icone {
@@ -84,20 +94,27 @@
   background: #564a72;
   color: white;
   border: none;
-  padding: 1rem;
   border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.5rem;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
-  transition: all 0.3s ease;
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.carrossel-btn.left {
+  left: -60px;
+}
+
+.carrossel-btn.right {
+  right: -60px;
 }
 
 .carrossel-btn:hover:not(.disabled) {
@@ -105,62 +122,82 @@
   transform: translateY(-50%) scale(1.1);
 }
 
-.carrossel-btn:active {
-  transform: translateY(-50%) scale(0.95);
-  transition: transform 0.1s;
-}
-
 .carrossel-btn.disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.left {
-  left: 0;
-}
-
-.right {
-  right: 0;
-}
-
-/* Ajustes para responsividade */
+/* Responsividade */
 @media (max-width: 1024px) {
-  .carrossel {
-      width: calc(5 * (120px + 1rem));
-      gap: 1rem;
+  .carrossel-container {
+    max-width: 850px;
   }
   
   .categoria {
-      width: 120px;
-      height: 120px;
-      padding: 1rem;
+    width: 130px;
+    height: 130px;
+    padding: 1.2rem;
   }
-
+  
   .icone {
-      font-size: 2rem;
+    font-size: 2.2rem;
+  }
+  
+  .carrossel {
+    gap: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
-  .carrossel {
-      width: calc(5 * (100px + 0.8rem));
-      gap: 0.8rem;
+  .carrossel-container {
+    max-width: 650px;
+    padding: 0 15px;
   }
   
   .categoria {
-      width: 100px;
-      height: 100px;
-      padding: 0.8rem;
+    width: 110px;
+    height: 110px;
+    padding: 1rem;
   }
-
+  
   .icone {
-      font-size: 1.5rem;
+    font-size: 1.8rem;
   }
-
+  
   .carrossel-btn {
-      padding: 0.8rem;
-      font-size: 1.2rem;
-      width: 40px;
-      height: 40px;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .carrossel {
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .carrossel-container {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+  
+  .categoria {
+    width: 90px;
+    height: 90px;
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .icone {
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .carrossel-btn {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .carrossel {
+    gap: 1rem;
   }
 }
