@@ -121,12 +121,27 @@
     transform: scale(1.03); /* Reduzido de 1.05 */
 }
 
+/* Novos estilos de animação */
+.container-eventos {
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.container-eventos.animating {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
 .paginacao {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem; /* Reduzido de 2rem */
-    margin-top: 1.5rem; /* Reduzido de 2rem */
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding: 1rem 0;
+    position: relative;
+    z-index: 2;
 }
 
 .btn-paginacao {
@@ -134,25 +149,31 @@
     color: white;
     border: none;
     border-radius: 50%;
-    width: 36px; /* Reduzido de 40px */
-    height: 36px; /* Reduzido de 40px */
-    font-size: 1.1rem; /* Reduzido de 1.2rem */
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.paginacao span {
-    color: #2E284E;
-    font-size: 0.9rem; /* Adicionado para reduzir */
-}
-
-.btn-paginacao:hover {
+.btn-paginacao:hover:not(:disabled) {
     background-color: #2E284E;
+    transform: scale(1.05);
 }
 
 .btn-paginacao:disabled {
     background-color: #8B7EA2;
     cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.paginacao span {
+    color: #2E284E;
+    font-weight: bold;
+    font-size: 1rem;
 }
 
 /* RESPONSIVIDADE PARA TELAS MENORES - COM AJUSTES */

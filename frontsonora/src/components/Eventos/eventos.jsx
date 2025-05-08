@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import './eventos.css';
 import axios from 'axios';
 
-const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
+const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPage }) => {
     const navigate = useNavigate();
     const [usuarioLogado, setUsuarioLogado] = useState(null);
     const [reservandoId, setReservandoId] = useState(null);
@@ -18,6 +18,14 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
         imagem: null
     });
     const [formMessage, setFormMessage] = useState('');
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    // Configuração da paginação
+    const eventosPorPagina = 6;
+    const totalPaginas = Math.ceil(eventosFiltrados.length / eventosPorPagina);
+    const indiceInicial = (currentPage - 1) * eventosPorPagina;
+    const indiceFinal = indiceInicial + eventosPorPagina;
+    const eventosPaginaAtual = eventosFiltrados.slice(indiceInicial, indiceFinal);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -119,7 +127,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
 
             if (response.status === 201) {
                 setFormMessage('Evento cadastrado com sucesso!');
-                // Opcional: Atualizar a lista de eventos localmente
                 setFormEvento({
                     nomeEvento: '',
                     dataHora: '',
@@ -137,6 +144,16 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
             console.error('Erro ao cadastrar evento:', error);
             setFormMessage(`Erro ao cadastrar evento: ${error.response?.data?.message || error.message}`);
         }
+    };
+
+    const mudarPagina = (novaPagina) => {
+        if (novaPagina < 1 || novaPagina > totalPaginas || isAnimating) return;
+        
+        setIsAnimating(true);
+        setTimeout(() => {
+            setCurrentPage(novaPagina);
+            setIsAnimating(false);
+        }, 300);
     };
 
     return (
@@ -184,8 +201,11 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
                 </div>
             )}
 
-            <div className="container-eventos">
-                {eventosFiltrados.map(evento => (
+            <div 
+                className={`container-eventos ${isAnimating ? 'animating' : ''}`}
+                style={{minHeight: '600px'}}
+            >
+                {eventosPaginaAtual.map(evento => (
                     <div
                         key={evento.id}
                         className="evento"
@@ -215,6 +235,28 @@ const Eventos = ({ eventosFiltrados, eventosCompletos }) => {
                     </div>
                 ))}
             </div>
+
+            {totalPaginas > 1 && (
+                <div className="paginacao">
+                    <button 
+                        className="btn-paginacao" 
+                        onClick={() => mudarPagina(currentPage - 1)}
+                        disabled={currentPage === 1 || isAnimating}
+                    >
+                        &lt;
+                    </button>
+                    
+                    <span>Página {currentPage} de {totalPaginas}</span>
+                    
+                    <button 
+                        className="btn-paginacao" 
+                        onClick={() => mudarPagina(currentPage + 1)}
+                        disabled={currentPage === totalPaginas || isAnimating}
+                    >
+                        &gt;
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
