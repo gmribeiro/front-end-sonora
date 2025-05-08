@@ -81,7 +81,7 @@ function Home() {
             eventosCompletos={eventos} 
           />
         } />
-        <Route path="/detalhes/:id" element={
+        <Route path="/infoevento/:id" element={
           <InfoEvento 
             eventos={eventos} 
             onVoltar={() => navigate('/')} 
