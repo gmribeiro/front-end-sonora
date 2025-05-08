@@ -2,13 +2,16 @@ import Header from '../components/Header/header';
 import Footer from '../components/Footer/footer';
 import Eventos from '../components/Eventos/eventos';
 import Carrossel from '../components/Carrossel/carrossel.jsx';
+import InfoEvento from '../components/InfoEvento/InfoEvento';
 import './css/global.css';
 import React, { useState } from 'react';
 import useTitle from '../hooks/useTitle';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 function Home() {
   useTitle('Início - Sonora');
   const [generoSelecionado, setGeneroSelecionado] = useState(null);
+  const navigate = useNavigate();
 
   const eventos = [
     // Eventos POP
@@ -70,7 +73,22 @@ function Home() {
     <>
       <Header />
       <Carrossel onGeneroSelecionado={setGeneroSelecionado} />
-      <Eventos eventosFiltrados={eventosFiltrados} />
+      
+      <Routes>
+        <Route path="/" element={
+          <Eventos 
+            eventosFiltrados={eventosFiltrados} 
+            eventosCompletos={eventos} 
+          />
+        } />
+        <Route path="/detalhes/:id" element={
+          <InfoEvento 
+            eventos={eventos} 
+            onVoltar={() => navigate('/')} 
+          />
+        } />
+      </Routes>
+      
       <Footer />
     </>
   );

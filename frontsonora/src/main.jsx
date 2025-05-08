@@ -13,6 +13,9 @@ import SobreNos from './pages/genericos/SobreNos';
 import Termos from './pages/genericos/Termos';
 import ConfMusico from './pages/perfil/ConfMusico';
 import ConfUsuario from './pages/perfil/ConfUsuario';
+import Avaliacoes from "./components/Avaliacoes/Avaliacoes.jsx";
+import Artista from "./pages/artistas/Artista.jsx";
+import DetalhesEvento from "./pages/detalhes-evento/DetalhesEvento.jsx";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -22,7 +25,10 @@ createRoot(document.getElementById('root')).render(
         <Route path="/meusconvites" element={<Meusconvites />} />
         <Route path="/acesso" element={<Acesso />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/meuperfil" element={<Meuperfil />} />
+        <Route path="/perfil" element={<Meuperfil />} />
+        <Route path="/avaliacoes" element={<Avaliacoes/>} />
+        <Route path="/artistas" element={<Artista/>} />
+        <Route path="/detalhes/:id" element={<DetalhesEvento/>} />
         <Route path="/esquecisenha" element={<EsqueciSenha />} />
         <Route path="/notificacao" element={<Notificacao />} />
         <Route path="/sobrenos" element={<SobreNos />} />

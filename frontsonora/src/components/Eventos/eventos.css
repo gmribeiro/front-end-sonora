@@ -4,49 +4,49 @@
     min-height: 70vh;
 }
 
-/* CONFIGURAÇÃO PARA MONITORES GRANDES (PC) - mantém como estava */
+/* CONFIGURAÇÃO PARA MONITORES GRANDES (PC) */
 @media (min-width: 1440px) {
     .container-eventos {
         display: grid;
-        grid-template-columns: repeat(3, 350px);
-        gap: 12rem;
+        grid-template-columns: repeat(3, 300px); /* Reduzido de 350px */
+        gap: 8rem; /* Reduzido de 12rem */
         padding: 0 2rem;
-        max-width: 1300px;
+        max-width: 1200px; /* Reduzido de 1300px */
         margin: 0 auto;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem; /* Reduzido de 3rem */
         justify-content: center;
     }
 
     .evento img {
         width: 100%;
-        height: 400px;
+        height: 350px; /* Reduzido de 400px */
         object-fit: cover;
         border-radius: 8px;
         margin-bottom: 1rem;
     }
 }
 
-/* CONFIGURAÇÃO PARA NOTEBOOKS E TELAS MENORES (novo estilo) */
+/* CONFIGURAÇÃO PARA NOTEBOOKS E TELAS MENORES */
 @media (max-width: 1439px) {
     .container-eventos {
         display: grid;
-        grid-template-columns: repeat(3, minmax(250px, 300px));
-        gap: 2rem;
+        grid-template-columns: repeat(3, minmax(200px, 250px)); /* Reduzido de 250px,300px */
+        gap: 1.5rem; /* Reduzido de 2rem */
         padding: 0 1rem;
-        max-width: 1100px;
+        max-width: 900px; /* Reduzido de 1100px */
         margin: 0 auto;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem; /* Reduzido de 3rem */
         justify-content: center;
     }
 
     .evento-imagem-container {
         width: 100%;
         height: 0;
-        padding-bottom: 100%;
+        padding-bottom: 90%; /* Reduzido de 100% */
         position: relative;
         overflow: hidden;
         border-radius: 8px;
-        margin-bottom: 1rem;
+        margin-bottom: 0.8rem; /* Reduzido de 1rem */
     }
 
     .evento-imagem {
@@ -56,26 +56,41 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.3s ease;
     }
 }
 
-/* ESTILOS COMUNS A AMBOS */
+/* ESTILOS COMUNS A AMBOS - COM REDUÇÕES */
 .evento {
     background: linear-gradient(to bottom, #2E284E, #5A4E75, #8B7EA2, #C5B6D2, #E8DFEC);
-    border-radius: 12px;
+    border-radius: 10px; /* Reduzido de 12px */
     text-align: center;
-    padding: 1.5rem;
+    padding: 1rem; /* Reduzido de 1.5rem */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform;
+    backface-visibility: hidden;
+    cursor: pointer;
+}
+
+.evento:hover {
+    transform: scale(1.03); /* Reduzido de 1.05 */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3); /* Reduzido de 8px 15px */
+    z-index: 1;
+}
+
+.evento:hover .evento-imagem {
+    transform: scale(1.02); /* Reduzido de 1.03 */
 }
 
 .evento h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
-    color: #5A4E75;
+    font-size: 1.1rem; /* Reduzido de 1.3rem */
+    margin-bottom: 0.4rem; /* Reduzido de 0.5rem */
+    color: white;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -83,34 +98,35 @@
 }
 
 .evento p {
-    font-size: 1rem;
-    color: #5A4E75;
-    margin-bottom: 1rem;
+    font-size: 0.9rem; /* Reduzido de 1rem */
+    color: #E8DFEC;
+    margin-bottom: 0.8rem; /* Reduzido de 1rem */
 }
 
 .btn-reservar {
     background-color: #5A4E75;
     color: white;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
+    padding: 0.4rem 0.8rem; /* Reduzido de 0.5rem 1rem */
+    font-size: 0.9rem; /* Reduzido de 1rem */
     border: none;
-    border-radius: 8px;
+    border-radius: 6px; /* Reduzido de 8px */
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: all 0.3s ease;
     width: 80%;
-    max-width: 200px;
+    max-width: 180px; /* Reduzido de 200px */
 }
 
 .btn-reservar:hover {
     background-color: #2E284E;
+    transform: scale(1.03); /* Reduzido de 1.05 */
 }
 
 .paginacao {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
-    margin-top: 2rem;
+    gap: 1.5rem; /* Reduzido de 2rem */
+    margin-top: 1.5rem; /* Reduzido de 2rem */
 }
 
 .btn-paginacao {
@@ -118,15 +134,16 @@
     color: white;
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
+    width: 36px; /* Reduzido de 40px */
+    height: 36px; /* Reduzido de 40px */
+    font-size: 1.1rem; /* Reduzido de 1.2rem */
     cursor: pointer;
     transition: 0.3s ease;
 }
 
 .paginacao span {
     color: #2E284E;
+    font-size: 0.9rem; /* Adicionado para reduzir */
 }
 
 .btn-paginacao:hover {
@@ -138,27 +155,37 @@
     cursor: not-allowed;
 }
 
-/* RESPONSIVIDADE PARA TELAS MENORES (comum a ambos) */
+/* RESPONSIVIDADE PARA TELAS MENORES - COM AJUSTES */
 @media (max-width: 1024px) {
     .container-eventos {
-        grid-template-columns: repeat(3, minmax(220px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(3, minmax(180px, 1fr)); /* Reduzido de 220px */
+        gap: 1.2rem; /* Reduzido de 1.5rem */
     }
 }
 
 @media (max-width: 768px) {
     .container-eventos {
-        grid-template-columns: repeat(2, minmax(200px, 1fr));
+        grid-template-columns: repeat(2, minmax(160px, 1fr)); /* Reduzido de 200px */
+        gap: 1rem; /* Reduzido de padrão */
+    }
+    
+    .evento {
+        padding: 0.8rem; /* Reduzido de 1rem */
     }
 }
 
 @media (max-width: 576px) {
     .container-eventos {
         grid-template-columns: 1fr;
-        max-width: 400px;
+        max-width: 350px; /* Reduzido de 400px */
+        gap: 1rem;
     }
     
     .evento-imagem-container {
-        padding-bottom: 120%;
+        padding-bottom: 100%; /* Reduzido de 120% */
+    }
+    
+    .btn-reservar {
+        max-width: 160px; /* Reduzido de padrão */
     }
 }
