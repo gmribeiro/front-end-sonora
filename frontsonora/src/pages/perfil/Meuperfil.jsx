@@ -5,6 +5,7 @@ import './meuperfil.css';
 
 function MeuPerfil() {
   const [nomeUsuario, setNomeUsuario] = useState('');
+  const [userId, setUserId] = useState(null); // Novo estado para armazenar o ID do usuário
   const [userRole, setUserRole] = useState('');
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
@@ -30,7 +31,9 @@ function MeuPerfil() {
           });
           setNomeUsuario(response.data.nome || 'Usuário');
           setUserRole(response.data.role);
+          setUserId(response.data.id); // Armazena o ID do usuário
           console.log("User Role:", response.data.role);
+          console.log("User ID:", response.data.id);
         } else {
           setMensagem('Usuário não autenticado.');
           navigate('/acesso');
@@ -105,7 +108,7 @@ function MeuPerfil() {
 
     try {
       const token = localStorage.getItem('token');
-      if (token) {
+      if (token && userId) { // Garante que o token e o ID do usuário estão disponíveis
         const genreResponse = await axios.post('/genres', { nomeGenero }, {
           headers: {
             'Content-Type': 'application/json',
@@ -124,13 +127,14 @@ function MeuPerfil() {
 
         const formattedDataHora = formatDateTime(dataHora);
 
-        // Terceiro, cadastrar o evento
+        // Terceiro, cadastrar o evento, incluindo o id_usuario_host
         const eventResponse = await axios.post('/eventos', {
           nomeEvento,
           dataHora: formattedDataHora,
           descricao,
           generoMusical: { idGeneroMusical: genreData.idGeneroMusical },
           localEvento: { idLocalEvento: placeData.idLocalEvento },
+          host: { id: userId }, // Passa o ID do usuário logado como host
         }, {
           headers: {
             'Content-Type': 'application/json',
@@ -146,7 +150,7 @@ function MeuPerfil() {
         setNomeGenero('');
         setLocalEventoNome('');
       } else {
-        setMensagem('Usuário não autenticado.');
+        setMensagem('Usuário não autenticado ou ID do usuário não encontrado.');
       }
     } catch (error) {
       setMensagem(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
