@@ -1,16 +1,229 @@
+<<<<<<< HEAD
 import React from 'react';
+=======
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+>>>>>>> integracao
 import './eventos.css';
 import axios from 'axios'; // Importe o axios
 
 const Eventos = () => {
-    const eventos = [
-        { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00", imagem: "../images/evento1.png" },
-        { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00", imagem: "../images/evento2.png" },
-        { id: 3, titulo: "Show Rock na Praça", local: "Campinas", hora: "14:30", imagem: "../images/evento3.png" },
-        { id: 4, titulo: "Sunset Eletrônico", local: "Indaiatuba", hora: "12:00", imagem: "../images/evento4.png" },
-        { id: 5, titulo: "Festival Indie", local: "Jundiaí", hora: "17:00", imagem: "../images/evento5.png" },
-        { id: 6, titulo: "Techno Waves", local: "Itupeva", hora: "23:00", imagem: "../images/evento6.png" },
-    ];
+    const navigate = useNavigate();
+    const [eventos, setEventos] = useState([
+        { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00:00", data: "15/11/2023", imagem: "../images/evento1.png", genero: "Rock" },
+        { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00:00", data: "20/11/2023", imagem: "../images/evento2.png", genero: "Hip Hop" },
+        { id: 3, titulo: "Show Rock na Praça", local: "Campinas", hora: "14:30:00", data: "25/11/2023", imagem: "../images/evento3.png", genero: "Rock" },
+        { id: 4, titulo: "Sunset Eletrônico", local: "Indaiatuba", hora: "12:00:00", data: "30/11/2023", imagem: "../images/evento4.png", genero: "Eletrônica" },
+        { id: 5, titulo: "Festival Indie", local: "Jundiaí", hora: "17:00:00", data: "05/12/2023", imagem: "../images/evento5.png", genero: "Indie" },
+        { id: 6, titulo: "Techno Waves", local: "Itupeva", hora: "23:00:00", data: "10/12/2023", imagem: "../images/evento6.png", genero: "Techno" },
+    ]);
+
+    // States for booking system
+    const [reservando, setReservando] = useState(null);
+    const [mensagensReserva, setMensagensReserva] = useState({});
+    const [usuarioLogado, setUsuarioLogado] = useState(null);
+
+    // States for event creation form
+    const [showEventForm, setShowEventForm] = useState(false);
+    const [eventoForm, setEventoForm] = useState({
+        nomeEvento: '',
+        dataHora: '',
+        descricao: '',
+        genero: '',
+        local: ''
+    });
+    const [formMessage, setFormMessage] = useState('');
+
+    const handleEventoClick = (eventoId) => {
+        navigate(`/detalhes/${eventoId}`);
+    };
+
+    const formatDateTime = (dateStr, timeStr) => {
+        const [day, month, year] = dateStr.split('/');
+        const [hours, minutes, seconds] = timeStr.split(':');
+
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.get('/auth/user/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then(response => {
+                    setUsuarioLogado(response.data);
+                })
+                .catch(error => console.error('Error loading user:', error));
+        }
+    }, []);
+
+    const handleReservar = async (evento) => {
+        setReservando(evento.id);
+        setMensagensReserva(prev => ({ ...prev, [evento.id]: '' }));
+
+        try {
+            const token = localStorage.getItem('token');
+
+            if (!usuarioLogado || !token) {
+                throw new Error('You need to be logged in to make reservations');
+            }
+
+            if (!usuarioLogado.id) {
+                throw new Error('User ID not found');
+            }
+
+            const dataHoraFormatada = formatDateTime(evento.data, evento.hora);
+
+            const reservaData = {
+                usuario: {
+                    id: usuarioLogado.id
+                },
+                evento: {
+                    idEvento: evento.id
+                },
+                confirmado: false
+            };
+
+            const response = await axios.post('http://localhost:8080/reservas', reservaData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            setMensagensReserva(prev => ({
+                ...prev,
+                [evento.id]: response.status === 201
+                    ? `Reservation for "${evento.titulo}" successful!`
+                    : `Error reserving "${evento.titulo}". Try again.`
+            }));
+
+        } catch (error) {
+            setMensagensReserva(prev => ({
+                ...prev,
+                [evento.id]: `Error: ${error.response?.data?.message || error.message}`
+            }));
+        } finally {
+            setReservando(null);
+        }
+    };
+
+    // Handle genre creation
+    const createGenre = async (genreName) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Not authenticated');
+
+            const response = await axios.post('/genres', {
+                nomeGenero: genreName,
+                // Adicione outros campos obrigatórios se necessário
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error creating genre:', error);
+            if (error.response?.status === 409) {
+                const existingGenre = await axios.get(`/genres?nomeGenero=${encodeURIComponent(genreName)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                return existingGenre.data;
+            }
+            throw error;
+        }
+    };
+
+    // Handle place creation
+    const createPlace = async (placeName) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Not authenticated');
+
+            const response = await axios.post('/places', { local: placeName }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error creating place:', error);
+            if (error.response?.status === 409) {
+                return { local: placeName };
+            }
+            throw error;
+        }
+    };
+    const handleCadastrarEvento = async (e) => {
+        e.preventDefault();
+        setFormMessage('');
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Not authenticated');
+
+            const genre = await createGenre(eventoForm.genero);
+            const place = await createPlace(eventoForm.local);
+
+            const date = new Date(eventoForm.dataHora);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+
+            const dataHoraFormatada = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+
+            const eventoData = {
+                nomeEvento: eventoForm.nomeEvento,
+                dataHora: dataHoraFormatada,
+                descricao: eventoForm.descricao,
+                generoMusical: genre,
+                localEvento: place
+            };
+
+            const response = await axios.post('/eventos', eventoData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const novoEvento = {
+                id: response.data.id,
+                titulo: eventoForm.nomeEvento,
+                local: place.local || place.nome || eventoForm.local,
+                hora: `${hours}:${minutes}:${seconds}`,
+                data: `${day}/${month}/${year}`,
+                imagem: "../images/evento-default.png",
+                genero: genre.nomeGenero || eventoForm.genero
+            };
+
+            setEventos([...eventos, novoEvento]);
+
+            setFormMessage('Event created successfully!');
+            setEventoForm({
+                nomeEvento: '',
+                dataHora: '',
+                descricao: '',
+                genero: '',
+                local: ''
+            });
+
+            setTimeout(() => setShowEventForm(false), 1500);
+
+        } catch (error) {
+            setFormMessage(`Error: ${error.response?.data?.message || error.message}`);
+        }
+    };
 
     const handleReservar = (evento) => {
         // Informações do usuário anônimo ou removidas
@@ -38,18 +251,121 @@ const Eventos = () => {
 
     return (
         <div className='espaco-eventos'>
+            {usuarioLogado?.role === 'HOST' && (
+                <div className="host-actions">
+                    <button
+                        onClick={() => setShowEventForm(!showEventForm)}
+                        className="btn-cadastrar-evento"
+                    >
+                        {showEventForm ? 'Cancelar' : 'Cadastrar Evento'}
+                    </button>
+
+                    {showEventForm && (
+                        <div className="evento-form-container">
+                            <h3>Cadastrar Novo Evento</h3>
+                            <form onSubmit={handleCadastrarEvento}>
+                                <div className="form-group">
+                                    <label htmlFor="nomeEvento">Nome do Evento:</label>
+                                    <input
+                                        type="text"
+                                        id="nomeEvento"
+                                        value={eventoForm.nomeEvento}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, nomeEvento: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="dataHora">Data e Hora:</label>
+                                    <input
+                                        type="datetime-local"
+                                        id="dataHora"
+                                        value={eventoForm.dataHora}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, dataHora: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="descricao">Descrição:</label>
+                                    <textarea
+                                        id="descricao"
+                                        value={eventoForm.descricao}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, descricao: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="genero">Gênero Musical:</label>
+                                    <input
+                                        type="text"
+                                        id="genero"
+                                        value={eventoForm.genero}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, genero: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="local">Local:</label>
+                                    <input
+                                        type="text"
+                                        id="local"
+                                        value={eventoForm.local}
+                                        onChange={(e) => setEventoForm({ ...eventoForm, local: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-buttons">
+                                    <button type="submit" className="btn-cadastrar">Cadastrar</button>
+                                    <button type="button" className="btn-cancelar" onClick={() => setShowEventForm(false)}>Cancelar</button>
+                                </div>
+                                {formMessage && <p className={`form-message ${formMessage.startsWith('Error') ? 'error' : 'success'}`}>{formMessage}</p>}
+                            </form>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Events listing */}
             <div className="container-eventos">
                 {eventos.map(evento => (
+<<<<<<< HEAD
                     <div key={evento.id} className="evento">
                         <img src={evento.imagem} alt={evento.titulo}/>
                         <h3>{evento.titulo}</h3>
                         <p>{evento.local} - {evento.hora}</p>
                         <button className="btn-reservar" onClick={() => handleReservar(evento)}>Reservar</button>
+=======
+                    <div
+                        key={evento.id}
+                        className="evento"
+                        onClick={() => handleEventoClick(evento.id)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <img src={evento.imagem} alt={evento.titulo} />
+                        <h3>{evento.titulo}</h3>
+                        <p>{evento.local} - {formatDateTime(evento.data, evento.hora)} ({evento.genero})</p>
+                        <button
+                            className="btn-reservar"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleReservar(evento);
+                            }}
+                            disabled={reservando === evento.id}
+                        >
+                            {reservando === evento.id ? 'Processing...' : 'Reserve'}
+                        </button>
+                        {mensagensReserva[evento.id] && (
+                            <p className="mensagem-reserva">{mensagensReserva[evento.id]}</p>
+                        )}
+>>>>>>> integracao
                     </div>
                 ))}
             </div>
         </div>
     );
-}
+};
 
 export default Eventos;
