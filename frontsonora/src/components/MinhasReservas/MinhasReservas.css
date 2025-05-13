@@ -1,11 +1,19 @@
+/* minhasreservas.css */
+
 .minhas-reservas-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f8;
     padding: 20px;
-    font-family: sans-serif;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
 }
 
 h2 {
-    color: #333;
-    margin-bottom: 15px;
+    color: #4a4a4a;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #dcdce6;
+    padding-bottom: 10px;
 }
 
 .reservas-lista {
@@ -14,22 +22,68 @@ h2 {
 }
 
 .reserva-item {
-    background-color: #f9f9f9;
-    border: 1px solid #eee;
+    background-color: #fff;
+    border: 1px solid #dcdce6;
+    border-radius: 6px;
+    margin-bottom: 15px;
     padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-.reserva-item p {
-    margin: 5px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .reserva-item strong {
+    color: #333;
+}
+
+.reserva-item p {
+    color: #555;
+    margin: 0;
+}
+
+.reserva-item .status-confirmada {
+    color: #28a745;
     font-weight: bold;
 }
 
-.error-message {
-    color: red;
+.reserva-item .status-pendente {
+    color: #ffc107;
     font-weight: bold;
+}
+
+.reserva-item button {
+    background-color: #55286b; /* Roxo mais escuro */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    align-self: flex-start;
+}
+
+.reserva-item button:hover {
+    background-color: #8b44a9;
+}
+
+.reserva-item button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.mensagem-confirmacao {
+    color: #28a745;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.error-message {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+p {
+    color: #555;
 }

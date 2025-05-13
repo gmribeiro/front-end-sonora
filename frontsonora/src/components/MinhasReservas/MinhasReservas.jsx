@@ -83,12 +83,12 @@ const MinhasReservas = () => {
 
         try {
             const response = await axios.put(`/reservas/${reservaId}`, {
+                confirmado: true,
                 usuario: {
                     id: usuarioLogado.id
-                    // Outras informações do usuário, se necessário
                 },
-                evento: { // Inclua as informações do evento
-                    idEvento: reservaEventoId // Pegando o ID do evento do objeto reserva
+                evento: {
+                    idEvento: reservaEventoId
                 }
             }, {
                 headers: {
@@ -152,7 +152,6 @@ const MinhasReservas = () => {
                             {mensagemConfirmacao && confirmandoId === reserva.idReserva && (
                                 <p className="mensagem-confirmacao">{mensagemConfirmacao}</p>
                             )}
-                            {/* Adicione mais detalhes da reserva conforme a estrutura do seu ReservaDTO */}
                         </li>
                     ))}
                 </ul>
