@@ -6,19 +6,18 @@ import axios from 'axios';
 const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPage }) => {
     const navigate = useNavigate();
     const [usuarioLogado, setUsuarioLogado] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [reservandoId, setReservandoId] = useState(null);
     const [mensagemReserva, setMensagemReserva] = useState('');
     const [showCadastro, setShowCadastro] = useState(false);
-    const [formEvento, setFormEvento] = useState({
-        nomeEvento: '',
-        dataHora: '',
-        descricao: '',
-        genero: '',
-        local: '',
-        imagem: null
-    });
+    const [nomeEvento, setNomeEvento] = useState('');
+    const [dataHora, setDataHora] = useState('');
+    const [descricao, setDescricao] = useState('');
+    const [selectedGeneroId, setSelectedGeneroId] = useState(''); // ID do gênero selecionado
+    const [localEventoNome, setLocalEventoNome] = useState('');
     const [formMessage, setFormMessage] = useState('');
     const [isAnimating, setIsAnimating] = useState(false);
+    const [generos, setGeneros] = useState([]); // Array para armazenar os gêneros do banco de dados
 
     // Configuração da paginação
     const eventosPorPagina = 6;
@@ -35,10 +34,32 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             })
                 .then(response => {
                     setUsuarioLogado(response.data);
+                    setUserId(response.data.id);
+                    console.log("User Role:", response.data.role);
+                    console.log("User ID:", response.data.id);
                 })
                 .catch(error => console.error('Erro ao carregar usuário:', error));
+
+            // Buscar gêneros do banco de dados
+            axios.get('/genres')
+                .then(response => {
+                    setGeneros(response.data);
+                })
+                .catch(error => console.error('Erro ao carregar gêneros:', error));
         }
     }, []);
+
+    const formatDateTime = (dateTimeString) => {
+        if (!dateTimeString) return '';
+        const date = new Date(dateTimeString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
 
     const handleEventoClick = (eventoId) => {
         navigate(`/detalhes/${eventoId}`);
@@ -84,17 +105,17 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormEvento(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleImagemChange = (e) => {
-        setFormEvento(prevState => ({
-            ...prevState,
-            imagem: e.target.files[0]
-        }));
+        if (name === 'local') {
+            setLocalEventoNome(value);
+        } else if (name === 'dataHora') {
+            setDataHora(value);
+        } else if (name === 'nomeEvento') {
+            setNomeEvento(value);
+        } else if (name === 'descricao') {
+            setDescricao(value);
+        } else if (name === 'generoMusical') {
+            setSelectedGeneroId(value);
+        }
     };
 
     const handleCadastrarEvento = async (e) => {
@@ -102,39 +123,45 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
         setFormMessage('');
         const token = localStorage.getItem('token');
 
-        if (!token || usuarioLogado?.role !== 'HOST') {
-            setFormMessage('Apenas hosts podem cadastrar eventos.');
+        if (!token || usuarioLogado?.role !== 'HOST' || !userId || !selectedGeneroId) {
+            setFormMessage('Preencha todos os campos para cadastrar o evento.');
             return;
         }
 
         try {
-            const formData = new FormData();
-            formData.append('nomeEvento', formEvento.nomeEvento);
-            formData.append('dataHora', formEvento.dataHora);
-            formData.append('descricao', formEvento.descricao);
-            formData.append('genero', formEvento.genero);
-            formData.append('local', formEvento.local);
-            if (formEvento.imagem) {
-                formData.append('imagem', formEvento.imagem);
-            }
+            const formattedDataHora = formatDateTime(dataHora);
 
-            const response = await axios.post('/eventos', formData, {
+            const placeResponse = await axios.post('/places', { local: localEventoNome }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const placeData = placeResponse.data;
+
+            const eventData = {
+                nomeEvento,
+                dataHora: formattedDataHora,
+                descricao,
+                generoMusical: { idGeneroMusical: selectedGeneroId },
+                localEvento: { idLocalEvento: placeData.idLocalEvento },
+                host: { id: userId }
+            };
+
+            const response = await axios.post('/eventos', eventData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'application/json'
                 }
             });
 
             if (response.status === 201) {
                 setFormMessage('Evento cadastrado com sucesso!');
-                setFormEvento({
-                    nomeEvento: '',
-                    dataHora: '',
-                    descricao: '',
-                    genero: '',
-                    local: '',
-                    imagem: null
-                });
+                setNomeEvento('');
+                setDataHora('');
+                setDescricao('');
+                setSelectedGeneroId('');
+                setLocalEventoNome('');
                 setShowCadastro(false);
             } else {
                 setFormMessage('Erro ao cadastrar evento.');
@@ -142,13 +169,13 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
 
         } catch (error) {
             console.error('Erro ao cadastrar evento:', error);
-            setFormMessage(`Erro ao cadastrar evento: ${error.response?.data?.message || error.message}`);
+            setFormMessage(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
         }
     };
 
     const mudarPagina = (novaPagina) => {
         if (novaPagina < 1 || novaPagina > totalPaginas || isAnimating) return;
-        
+
         setIsAnimating(true);
         setTimeout(() => {
             setCurrentPage(novaPagina);
@@ -170,27 +197,36 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                             <form onSubmit={handleCadastrarEvento}>
                                 <div className="form-group">
                                     <label htmlFor="nomeEvento">Nome do Evento:</label>
-                                    <input type="text" id="nomeEvento" name="nomeEvento" value={formEvento.nomeEvento} onChange={handleInputChange} required />
+                                    <input type="text" id="nomeEvento" name="nomeEvento" value={nomeEvento} onChange={handleInputChange} required />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="dataHora">Data e Hora:</label>
-                                    <input type="datetime-local" id="dataHora" name="dataHora" value={formEvento.dataHora} onChange={handleInputChange} required />
+                                    <input type="datetime-local" id="dataHora" name="dataHora" value={dataHora} onChange={handleInputChange} required />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="descricao">Descrição:</label>
-                                    <textarea id="descricao" name="descricao" value={formEvento.descricao} onChange={handleInputChange} />
+                                    <textarea id="descricao" name="descricao" value={descricao} onChange={handleInputChange} required />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="genero">Gênero Musical:</label>
-                                    <input type="text" id="genero" name="genero" value={formEvento.genero} onChange={handleInputChange} required />
+                                    <label htmlFor="generoMusical">Gênero Musical:</label>
+                                    <select
+                                        id="generoMusical"
+                                        name="generoMusical"
+                                        value={selectedGeneroId}
+                                        onChange={handleInputChange}
+                                        required
+                                    >
+                                        <option value="">Selecione um gênero</option>
+                                        {generos.map(genero => (
+                                            <option key={genero.idGeneroMusical} value={genero.idGeneroMusical}>
+                                                {genero.nomeGenero}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="local">Local:</label>
-                                    <input type="text" id="local" name="local" value={formEvento.local} onChange={handleInputChange} required />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="imagem">Imagem:</label>
-                                    <input type="file" id="imagem" name="imagem" onChange={handleImagemChange} />
+                                    <input type="text" id="local" name="local" value={localEventoNome} onChange={handleInputChange} required />
                                 </div>
                                 <button type="submit" className="btn-cadastrar">Cadastrar</button>
                                 <button type="button" onClick={() => setShowCadastro(false)} className="btn-cancelar">Cancelar</button>
@@ -201,9 +237,9 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 </div>
             )}
 
-            <div 
+            <div
                 className={`container-eventos ${isAnimating ? 'animating' : ''}`}
-                style={{minHeight: '600px'}}
+                style={{ minHeight: '600px' }}
             >
                 {eventosPaginaAtual.map(evento => (
                     <div
@@ -238,18 +274,18 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
 
             {totalPaginas > 1 && (
                 <div className="paginacao">
-                    <button 
-                        className="btn-paginacao" 
+                    <button
+                        className="btn-paginacao"
                         onClick={() => mudarPagina(currentPage - 1)}
                         disabled={currentPage === 1 || isAnimating}
                     >
                         &lt;
                     </button>
-                    
+
                     <span>Página {currentPage} de {totalPaginas}</span>
-                    
-                    <button 
-                        className="btn-paginacao" 
+
+                    <button
+                        className="btn-paginacao"
                         onClick={() => mudarPagina(currentPage + 1)}
                         disabled={currentPage === totalPaginas || isAnimating}
                     >
