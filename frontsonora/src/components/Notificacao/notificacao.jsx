@@ -3,28 +3,26 @@ import "./notificacao.css";
 import axios from "axios";
 
 const Notificacao = () => {
-  const [notificacaoUnica, setNotificacaoUnica] = useState(null);
-  const [notificacaoId, setNotificacaoId] = useState(null); // Estado para armazenar o ID da notificação
-  const [detalhesVisiveis, setDetalhesVisiveis] = useState(false);
-  const [notificacaoLidaLocal, setNotificacaoLidaLocal] = useState(false);
+  const [notificacoes, setNotificacoes] = useState([]);
+  const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
+  const [notificacoesLidasLocal, setNotificacoesLidasLocal] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchNotificacaoUnica = async () => {
+    const fetchNotificacoes = async () => {
       setIsLoading(true);
       setError(null);
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get(`/notifications/1`, {
+          const response = await axios.get(`/notifications`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          setNotificacaoUnica(response.data);
-          setNotificacaoId(response.data?.idNotificacao); // Armazena o ID no estado (camelCase)
+          setNotificacoes(response.data);
         } catch (error) {
-          console.error("Erro ao buscar notificação:", error);
-          setError("Erro ao buscar notificação.");
+          console.error("Erro ao buscar notificações:", error);
+          setError("Erro ao buscar notificações.");
         } finally {
           setIsLoading(false);
         }
@@ -35,25 +33,23 @@ const Notificacao = () => {
       }
     };
 
-    fetchNotificacaoUnica();
+    fetchNotificacoes();
   }, []);
 
-  const handleVerDetalhes = () => {
-    setDetalhesVisiveis(!detalhesVisiveis);
+  const handleVerDetalhes = (id) => {
+    setDetalhesVisiveis(prevState => ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));
   };
 
-  const handleMarcarComoLida = async () => {
-    if (!notificacaoId) {
-      console.warn("ID da notificação não disponível para marcar como lida.");
-      return;
-    }
-
-    console.log("ID para marcar como lida:", notificacaoId);
+  const handleMarcarComoLida = async (idNotificacao) => {
+    console.log("ID recebido para marcar como lida:", idNotificacao);
     const token = localStorage.getItem('token');
-    if (token && notificacaoUnica) {
+    if (token) {
       try {
         await axios.put(
-            `/notifications/${notificacaoId}/read`, // Usa o ID do estado
+            `/notifications/${idNotificacao}/read`,
             {
               lida: true,
             },
@@ -65,61 +61,67 @@ const Notificacao = () => {
             }
         );
 
-        setNotificacaoLidaLocal(true);
-        setNotificacaoUnica({ ...notificacaoUnica, lida: true });
-        console.log(`Notificação ${notificacaoId} marcada como lida no backend.`);
+        setNotificacoesLidasLocal(prev => ({ ...prev, [idNotificacao]: true }));
+
+        setNotificacoes(prev =>
+            prev.map(n => (n.idNotificacao === idNotificacao ? { ...n, lida: true } : n))
+        );
+
+        console.log(`Notificação ${idNotificacao} marcada como lida no backend.`);
       } catch (error) {
-        console.error(`Erro ao marcar notificação ${notificacaoId} como lida no backend:`, error);
-        setNotificacaoLidaLocal(false);
+        console.error(`Erro ao marcar notificação ${idNotificacao} como lida no backend:`, error);
+        setNotificacoesLidasLocal(prev => {
+          const newState = { ...prev };
+          delete newState[idNotificacao];
+          return newState;
+        });
       }
     } else {
-      console.warn("Token não encontrado ou notificação não carregada.");
+      console.warn("Token não encontrado.");
     }
   };
 
   if (isLoading) {
-    return <div className="loading-message">Carregando notificação...</div>;
+    return <div className="loading-message">Carregando notificações...</div>;
   }
 
   if (error) {
     return <div className="error-message">{error}</div>;
   }
 
-  if (!notificacaoUnica) {
-    return <div>Nenhuma notificação encontrada.</div>;
-  }
-
   return (
       <main className="notifications-container">
-        <h2 className="notifications-title">Notificação</h2>
+        <h2 className="notifications-title">Notificações</h2>
         <div className="notifications-grid">
-          <div
-              className={`notification-card ${detalhesVisiveis ? 'com-detalhes' : ''} ${notificacaoLidaLocal || notificacaoUnica.lida ? 'lida' : ''}`}
-              key={notificacaoUnica?.idNotificacao} // Usa a chave correta (opcional chaining para evitar erros iniciais)
-          >
-            <div className="notification-content">
-              <img src={`/images/${notificacaoUnica?.image || 'evento7.png'}`} alt={notificacaoUnica?.title || notificacaoUnica?.mensagem} className="notification-image" />
-              <h3 className="notification-title">{notificacaoUnica?.title || notificacaoUnica?.mensagem}</h3>
-              <p className="notification-date">Data: {notificacaoUnica?.date || (notificacaoUnica?.dataCriacao ? new Date(notificacaoUnica.dataCriacao).toLocaleDateString() : '')}</p>
-              <button onClick={handleVerDetalhes}>
-                {detalhesVisiveis ? 'Ocultar Detalhes' : 'Ver Detalhes'}
-              </button>
-              {detalhesVisiveis && (
-                  <div className="notification-details">
-                    <p>{notificacaoUnica?.details || notificacaoUnica?.mensagem}</p>
-                  </div>
-              )}
-            </div>
-            <div className="notification-actions">
-              <button
-                  onClick={handleMarcarComoLida}
-                  disabled={isLoading || notificacaoLidaLocal || notificacaoUnica?.lida || !notificacaoId}
+          {notificacoes.map((notificacao) => (
+              <div
+                  className={`notification-card ${detalhesVisiveis[notificacao.idNotificacao] ? 'com-detalhes' : ''} ${notificacoesLidasLocal[notificacao.idNotificacao] || notificacao.lida ? 'lida' : ''}`}
+                  key={notificacao.idNotificacao}
               >
-                {notificacaoLidaLocal || notificacaoUnica?.lida ? 'Já Lida' : 'Marcar como Lida'}
-              </button>
-              <div className="notification-icon">🔔</div>
-            </div>
-          </div>
+                <div className="notification-content">
+                  <img src={`/images/${notificacao.image || 'evento7.png'}`} alt={notificacao.title || notificacao.mensagem} className="notification-image" />
+                  <h3 className="notification-title">{notificacao.title || notificacao.mensagem}</h3>
+                  <p className="notification-date">Data: {notificacao.date || (notificacao.dataCriacao ? new Date(notificacao.dataCriacao).toLocaleDateString() : '')}</p>
+                  <button onClick={() => handleVerDetalhes(notificacao.idNotificacao)}>
+                    {detalhesVisiveis[notificacao.idNotificacao] ? 'Ocultar Detalhes' : 'Ver Detalhes'}
+                  </button>
+                  {detalhesVisiveis[notificacao.idNotificacao] && (
+                      <div className="notification-details">
+                        <p>{notificacao.details || notificacao.mensagem}</p>
+                      </div>
+                  )}
+                </div>
+                <div className="notification-actions">
+                  <button
+                      onClick={() => handleMarcarComoLida(notificacao.idNotificacao)}
+                      disabled={notificacoesLidasLocal[notificacao.idNotificacao] || notificacao.lida || false}
+                  >
+                    {notificacoesLidasLocal[notificacao.idNotificacao] || notificacao.lida ? 'Já Lida' : 'Marcar como Lida'}
+                  </button>
+                  <div className="notification-icon">🔔</div>
+                </div>
+              </div>
+          ))}
         </div>
       </main>
   );
