@@ -86,7 +86,7 @@ const Artistas = () => {
         buscarArtistas();
         buscarUsuario();
         buscarEventosHost();
-    }, [usuarioLogado?.id, usuarioLogado?.role]); // Dependência no ID do usuário para refetch de eventos
+    }, [usuarioLogado?.id, usuarioLogado?.role]);
 
     const handleContratarClick = (artistaId) => {
         if (!eventoSelecionado) {
@@ -115,7 +115,7 @@ const Artistas = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const contratoResponse = await axios.post('http://localhost:8080/contratos', {
+            const contratoResponse = await axios.post('/contratos', {
                 idContrato: {
                     evento: { idEvento: parseInt(eventoSelecionado) },
                     musico: { idMusico: artistaId },

@@ -168,10 +168,10 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 setLocalEventoNome('');
 
                 // Enviar notificação após o cadastro bem-sucedido
-                const novoEvento = response.data; // Assumindo que a resposta contém os dados do evento criado
+                const novoEvento = response.data;
                 const notificationMessage = `Novo evento ${novoEvento.nomeEvento} postado pelo anfitrião ${usuarioLogado.nome}.`;
-                await axios.post('/notifications', { // Usando o endpoint genérico /notifications
-                    usuarioId: userId, // Enviando para o próprio host (você pode ajustar isso se necessário)
+                await axios.post('/notifications', {
+                    usuarioId: userId,
                     mensagem: notificationMessage
                 }, {
                     headers: {
