@@ -127,7 +127,7 @@ function MeusEventosHost() {
     }
 
     if (!isHost) {
-        return <div>Você não tem permissão para ver os eventos de um HOST.</div>;
+        return <div></div>;
     }
 
     return (

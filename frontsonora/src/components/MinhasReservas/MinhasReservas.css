@@ -1,0 +1,35 @@
+.minhas-reservas-container {
+    padding: 20px;
+    font-family: sans-serif;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.reservas-lista {
+    list-style: none;
+    padding: 0;
+}
+
+.reserva-item {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.reserva-item p {
+    margin: 5px 0;
+}
+
+.reserva-item strong {
+    font-weight: bold;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+}
