@@ -78,8 +78,12 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
 
         try {
             const response = await axios.post('/reservas', {
-                usuarioId: usuarioLogado.id,
-                eventoId: eventoId,
+                usuario: {
+                    id: usuarioLogado.id
+                },
+                evento: { // Envie um objeto 'evento'
+                    idEvento: eventoId // Inclua o ID do evento dentro do objeto
+                },
                 confirmado: false
             }, {
                 headers: {
@@ -162,7 +166,11 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 setDescricao('');
                 setSelectedGeneroId('');
                 setLocalEventoNome('');
-                setShowCadastro(false);
+                // Não fechar o formulário imediatamente
+                setTimeout(() => {
+                    setShowCadastro(false);
+                    setFormMessage(''); // Limpar a mensagem após um tempo
+                }, 2000); // Exibe a mensagem por 2 segundos (2000 milissegundos)
             } else {
                 setFormMessage('Erro ao cadastrar evento.');
             }

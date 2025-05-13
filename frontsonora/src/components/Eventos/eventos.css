@@ -122,6 +122,122 @@
     transform: scale(1.03); /* Reduzido de 1.05 */
 }
 
+/* Estilos para o botão de cadastrar evento */
+.btn-cadastrar-evento {
+    background-color: #573765; /* Roxo */
+    color: white;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1.5rem;
+}
+
+.btn-cadastrar-evento:hover {
+    background-color: #6C3483; /* Roxo mais escuro no hover */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-cadastrar-evento:active {
+    background-color: #5E35B1; /* Roxo ainda mais escuro ao clicar */
+    transform: scale(1.0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para o formulário de cadastro (se necessário ajustes) */
+.cadastro-evento-form {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+}
+
+.cadastro-evento-form h3 {
+    color: #8E44AD;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.cadastro-evento-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.cadastro-evento-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.cadastro-evento-form input[type="text"],
+.cadastro-evento-form input[type="datetime-local"],
+.cadastro-evento-form textarea,
+.cadastro-evento-form select {
+    width: calc(100% - 1rem);
+    padding: 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.cadastro-evento-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.cadastro-evento-form button[type="submit"],
+.cadastro-evento-form .btn-cadastrar {
+    background-color: #613176;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.cadastro-evento-form button[type="submit"]:hover,
+.cadastro-evento-form .btn-cadastrar:hover {
+    background-color: #6C3483;
+}
+
+.cadastro-evento-form .btn-cancelar {
+    background-color: #f44336;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+    margin-left: 0.5rem;
+}
+
+.cadastro-evento-form .btn-cancelar:hover {
+    background-color: #d32f2f;
+}
+
+.cadastro-evento-form .form-message {
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.cadastro-evento-form .form-message.success {
+    color: green;
+}
+
+.cadastro-evento-form .form-message.error {
+    color: red;
+}
+
 /* Novos estilos de animação */
 .container-eventos {
     transition: all 0.3s ease;
