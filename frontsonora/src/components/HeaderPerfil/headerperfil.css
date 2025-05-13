@@ -1,0 +1,118 @@
+.header-perfil-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #5a4a72;
+  padding: 10px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: white;
+  position: relative;
+  height: 80px; /* Altura reduzida */
+}
+
+/* Logo */
+.logo-wrapper .logo-img {
+  height: 50px;
+  transition: transform 0.3s ease;
+}
+.logo-img:hover {
+  transform: scale(1.1);
+}
+
+/* Botões */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.icon-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+.icon-button:hover {
+  transform: scale(1.2);
+}
+.logout-button {
+  background-color: white;
+  color: #5a4a72;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.logout-button:hover {
+  background-color: #ddd;
+}
+
+/* Perfil ajustado para fora da header */
+.profile-wrapper {
+  position: absolute;
+  bottom: -90px; /* ajustado para o novo tamanho */
+  left: 20%;      /* menor valor = mais à esquerda */
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Informações do perfil */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* mantém alinhado à esquerda */
+  justify-content: flex-start; /* empurra o conteúdo para cima */
+  margin-top: -100px; /* 🔼 sobe o nome */
+}
+
+.username {
+  font-size: 20px;
+  margin: 0;
+}
+.edit-name {
+  font-size: 14px;
+  color: #e0c3fc;
+  cursor: pointer;
+}
+.edit-name:hover {
+  text-decoration: underline;
+}
+
+/* Notificações */
+.notificacoes-popup {
+  position: absolute;
+  top: 90px;
+  right: 20px;
+  background-color: #f3e8ff;
+  color: #5a4a72;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 250px;
+  z-index: 1000;
+}
+.fechar-notificacao {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #5a4a72;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+.notificacoes-popup ul {
+  margin-top: 30px;
+  list-style: none;
+  padding: 0;
+}
+.notificacoes-popup li {
+  margin-bottom: 10px;
+  font-size: 14px;
+}

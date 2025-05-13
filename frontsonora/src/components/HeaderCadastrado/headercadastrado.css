@@ -1,0 +1,23 @@
+.icon-button {
+    display: flex;
+    align-items: center;
+    color: #c2a0bb;
+  }
+  
+  .perfil-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: #c2a0bb;
+  }
+  
+  .perfil-icon {
+    font-size: 30px;
+  }
+  
+  .perfil-nome {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  
