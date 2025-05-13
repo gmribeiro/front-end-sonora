@@ -57,7 +57,7 @@ body, html {
     font-size: 1rem; 
 }
 
-.form-cadastro input {
+.form-cadastro input, .form-cadastro select {
     width: 100%;
     padding: 0.6rem; 
     border: 1px solid #A48BB3;
@@ -102,36 +102,80 @@ body, html {
     transform: scale(1.05);
 }
 
-.selecao-tipo-cadastro {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    margin-bottom: 2rem;
-}
-
-.selecao-tipo-cadastro button {
-    background-color: #A48BB3;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
+.mensagem {
+    width: 80%;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
     font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-.selecao-tipo-cadastro button:hover {
-    background-color: #1F1536;
-    transform: scale(1.05);
+.mensagem.sucesso {
+    background-color: #EDE6F2;
+    color: #1F1536;
+    border: 2px solid #A48BB3;
 }
 
-/* Responsividade para Desktop (acima de 1024px) */
+.mensagem.erro {
+    background-color: #FFEBEE;
+    color: #B00020;
+    border: 2px solid #B00020;
+}
+
+.mensagem-sucesso {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.mensagem-sucesso h1 {
+    color: #1F1536;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.mensagem-sucesso p {
+    color: #A48BB3;
+    font-size: 1.2rem;
+    max-width: 80%;
+}
+
+.sem-conta {
+    margin-top: 1rem;
+    color: #1F1536;
+}
+
+.link {
+    color: #A48BB3;
+    text-decoration: none;
+    margin-left: 0.5rem;
+    font-weight: bold;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsividade */
 @media (max-width: 1024px) {
     .area-cadastro {
         width: 60vw; 
     }
 }
 
-/* Responsividade para Tablets (768px a 1024px) */
 @media (max-width: 768px) {
     .area-cadastro {
         width: 80vw; 
@@ -139,7 +183,6 @@ body, html {
     }
 }
 
-/* Responsividade para Celulares (abaixo de 768px) */
 @media (max-width: 480px) {
     .area-cadastro {
         width: 100vw;
@@ -154,7 +197,7 @@ body, html {
         font-size: 0.9rem; 
     }
 
-    .form-cadastro input {
+    .form-cadastro input, .form-cadastro select {
         font-size: 0.9rem; 
         padding: 0.5rem; 
         margin-bottom: 0.6rem; 
@@ -168,5 +211,13 @@ body, html {
     .botao-voltar {
         font-size: 0.9rem; 
         padding: 0.6rem 1rem; 
+    }
+
+    .mensagem-sucesso h1 {
+        font-size: 1.8rem;
+    }
+
+    .mensagem-sucesso p {
+        font-size: 1rem;
     }
 }

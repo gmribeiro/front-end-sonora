@@ -245,7 +245,7 @@ const Acessar = () => {
                     </div>
 
                     <div className='esqueci-senha'>
-                        <Link className='link' to="/esqueci-senha">Esqueci a senha</Link>
+                        <Link className='link' to="/esquecisenha">Esqueci a senha</Link>
                     </div>
                 </div>
             </div>
