@@ -166,11 +166,25 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 setDescricao('');
                 setSelectedGeneroId('');
                 setLocalEventoNome('');
-                // Não fechar o formulário imediatamente
+
+                // Enviar notificação após o cadastro bem-sucedido
+                const novoEvento = response.data; // Assumindo que a resposta contém os dados do evento criado
+                const notificationMessage = `Novo evento ${novoEvento.nomeEvento} postado pelo anfitrião ${usuarioLogado.nome}.`;
+                await axios.post('/notifications', { // Usando o endpoint genérico /notifications
+                    usuarioId: userId, // Enviando para o próprio host (você pode ajustar isso se necessário)
+                    mensagem: notificationMessage
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log('Notificação de novo evento enviada.');
+
                 setTimeout(() => {
                     setShowCadastro(false);
-                    setFormMessage(''); // Limpar a mensagem após um tempo
-                }, 2000); // Exibe a mensagem por 2 segundos (2000 milissegundos)
+                    setFormMessage('');
+                }, 2000);
             } else {
                 setFormMessage('Erro ao cadastrar evento.');
             }
