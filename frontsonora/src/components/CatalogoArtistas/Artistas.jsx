@@ -126,38 +126,15 @@ const Artistas = () => {
             }, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-
-            if (contratoResponse.status === 200) {
-                setContratacaoStatus({ type: 'success', message: `Artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico} contratado com sucesso para o evento!` });
-                setShowContratarForm(null); // Fechar o formulário após a contratação
-
-                // Enviar notificação para o artista
-                const artista = artistas.find(a => a.idMusico === artistaId);
-                const evento = eventosHost.find(e => e.idEvento === parseInt(eventoSelecionado));
-
-                if (artista && evento && usuarioLogado && artista.idUsuario) {
-                    console.log("ID do usuário do artista:", artista.idUsuario);
-                    const notificationMessage = `O anfitrião ${usuarioLogado.nome} te contratou para o evento ${evento.nomeEvento || evento.nome}! Valor: ${contratacaoDetalhes.valor}. Detalhes: ${contratacaoDetalhes.detalhes}`;
-                    await axios.post(`http://localhost:8080/notifications/user/${artista.idUsuario}`, {
-                        mensagem: notificationMessage
-                    }, {
-                        headers: { 'Authorization': `Bearer ${token}` },
-                    });
-                    console.log('Notificação enviada para o usuário do artista com ID:', artista.idUsuario);
-                } else {
-                    console.warn('Não foi possível enviar a notificação: informações do artista, evento ou anfitrião incompletas ou ID do usuário do artista ausente.');
-                }
-            } else {
-                setContratacaoStatus({ type: 'error', message: `Erro ao contratar o artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico}.` });
-            }
-
+            setContratacaoStatus({ type: 'success', message: `Artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico} contratado com sucesso para o evento!` });
+            setShowContratarForm(null); // Fechar o formulário após a contratação
+            setTimeout(() => setContratacaoStatus(null), 5000);
             // Opcional: Atualizar a lista de artistas ou exibir uma mensagem diferente
         } catch (error) {
             console.error('Erro ao contratar artista:', error);
             setContratacaoStatus({ type: 'error', message: `Erro ao contratar o artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico}.` });
         } finally {
             setContratandoId(null);
-            setTimeout(() => setContratacaoStatus(null), 5000);
         }
     };
 
@@ -210,40 +187,42 @@ const Artistas = () => {
                             {artista.redesSociais && (
                                 <p>Rede Social: <a href={artista.redesSociais} target="_blank" rel="noopener noreferrer">{artista.redesSociais}</a></p>
                             )}
-                            {usuarioLogado?.role === 'HOST' && showContratarForm === artista.idMusico ? (
-                                <div className="contratar-form">
-                                    <h4>Detalhes da Contratação</h4>
-                                    <label htmlFor={`valor-${artista.idMusico}`}>Valor:</label>
-                                    <input
-                                        type="number"
-                                        id={`valor-${artista.idMusico}`}
-                                        name="valor"
-                                        value={contratacaoDetalhes.valor}
-                                        onChange={handleContratacaoDetalhesChange}
-                                        required
-                                    />
-                                    <label htmlFor={`detalhes-${artista.idMusico}`}>Detalhes:</label>
-                                    <textarea
-                                        id={`detalhes-${artista.idMusico}`}
-                                        name="detalhes"
-                                        value={contratacaoDetalhes.detalhes}
-                                        onChange={handleContratacaoDetalhesChange}
-                                    />
-                                    <button onClick={() => confirmarContratacao(artista.idMusico)} disabled={contratandoId === artista.idMusico}>
-                                        {contratandoId === artista.idMusico ? 'Contratando...' : 'Confirmar Contratação'}
-                                    </button>
-                                    <button className="btn-cancelar" onClick={cancelarContratacao}>Cancelar</button>
-                                </div>
-                            ) : (
-                                usuarioLogado?.role === 'HOST' && (
-                                    <button
-                                        onClick={() => handleContratarClick(artista.idMusico)}
-                                        className="btn-contratar"
-                                        disabled={contratandoId === artista.idMusico}
-                                    >
-                                        Contratar
-                                    </button>
-                                )
+                            {usuarioLogado?.role === 'HOST' && (
+                                <>
+                                    {showContratarForm === artista.idMusico ? (
+                                        <div className="contratar-form">
+                                            <h4>Detalhes da Contratação</h4>
+                                            <label htmlFor={`valor-${artista.idMusico}`}>Valor:</label>
+                                            <input
+                                                type="number"
+                                                id={`valor-${artista.idMusico}`}
+                                                name="valor"
+                                                value={contratacaoDetalhes.valor}
+                                                onChange={handleContratacaoDetalhesChange}
+                                                required
+                                            />
+                                            <label htmlFor={`detalhes-${artista.idMusico}`}>Detalhes:</label>
+                                            <textarea
+                                                id={`detalhes-${artista.idMusico}`}
+                                                name="detalhes"
+                                                value={contratacaoDetalhes.detalhes}
+                                                onChange={handleContratacaoDetalhesChange}
+                                            />
+                                            <button onClick={() => confirmarContratacao(artista.idMusico)} disabled={contratandoId === artista.idMusico}>
+                                                {contratandoId === artista.idMusico ? 'Contratando...' : 'Confirmar'}
+                                            </button>
+                                            <button className="btn-cancelar" onClick={cancelarContratacao}>Cancelar</button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleContratarClick(artista.idMusico)}
+                                            className="btn-contratar"
+                                            disabled={contratandoId === artista.idMusico}
+                                        >
+                                            Contratar
+                                        </button>
+                                    )}
+                                </>
                             )}
                         </div>
                     ))}
