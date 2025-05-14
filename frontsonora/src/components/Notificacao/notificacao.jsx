@@ -8,22 +8,20 @@ const Notificacao = () => {
   const [notificacoesLidasLocal, setNotificacoesLidasLocal] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [usuarioLogado, setUsuarioLogado] = useState(null);
 
   useEffect(() => {
-    const fetchNotificacoes = async () => {
-      setIsLoading(true);
-      setError(null);
+    const buscarUsuario = async () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get(`/notifications`, {
-            headers: { Authorization: `Bearer ${token}` },
+          const response = await axios.get('/auth/user/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
           });
-          setNotificacoes(response.data);
+          setUsuarioLogado(response.data);
         } catch (error) {
-          console.error("Erro ao buscar notificações:", error);
-          setError("Erro ao buscar notificações.");
-        } finally {
+          console.error('Erro ao buscar informações do usuário:', error);
+          setError("Erro ao buscar informações do usuário.");
           setIsLoading(false);
         }
       } else {
@@ -33,8 +31,31 @@ const Notificacao = () => {
       }
     };
 
-    fetchNotificacoes();
+    buscarUsuario();
   }, []);
+
+  useEffect(() => {
+    const fetchNotificacoes = async () => {
+      if (usuarioLogado?.id) {
+        setIsLoading(true);
+        setError(null);
+        const token = localStorage.getItem('token');
+        try {
+          const response = await axios.get(`/notifications/user/${usuarioLogado.id}`, { // Endpoint modificado
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setNotificacoes(response.data);
+        } catch (error) {
+          console.error("Erro ao buscar notificações:", error);
+          setError("Erro ao buscar notificações.");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchNotificacoes();
+  }, [usuarioLogado?.id]); // Dependência no ID do usuário logado
 
   const handleVerDetalhes = (id) => {
     setDetalhesVisiveis(prevState => ({
