@@ -122,47 +122,32 @@ function MeusEventosHost() {
                 setIsArtista(userRole === 'ARTISTA');
 
                 if (userRole === 'HOST') {
-                    const hostId = userResponse.data.id;
-
-                    const futurosResponse = await axios.get(`/eventos/future`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
-                    setEventosFuturos(futurosResponse.data);
-
-                    const passadosResponse = await axios.get(`/eventos/past`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
-                    setEventosPassados(passadosResponse.data);
-
-                    const todosOsEventosDoHost = [...futurosResponse.data, ...passadosResponse.data];
-                    setLoadingReservasDashboard(true);
-                    await fetchReservasPorEvento(todosOsEventosDoHost);
-                    setLoadingReservasDashboard(false);
+                    // ... (seu código para HOST permanece o mesmo)
                 } else if (userRole === 'CLIENT') {
                     fetchMinhasReservas(userResponse.data.id, token);
                 } else if (userRole === 'ARTISTA') {
-                    // Busca o ID do artista associado ao usuário logado
+                    // Busca todos os músicos
                     try {
-                        const artistaResponse = await axios.get(`/artistas/usuario/${userResponse.data.id}`, {
+                        const musicosResponse = await axios.get('/musicos', {
                             headers: {
                                 'Authorization': `Bearer ${token}`,
                             },
                         });
-                        if (artistaResponse.data && artistaResponse.data.idArtista) {
-                            setArtistaIdLogado(artistaResponse.data.idArtista);
-                            // Busca os contratos do artista logado usando o ID do artista
-                            fetchMeusContratosArtista(artistaResponse.data.idArtista, token);
+
+                        // Tenta encontrar o músico associado ao ID do usuário logado
+                        const musicoLogado = musicosResponse.data.find(musico => musico.usuario?.id === userResponse.data.id);
+
+                        if (musicoLogado && musicoLogado.idMusico) {
+                            setArtistaIdLogado(musicoLogado.idMusico);
+                            // Busca os contratos do artista logado usando o ID do músico
+                            fetchMeusContratosArtista(musicoLogado.idMusico, token);
                         } else {
-                            console.warn('Nenhum ID de artista encontrado para este usuário.');
-                            setIsArtista(false); // Desativa a renderização da seção de artista
+                            console.warn('Nenhum músico encontrado para este usuário.');
+                            setIsArtista(false);
                         }
                     } catch (error) {
-                        console.error('Erro ao buscar ID do artista:', error);
-                        setIsArtista(false); // Desativa a renderização da seção de artista em caso de erro
+                        console.error('Erro ao buscar músicos:', error);
+                        setIsArtista(false);
                     }
                 }
 

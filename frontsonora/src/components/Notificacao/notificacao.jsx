@@ -42,7 +42,7 @@ const Notificacao = () => {
         setError(null);
         const token = localStorage.getItem('token');
         try {
-          const response = await axios.get(`/notifications/user/${usuarioLogado.id}`, { // Endpoint modificado
+          const response = await axios.get(`/notifications/user/${usuarioLogado.id}`, { 
             headers: { Authorization: `Bearer ${token}` },
           });
           setNotificacoes(response.data);
@@ -59,7 +59,7 @@ const Notificacao = () => {
     };
 
     fetchNotificacoes();
-  }, [usuarioLogado?.id]); // Dependência no ID do usuário logado
+  }, [usuarioLogado?.id]);
 
   const handleVerDetalhes = (id) => {
     setDetalhesVisiveis(prevState => ({
