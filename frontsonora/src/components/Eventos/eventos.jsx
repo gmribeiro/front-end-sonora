@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import './eventos.css';
 import axios from 'axios';
 
-const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPage }) => {
+const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPage, onEventoCadastrado }) => {
     const navigate = useNavigate();
     const [usuarioLogado, setUsuarioLogado] = useState(null);
     const [userId, setUserId] = useState(null);
@@ -167,9 +167,24 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 setSelectedGeneroId('');
                 setLocalEventoNome('');
 
+                const novoEventoDoBackend = response.data; // Assumindo que o backend retorna o evento completo
+
+                const novoEventoParaHome = {
+                    id: novoEventoDoBackend.idEvento, // Use o ID do backend
+                    titulo: nomeEvento,
+                    local: localEventoNome,
+                    hora: formatDateTime(dataHora).split(' ')[1], // Extrai apenas a hora
+                    imagem: null, // Ou '/images/placeholder.png'
+                    genero: generos.find(g => g.idGeneroMusical === selectedGeneroId)?.nomeGenero || 'Outro'
+                    // Adicione outras propriedades conforme a estrutura dos seus eventos
+                };
+
+                if (onEventoCadastrado) {
+                    onEventoCadastrado(novoEventoParaHome);
+                }
+
                 // Enviar notificação após o cadastro bem-sucedido
-                const novoEvento = response.data;
-                const notificationMessage = `Novo evento ${novoEvento.nomeEvento} postado pelo anfitrião ${usuarioLogado.nome}.`;
+                const notificationMessage = `Novo evento ${novoEventoParaHome.titulo} postado pelo anfitrião ${usuarioLogado.nome}.`;
                 await axios.post('/notifications', {
                     usuarioId: userId,
                     mensagem: notificationMessage
@@ -271,7 +286,11 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                         style={{ cursor: 'pointer' }}
                     >
                         <div className="evento-imagem-container">
-                            <img src={evento.imagem} alt={evento.titulo} className="evento-imagem" />
+                            <img
+                                src={evento.imagem || '/images/evento_padrao.png'} // Use uma imagem padrão se evento.imagem for null
+                                alt={evento.titulo}
+                                className="evento-imagem"
+                            />
                         </div>
                         <h3>{evento.titulo}</h3>
                         <p>{evento.local} - {evento.hora}</p>
