@@ -98,7 +98,6 @@ function MeusEventosHost() {
         const verificarRoleEBuscarDados = async () => {
             setLoading(true);
             setError('');
-
             try {
                 const token = localStorage.getItem('token');
                 if (!token) {
@@ -108,21 +107,38 @@ function MeusEventosHost() {
                     setLoading(false);
                     return;
                 }
-
                 const userResponse = await axios.get('/auth/user/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-
                 const userRole = userResponse.data.role;
                 setUsuarioLogadoId(userResponse.data.id);
                 setIsHost(userRole === 'HOST');
                 setIsClient(userRole === 'CLIENT');
                 setIsArtista(userRole === 'ARTISTA');
-
                 if (userRole === 'HOST') {
-                    // ... (seu código para HOST permanece o mesmo)
+                    const hostId = userResponse.data.id;
+                    const futurosResponse = await axios.get(`/eventos/future`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+                    setEventosFuturos(futurosResponse.data);
+
+                    const passadosResponse = await axios.get(`/eventos/past`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+
+                        },
+
+                    });
+                    setEventosPassados(passadosResponse.data);
+                    const todosOsEventosDoHost = [...futurosResponse.data, ...passadosResponse.data];
+                    setLoadingReservasDashboard(true);
+                    await fetchReservasPorEvento(todosOsEventosDoHost);
+
+                    setLoadingReservasDashboard(false);
                 } else if (userRole === 'CLIENT') {
                     fetchMinhasReservas(userResponse.data.id, token);
                 } else if (userRole === 'ARTISTA') {
