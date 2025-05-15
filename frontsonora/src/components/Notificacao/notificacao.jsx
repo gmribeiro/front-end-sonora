@@ -8,23 +8,21 @@ const Notificacao = () => {
   const [notificacoesLidasLocal, setNotificacoesLidasLocal] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [usuarioLogado, setUsuarioLogado] = useState(null);
+  const [notificacoesVisiveis, setNotificacoesVisiveis] = useState({}); // Controla a visibilidade das notificações
 
   useEffect(() => {
-    const fetchNotificacoes = async () => {
-      setIsLoading(true);
-      setError(null);
+    const buscarUsuario = async () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get(`http://localhost:8080/notifications`, {
-            headers: { Authorization: `Bearer ${token}` },
+          const response = await axios.get('/auth/user/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
           });
-          setNotificacoes(response.data);
-
+          setUsuarioLogado(response.data);
         } catch (error) {
-          console.error("Erro ao buscar notificações:", error);
-          setError("Erro ao buscar notificações.");
-        } finally {
+          console.error('Erro ao buscar informações do usuário:', error);
+          setError("Erro ao buscar informações do usuário.");
           setIsLoading(false);
         }
       } else {
@@ -34,8 +32,34 @@ const Notificacao = () => {
       }
     };
 
-    fetchNotificacoes();
+    buscarUsuario();
   }, []);
+
+  useEffect(() => {
+    const fetchNotificacoes = async () => {
+      if (usuarioLogado?.id) {
+        setIsLoading(true);
+        setError(null);
+        const token = localStorage.getItem('token');
+        try {
+          const response = await axios.get(`/notifications/user/${usuarioLogado.id}`, { 
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setNotificacoes(response.data);
+          const initialVisibility = {};
+          response.data.forEach(n => (initialVisibility[n.idNotificacao] = true));
+          setNotificacoesVisiveis(initialVisibility);
+        } catch (error) {
+          console.error("Erro ao buscar notificações:", error);
+          setError("Erro ao buscar notificações.");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchNotificacoes();
+  }, [usuarioLogado?.id]);
 
   const handleVerDetalhes = (id) => {
     setDetalhesVisiveis(prevState => ({
@@ -44,17 +68,14 @@ const Notificacao = () => {
     }));
   };
 
-  const handleMarcarComoLida = async (idNotificacao, mensagem) => {
+  const handleMarcarComoLida = async (idNotificacao) => {
     console.log("ID recebido para marcar como lida:", idNotificacao);
-    console.log("Mensagem da notificação:", mensagem);
     const token = localStorage.getItem('token');
     if (token) {
       try {
         await axios.put(
             `/notifications/${idNotificacao}/read`,
             {
-              idNotificacao: idNotificacao,
-              mensagem: mensagem,
               lida: true,
             },
             {
@@ -66,12 +87,16 @@ const Notificacao = () => {
         );
 
         setNotificacoesLidasLocal(prev => ({ ...prev, [idNotificacao]: true }));
-
         setNotificacoes(prev =>
-            prev.map(n => (n.id === idNotificacao ? { ...n, lida: true } : n))
+            prev.map(n => (n.idNotificacao === idNotificacao ? { ...n, lida: true } : n))
         );
 
-        console.log(`Notificação ${idNotificacao} marcada como lida no backend.`);
+        // Inicia o desaparecimento após 3 segundos
+        setTimeout(() => {
+          setNotificacoesVisiveis(prev => ({ ...prev, [idNotificacao]: false }));
+        }, 3000);
+
+        console.log(`Notificação ${idNotificacao} marcada como lida no backend e sumirá em 3s.`);
       } catch (error) {
         console.error(`Erro ao marcar notificação ${idNotificacao} como lida no backend:`, error);
         setNotificacoesLidasLocal(prev => {
@@ -98,33 +123,35 @@ const Notificacao = () => {
         <h2 className="notifications-title">Notificações</h2>
         <div className="notifications-grid">
           {notificacoes.map((notificacao) => (
-              <div
-                  className={`notification-card ${detalhesVisiveis[notificacao.id] ? 'com-detalhes' : ''} ${notificacoesLidasLocal[notificacao.id] || notificacao.lida ? 'lida' : ''}`}
-                  key={notificacao.id}
-              >
-                <div className="notification-content">
-                  <img src={`/images/${notificacao.image || 'evento7.png'}`} alt={notificacao.title || notificacao.mensagem} className="notification-image" />
-                  <h3 className="notification-title">{notificacao.title || notificacao.mensagem}</h3>
-                  <p className="notification-date">Data: {notificacao.date || (notificacao.dataCriacao ? new Date(notificacao.dataCriacao).toLocaleDateString() : '')}</p>
-                  <button onClick={() => handleVerDetalhes(notificacao.id)}>
-                    {detalhesVisiveis[notificacao.id] ? 'Ocultar Detalhes' : 'Ver Detalhes'}
-                  </button>
-                  {detalhesVisiveis[notificacao.id] && (
-                      <div className="notification-details">
-                        <p>{notificacao.details || notificacao.mensagem}</p>
-                      </div>
-                  )}
-                </div>
-                <div className="notification-actions">
-                  <button
-                      onClick={() => handleMarcarComoLida(notificacao.id, notificacao.mensagem)}
-                      disabled={notificacoesLidasLocal[notificacao.id] || notificacao.lida || false}
+              notificacoesVisiveis[notificacao.idNotificacao] && (
+                  <div
+                      className={`notification-card ${detalhesVisiveis[notificacao.idNotificacao] ? 'com-detalhes' : ''} ${notificacoesLidasLocal[notificacao.idNotificacao] || notificacao.lida ? 'lida' : ''}`}
+                      key={notificacao.idNotificacao}
                   >
-                    {notificacoesLidasLocal[notificacao.id] || notificacao.lida ? 'Já Lida' : 'Marcar como Lida'}
-                  </button>
-                  <div className="notification-icon">🔔</div>
-                </div>
-              </div>
+                    <div className="notification-content">
+                      <img src={`/images/${notificacao.image || 'evento7.png'}`} alt={notificacao.title || notificacao.mensagem} className="notification-image" />
+                      <h3 className="notification-title">{notificacao.title || notificacao.mensagem}</h3>
+                      <p className="notification-date">Data: {notificacao.date || (notificacao.dataCriacao ? new Date(notificacao.dataCriacao).toLocaleDateString() : '')}</p>
+                      <button onClick={() => handleVerDetalhes(notificacao.idNotificacao)}>
+                        {detalhesVisiveis[notificacao.idNotificacao] ? 'Ocultar Detalhes' : 'Ver Detalhes'}
+                      </button>
+                      {detalhesVisiveis[notificacao.idNotificacao] && (
+                          <div className="notification-details">
+                            <p>{notificacao.details || notificacao.mensagem}</p>
+                          </div>
+                      )}
+                    </div>
+                    <div className="notification-actions">
+                      <button
+                          onClick={() => handleMarcarComoLida(notificacao.idNotificacao)}
+                          disabled={notificacoesLidasLocal[notificacao.idNotificacao] || notificacao.lida || false}
+                      >
+                        {notificacoesLidasLocal[notificacao.idNotificacao] || notificacao.lida ? 'Já Lida' : 'Marcar como Lida'}
+                      </button>
+                      <div className="notification-icon">🔔</div>
+                    </div>
+                  </div>
+              )
           ))}
         </div>
       </main>

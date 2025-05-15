@@ -141,3 +141,59 @@ h2 {
 p {
     color: #555;
 }
+/* meusContratos.css */
+
+.meus-contratos-artista-container {
+    padding: 20px;
+    font-family: sans-serif;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.meus-contratos-artista-container h2 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.contratos-lista {
+    list-style: none;
+    padding: 0;
+}
+
+.contrato-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.contrato-item strong {
+    font-weight: bold;
+    color: #555;
+    margin-right: 5px;
+}
+
+.contrato-item p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.contrato-item a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contrato-item a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.contratos-lista p {
+    color: #777;
+    text-align: center;
+}

@@ -129,7 +129,25 @@ const Artistas = () => {
             setContratacaoStatus({ type: 'success', message: `Artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico} contratado com sucesso para o evento!` });
             setShowContratarForm(null); // Fechar o formulário após a contratação
             setTimeout(() => setContratacaoStatus(null), 5000);
-            // Opcional: Atualizar a lista de artistas ou exibir uma mensagem diferente
+
+            // Enviar notificação para o artista contratado
+            const artistaContratado = artistas.find(a => a.idMusico === artistaId);
+            const evento = eventosHost.find(e => e.idEvento === parseInt(eventoSelecionado));
+            if (artistaContratado?.usuario?.id && evento) {
+                try {
+                    await axios.post(`/notifications/user/${artistaContratado.usuario.id}`, {
+                        mensagem: `Você foi convidado para o evento ${evento.nome || evento.nomeEvento} pelo anfitrião ${usuarioLogado?.nome || usuarioLogado?.username}!`,
+                        tipo: 'CONVITE_EVENTO', // Opcional: tipo da notificação
+                        // Outros detalhes da notificação, se necessário
+                    }, {
+                        headers: { 'Authorization': `Bearer ${token}` },
+                    });
+                    console.log(`Notificação de convite enviada para o artista com ID: ${artistaContratado.usuario.id}`);
+                } catch (error) {
+                    console.error('Erro ao enviar notificação de convite para o artista:', error);
+                }
+            }
+
         } catch (error) {
             console.error('Erro ao contratar artista:', error);
             setContratacaoStatus({ type: 'error', message: `Erro ao contratar o artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico}.` });

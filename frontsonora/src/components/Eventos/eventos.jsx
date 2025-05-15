@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import './eventos.css';
 import axios from 'axios';
 
-const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPage }) => {
+const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPage, onEventoCadastrado }) => {
     const navigate = useNavigate();
     const [usuarioLogado, setUsuarioLogado] = useState(null);
     const [userId, setUserId] = useState(null);
@@ -13,13 +13,13 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
     const [nomeEvento, setNomeEvento] = useState('');
     const [dataHora, setDataHora] = useState('');
     const [descricao, setDescricao] = useState('');
-    const [selectedGeneroId, setSelectedGeneroId] = useState(''); // ID do gênero selecionado
+    const [selectedGeneroId, setSelectedGeneroId] = useState('');
     const [localEventoNome, setLocalEventoNome] = useState('');
+    const [cep, setCep] = useState('');
+    const [numero, setNumero] = useState('');
     const [formMessage, setFormMessage] = useState('');
     const [isAnimating, setIsAnimating] = useState(false);
-    const [generos, setGeneros] = useState([]); // Array para armazenar os gêneros do banco de dados
-
-    // Configuração da paginação
+    const [generos, setGeneros] = useState([]);
     const eventosPorPagina = 6;
     const totalPaginas = Math.ceil(eventosFiltrados.length / eventosPorPagina);
     const indiceInicial = (currentPage - 1) * eventosPorPagina;
@@ -40,7 +40,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 })
                 .catch(error => console.error('Erro ao carregar usuário:', error));
 
-            // Buscar gêneros do banco de dados
             axios.get('/genres')
                 .then(response => {
                     setGeneros(response.data);
@@ -48,7 +47,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 .catch(error => console.error('Erro ao carregar gêneros:', error));
         }
     }, []);
-
     const formatDateTime = (dateTimeString) => {
         if (!dateTimeString) return '';
         const date = new Date(dateTimeString);
@@ -60,11 +58,9 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
         const seconds = String(date.getSeconds()).padStart(2, '0');
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
-
     const handleEventoClick = (eventoId) => {
         navigate(`/detalhes/${eventoId}`);
     };
-
     const handleReservar = async (eventoId) => {
         setReservandoId(eventoId);
         setMensagemReserva('');
@@ -75,14 +71,13 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             setReservandoId(null);
             return;
         }
-
         try {
             const response = await axios.post('/reservas', {
                 usuario: {
                     id: usuarioLogado.id
                 },
-                evento: { // Envie um objeto 'evento'
-                    idEvento: eventoId // Inclua o ID do evento dentro do objeto
+                evento: {
+                    idEvento: eventoId
                 },
                 confirmado: false
             }, {
@@ -106,7 +101,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             }, 3000);
         }
     };
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name === 'local') {
@@ -119,15 +113,18 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             setDescricao(value);
         } else if (name === 'generoMusical') {
             setSelectedGeneroId(value);
+        } else if (name === 'cep') {
+            setCep(value);
+        } else if (name === 'numero') {
+            setNumero(value);
         }
     };
-
     const handleCadastrarEvento = async (e) => {
         e.preventDefault();
         setFormMessage('');
         const token = localStorage.getItem('token');
 
-        if (!token || usuarioLogado?.role !== 'HOST' || !userId || !selectedGeneroId) {
+        if (!token || usuarioLogado?.role !== 'HOST' || !userId || !selectedGeneroId || !localEventoNome || !cep || !numero) {
             setFormMessage('Preencha todos os campos para cadastrar o evento.');
             return;
         }
@@ -135,7 +132,11 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
         try {
             const formattedDataHora = formatDateTime(dataHora);
 
-            const placeResponse = await axios.post('/places', { local: localEventoNome }, {
+            const placeResponse = await axios.post('/places', {
+                local: localEventoNome,
+                cep: cep,
+                numero: numero
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
@@ -158,7 +159,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                     'Content-Type': 'application/json'
                 }
             });
-
             if (response.status === 201) {
                 setFormMessage('Evento cadastrado com sucesso!');
                 setNomeEvento('');
@@ -166,10 +166,24 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 setDescricao('');
                 setSelectedGeneroId('');
                 setLocalEventoNome('');
+                setCep('');
+                setNumero('');
 
-                // Enviar notificação após o cadastro bem-sucedido
-                const novoEvento = response.data;
-                const notificationMessage = `Novo evento ${novoEvento.nomeEvento} postado pelo anfitrião ${usuarioLogado.nome}.`;
+                const novoEventoDoBackend = response.data;
+
+                const novoEventoParaHome = {
+                    id: novoEventoDoBackend.idEvento,
+                    titulo: nomeEvento,
+                    local: localEventoNome,
+                    hora: formatDateTime(dataHora).split(' ')[1],
+                    imagem: null,
+                    genero: generos.find(g => g.idGeneroMusical === selectedGeneroId)?.nomeGenero || 'Outro'
+                };
+
+                if (onEventoCadastrado) {
+                    onEventoCadastrado(novoEventoParaHome);
+                }
+                const notificationMessage = `Novo evento ${novoEventoParaHome.titulo} postado pelo anfitrião ${usuarioLogado.nome}.`;
                 await axios.post('/notifications', {
                     usuarioId: userId,
                     mensagem: notificationMessage
@@ -250,6 +264,14 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                                     <label htmlFor="local">Local:</label>
                                     <input type="text" id="local" name="local" value={localEventoNome} onChange={handleInputChange} required />
                                 </div>
+                                <div className="form-group">
+                                    <label htmlFor="cep">CEP do Local:</label>
+                                    <input type="text" id="cep" name="cep" value={cep} onChange={handleInputChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="numero">Número do Local:</label>
+                                    <input type="text" id="numero" name="numero" value={numero} onChange={handleInputChange} />
+                                </div>
                                 <button type="submit" className="btn-cadastrar">Cadastrar</button>
                                 <button type="button" onClick={() => setShowCadastro(false)} className="btn-cancelar">Cancelar</button>
                                 {formMessage && <p className={`form-message ${formMessage.startsWith('Erro') ? 'error' : 'success'}`}>{formMessage}</p>}
@@ -271,7 +293,11 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                         style={{ cursor: 'pointer' }}
                     >
                         <div className="evento-imagem-container">
-                            <img src={evento.imagem} alt={evento.titulo} className="evento-imagem" />
+                            <img
+                                src={evento.imagem || '/images/evento_padrao.png'}
+                                alt={evento.titulo}
+                                className="evento-imagem"
+                            />
                         </div>
                         <h3>{evento.titulo}</h3>
                         <p>{evento.local} - {evento.hora}</p>

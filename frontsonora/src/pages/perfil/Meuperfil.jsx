@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import './meuperfil.css';
+import './meuperfil.css'; // Certifique-se de ter este arquivo CSS
 
 function MeuPerfil() {
   const [nomeUsuario, setNomeUsuario] = useState('');
-  const [userId, setUserId] = useState(null); // Novo estado para armazenar o ID do usuário
+  const [userId, setUserId] = useState(null);
   const [userRole, setUserRole] = useState('');
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarNovaSenha, setConfirmarNovaSenha] = useState('');
-  const [mensagem, setMensagem] = useState('');
+  const [mensagemSenha, setMensagemSenha] = useState('');
   const [exibirFormularioEvento, setExibirFormularioEvento] = useState(false);
   const [nomeEvento, setNomeEvento] = useState('');
   const [dataHora, setDataHora] = useState('');
   const [descricao, setDescricao] = useState('');
   const [nomeGenero, setNomeGenero] = useState('');
   const [localEventoNome, setLocalEventoNome] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadMessage, setUploadMessage] = useState('');
+  const [profileImageUrl, setProfileImageUrl] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,21 +34,24 @@ function MeuPerfil() {
           });
           setNomeUsuario(response.data.nome || 'Usuário');
           setUserRole(response.data.role);
-          setUserId(response.data.id); // Armazena o ID do usuário
+          setUserId(response.data.id);
+          setProfileImageUrl(response.data.foto || ''); // Se response.data.foto for null, profileImageUrl será ''
           console.log("User Role:", response.data.role);
           console.log("User ID:", response.data.id);
+          console.log("Profile Image URL:", response.data.foto);
         } else {
-          setMensagem('Usuário não autenticado.');
+          setMensagemSenha('Usuário não autenticado.');
           navigate('/acesso');
         }
       } catch (error) {
-        setMensagem('Erro ao buscar informações do usuário.');
+        setMensagemSenha('Erro ao buscar informações do usuário.');
         navigate('/acesso');
       }
     };
 
     buscarInformacoesUsuario();
   }, [navigate]);
+
 
   const formatDateTime = (dateTimeString) => {
     if (!dateTimeString) return '';
@@ -61,10 +67,10 @@ function MeuPerfil() {
 
   const handleAlterarSenha = async (event) => {
     event.preventDefault();
-    setMensagem('');
+    setMensagemSenha('');
 
     if (novaSenha !== confirmarNovaSenha) {
-      setMensagem('A nova senha e a confirmação não coincidem.');
+      setMensagemSenha('A nova senha e a confirmação não coincidem.');
       return;
     }
 
@@ -81,15 +87,15 @@ function MeuPerfil() {
           },
         });
 
-        setMensagem(response.data || 'Senha alterada com sucesso!');
+        setMensagemSenha(response.data || 'Senha alterada com sucesso!');
         setSenhaAtual('');
         setNovaSenha('');
         setConfirmarNovaSenha('');
       } else {
-        setMensagem('Usuário não autenticado.');
+        setMensagemSenha('Usuário não autenticado.');
       }
     } catch (error) {
-      setMensagem('Erro de conexão ao alterar a senha.');
+      setMensagemSenha('Erro de conexão ao alterar a senha.');
     }
   };
 
@@ -104,11 +110,11 @@ function MeuPerfil() {
 
   const handleCadastrarEventoSubmit = async (event) => {
     event.preventDefault();
-    setMensagem('');
+    setMensagemSenha('');
 
     try {
       const token = localStorage.getItem('token');
-      if (token && userId) { // Garante que o token e o ID do usuário estão disponíveis
+      if (token && userId) {
         const genreResponse = await axios.post('/genres', { nomeGenero }, {
           headers: {
             'Content-Type': 'application/json',
@@ -127,14 +133,13 @@ function MeuPerfil() {
 
         const formattedDataHora = formatDateTime(dataHora);
 
-        // Terceiro, cadastrar o evento, incluindo o id_usuario_host
         const eventResponse = await axios.post('/eventos', {
           nomeEvento,
           dataHora: formattedDataHora,
           descricao,
           generoMusical: { idGeneroMusical: genreData.idGeneroMusical },
           localEvento: { idLocalEvento: placeData.idLocalEvento },
-          host: { id: userId }, // Passa o ID do usuário logado como host
+          host: { id: userId },
         }, {
           headers: {
             'Content-Type': 'application/json',
@@ -142,7 +147,7 @@ function MeuPerfil() {
           },
         });
 
-        setMensagem('Evento cadastrado com sucesso!');
+        setMensagemSenha('Evento cadastrado com sucesso!');
         setExibirFormularioEvento(false);
         setNomeEvento('');
         setDataHora('');
@@ -150,10 +155,45 @@ function MeuPerfil() {
         setNomeGenero('');
         setLocalEventoNome('');
       } else {
-        setMensagem('Usuário não autenticado ou ID do usuário não encontrado.');
+        setMensagemSenha('Usuário não autenticado ou ID do usuário não encontrado.');
       }
     } catch (error) {
-      setMensagem(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
+      setMensagemSenha(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
+    }
+  };
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handleUploadProfileImage = async () => {
+    if (!selectedFile) {
+      setUploadMessage('Por favor, selecione uma imagem.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('profileImage', selectedFile);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const response = await axios.post('/auth/user/me/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setUploadMessage('Foto de perfil atualizada com sucesso!');
+        setProfileImageUrl(response.data);
+        console.log('Foto de perfil atualizada:', response.data);
+        setSelectedFile(null);
+      } else {
+        setUploadMessage('Usuário não autenticado.');
+      }
+    } catch (error) {
+      console.error('Erro ao fazer upload da foto de perfil:', error);
+      setUploadMessage(error.response?.data || 'Erro ao fazer upload da imagem.');
     }
   };
 
@@ -165,6 +205,11 @@ function MeuPerfil() {
         <h1>Meu Perfil</h1>
         <div className="bem-vindo">
           <h2>Bem-vindo(a), {nomeUsuario}!</h2>
+          {profileImageUrl && (
+              <div className="foto-perfil-preview">
+                <img src={profileImageUrl} alt="Foto de Perfil" style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%' }} />
+              </div>
+          )}
         </div>
 
         {userRole === 'CLIENT' && (
@@ -244,6 +289,23 @@ function MeuPerfil() {
             </div>
         )}
 
+        <div className="upload-foto-perfil-container">
+          <h3>Foto de Perfil</h3>
+          <div className="upload-area">
+            <input type="file" accept="image/*" onChange={handleFileChange} id="profileImageInput" style={{ display: 'none' }} />
+            <label htmlFor="profileImageInput" className="selecionar-foto-btn">
+              {selectedFile ? 'Selecionar outra foto' : 'Selecionar Foto'}
+            </label>
+            {selectedFile && (
+                <p>Arquivo selecionado: {selectedFile.name}</p>
+            )}
+            <button onClick={handleUploadProfileImage} disabled={!selectedFile} className="enviar-foto-btn">
+              Enviar Foto
+            </button>
+            {uploadMessage && <p className={`mensagem ${uploadMessage.includes('sucesso') ? 'sucesso' : 'erro'}`}>{uploadMessage}</p>}
+          </div>
+        </div>
+
         <div className="alterar-senha-container">
           <h3>Alterar Senha</h3>
           <form onSubmit={handleAlterarSenha}>
@@ -281,7 +343,7 @@ function MeuPerfil() {
               Alterar Senha
             </button>
           </form>
-          {mensagem && <p className={`mensagem ${mensagem.includes('sucesso') ? 'sucesso' : 'erro'}`}>{mensagem}</p>}
+          {mensagemSenha && <p className={`mensagem ${mensagemSenha.includes('sucesso') ? 'sucesso' : 'erro'}`}>{mensagemSenha}</p>}
         </div>
 
         <button onClick={handleLogout} className="logout-btn">

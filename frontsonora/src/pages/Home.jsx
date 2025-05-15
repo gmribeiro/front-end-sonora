@@ -12,9 +12,7 @@ function Home() {
   useTitle('Início - Sonora');
   const [generoSelecionado, setGeneroSelecionado] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const navigate = useNavigate();
-
-  const eventos = [
+  const [eventosCompletos, setEventosCompletos] = useState([ // Inicializa o estado com seus eventos
     { id: 1, titulo: "Indaiatuba Pop Festival", local: "Indaiatuba", hora: "19:00", imagem: "../images/eventopop1.png", genero: "POP" },
     { id: 2, titulo: "Hit Parade Live", local: "Campinas", hora: "20:30", imagem: "../images/eventopop2.png", genero: "POP" },
     { id: 3, titulo: "Top 40 Experience", local: "São Paulo", hora: "22:00", imagem: "../images/eventopop3.png", genero: "POP" },
@@ -45,40 +43,54 @@ function Home() {
     { id: 28, titulo: "Concerto de Outono", local: "São Paulo", hora: "20:00", imagem: "../images/classica1.png", genero: "Clássica" },
     { id: 29, titulo: "Noite de Ópera", local: "Campinas", hora: "19:30", imagem: "../images/classica2.png", genero: "Clássica" },
     { id: 30, titulo: "Orquestra Sinfônica", local: "Rio de Janeiro", hora: "18:00", imagem: "../images/classica3.png", genero: "Clássica" }
-  ];
+  ]);
+  const [eventosFiltrados, setEventosFiltrados] = useState(eventosCompletos);
+  const navigate = useNavigate();
 
-  const eventosFiltrados = generoSelecionado 
-    ? eventos.filter(evento => evento.genero === generoSelecionado)
-    : eventos;
+  const handleNovoEventoCadastrado = (novoEvento) => {
+    setEventosCompletos(prevEventos => [novoEvento, ...prevEventos]);
+    setEventosFiltrados(prevEventos => [novoEvento, ...prevEventos]);
+    setCurrentPage(1);
+  };
+
+  const handleGeneroSelecionado = (genero) => {
+    setGeneroSelecionado(genero);
+  };
 
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [generoSelecionado]);
+    if (generoSelecionado) {
+      setEventosFiltrados(eventosCompletos.filter(evento => evento.genero === generoSelecionado));
+    } else {
+      setEventosFiltrados(eventosCompletos);
+    }
+  }, [generoSelecionado, eventosCompletos]);
 
   return (
-    <main className='body'>
-      <Header />
-      <Carrossel onGeneroSelecionado={setGeneroSelecionado} />
-      
-      <Routes>
-        <Route path="/" element={
-          <Eventos 
-            eventosFiltrados={eventosFiltrados} 
-            eventosCompletos={eventos}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        } />
-        <Route path="/infoevento/:id" element={
-          <InfoEvento 
-            eventos={eventos} 
-            onVoltar={() => navigate('/')} 
-          />
-        } />
-      </Routes>
-      
-      <Footer />
-    </main>
+      <main className='body'>
+        <Header />
+        <Carrossel onGeneroSelecionado={handleGeneroSelecionado} />
+
+        <Routes>
+          <Route path="/" element={
+            <Eventos
+                eventosFiltrados={eventosFiltrados}
+                eventosCompletos={eventosCompletos}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                onEventoCadastrado={handleNovoEventoCadastrado}
+            />
+          } />
+          <Route path="/detalhes/:id" element={
+            <InfoEvento
+                eventos={eventosCompletos}
+                onVoltar={() => navigate('/')}
+            />
+          } />
+        </Routes>
+
+        <Footer />
+      </main>
   );
 }
 

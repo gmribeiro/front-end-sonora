@@ -1,222 +1,149 @@
-.meu-perfil-container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 30px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
+:root {
+    --roxo-principal: #75518c;
+    --roxo-claro: #d7bce8;
+    --rosa-claro: #f3e7f9;
+    --cinza-escuro: #333;
+    --branco: #fff;
+  }
+  
+  body {
+    background-color: var(--rosa-claro);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .meu-perfil-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--rosa-claro);
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+  }
+  
+  h1 {
+    text-align: center;
+    color: var(--roxo-principal);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .perfil-header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  
+  .perfil-header button {
+    background-color: var(--roxo-principal);
+    color: var(--branco);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .perfil-header button:hover {
+    background-color: #5e3b71;
+  }
+  
+  .foto-perfil {
+    width: 120px;
+    height: 120px;
+    background-color: #c5a0db;
+    border-radius: 50%;
+    margin: 0 auto;
+    display: flex;
     align-items: center;
-}
-
-.meu-perfil-container > .voltar-home-btn {
-    align-self: flex-start;
-    margin-bottom: 20px;
-    background-color: #f0f0f0;
-    color: #333;
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    justify-content: center;
+    font-weight: bold;
+    color: var(--branco);
+    font-size: 0.9rem;
     cursor: pointer;
-    font-size: 16px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-    display: inline-block;
-}
-
-.meu-perfil-container > .voltar-home-btn:hover {
-    background-color: #e0e0e0;
-}
-
-h1, h2, h3 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.bem-vindo {
-    margin-bottom: 30px;
-}
-
-.cadastrar-evento-container {
-    margin-top: 30px;
-    margin-bottom: 30px; /* Adiciona margem abaixo do botão de cadastrar evento */
-    text-align: center; /* Centraliza o botão */
-    width: 100%; /* Ocupa a largura total do container pai */
-}
-
-.cadastrar-evento-btn {
-    background-color: #28a745; /* Cor verde para destacar */
-    color: white;
-    padding: 12px 20px;
+    margin-bottom: 1rem;
+  }
+  
+  .secao {
+    background-color: var(--branco);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 10px rgba(117, 81, 140, 0.1);
+  }
+  
+  .secao h3 {
+    color: var(--roxo-principal);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .info-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+  }
+  
+  .info-linha span {
+    color: var(--cinza-escuro);
+  }
+  
+  .info-linha button {
+    background-color: var(--roxo-claro);
+    color: var(--cinza-escuro);
     border: none;
-    border-radius: 4px;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    display: inline-block; /* Para aplicar margens e padding corretamente */
-    text-decoration: none; /* Remove sublinhado se estilizado como link */
-}
-
-.cadastrar-evento-btn:hover {
-    background-color: #1e7e34;
-}
-
-.formulario-evento {
-    margin-top: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-    text-align: left; /* Alinha o texto do formulário à esquerda */
-    width: 100%; /* Ocupa a largura total do container pai */
-    box-sizing: border-box; /* Garante que padding e border não aumentem a largura */
-}
-
-.formulario-evento h3 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.formulario-evento .form-group {
-    margin-bottom: 15px;
-}
-
-.formulario-evento label {
+    transition: background 0.3s;
+  }
+  
+  .info-linha button:hover {
+    background-color: #caa0e4;
+  }
+  
+  /* Botões grandes (logout e alterar senha) */
+  .logout-btn,
+  .alterar-senha-btn {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #555;
-}
-
-.formulario-evento input[type='text'],
-.formulario-evento input[type='datetime-local'],
-.formulario-evento textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.formulario-evento textarea {
-    resize: vertical; /* Permite redimensionamento vertical */
-    min-height: 100px;
-}
-
-.formulario-evento .cadastrar-evento-submit-btn,
-.formulario-evento .cancelar-evento-btn {
-    background-color: #007bff;
+    width: fit-content;
+    margin: 1rem auto;
+    background-color: var(--roxo-principal);
     color: white;
-    padding: 10px 15px;
+    padding: 10px 20px;
+    border-radius: 25px;
     border: none;
-    border-radius: 4px;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    margin-right: 10px; /* Espaçamento entre os botões */
-}
-
-.formulario-evento .cadastrar-evento-submit-btn:hover {
-    background-color: #0056b3;
-}
-
-.formulario-evento .cancelar-evento-btn {
-    background-color: #dc3545; /* Cor vermelha para cancelar */
-}
-
-.formulario-evento .cancelar-evento-btn:hover {
-    background-color: #c82333;
-}
-
-.alterar-senha-container {
-    margin-top: 30px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-    width: 100%; /* Ocupa a largura total do container pai */
-    box-sizing: border-box;
-}
-
-.alterar-senha-container h3 {
-    text-align: left; /* Alinha o título à esquerda dentro do container */
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.alterar-senha-container .form-group {
-    margin-bottom: 15px;
-}
-
-.alterar-senha-container label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #555;
-}
-
-.alterar-senha-container input[type='password'] {
-    width: calc(100% - 22px); /* Considera o padding e a borda */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px;
-}
-
-.alterar-senha-container .alterar-senha-btn {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.alterar-senha-container .alterar-senha-btn:hover {
-    background-color: #0056b3;
-}
-
-.mensagem {
-    margin-top: 20px;
-    padding: 10px;
-    border-radius: 4px;
-    font-weight: bold;
-    text-align: center;
-}
-
-.mensagem.sucesso {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.mensagem.erro {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.logout-btn {
-    background-color: #dc3545; /* Cor vermelha para sair */
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    margin-top: 20px; /* Adiciona margem acima do botão de sair */
-}
-
-.logout-btn:hover {
-    background-color: #c82333;
-}
+    transition: background 0.3s ease;
+  }
+  
+  .logout-btn:hover,
+  .alterar-senha-btn:hover {
+    background-color: #5e3b71;
+  }
+  
+  /* Responsivo */
+  @media (max-width: 700px) {
+    .info-linha {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .info-linha button {
+      margin-top: 5px;
+    }
+  
+    .perfil-header {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .foto-perfil {
+      width: 100px;
+      height: 100px;
+    }
+  }
+  
