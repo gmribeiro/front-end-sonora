@@ -57,11 +57,21 @@
   animation: slideIn 0.5s ease-out forwards;
 }
 
+.categoria p {
+  color: #EDE6F2;
+  margin: 0.5rem 0 0 0;
+  transition: color 0.3s ease;
+  font-size: 1rem;
+}
+
 .categoria.ativo {
   background: #C5B6D2;
-  color: #564a72;
   transform: scale(1.05) translateX(0);
   box-shadow: 0 0 15px rgba(197, 182, 210, 0.8);
+}
+
+.categoria.ativo p {
+  color: #564a72;
 }
 
 @keyframes slideIn {
@@ -88,6 +98,12 @@
 .icone {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  color: #EDE6F2;
+  transition: color 0.3s ease;
+}
+
+.categoria.ativo .icone {
+  color: #564a72;
 }
 
 .carrossel-btn {
@@ -160,6 +176,10 @@
     padding: 1rem;
   }
   
+  .categoria p {
+    font-size: 0.9rem;
+  }
+  
   .icone {
     font-size: 1.8rem;
   }
@@ -184,7 +204,10 @@
     width: 90px;
     height: 90px;
     padding: 0.8rem;
-    font-size: 0.9rem;
+  }
+  
+  .categoria p {
+    font-size: 0.8rem;
   }
   
   .icone {
@@ -199,5 +222,13 @@
   
   .carrossel {
     gap: 1rem;
+  }
+  
+  .carrossel-btn.left {
+    left: -50px;
+  }
+  
+  .carrossel-btn.right {
+    right: -50px;
   }
 }
