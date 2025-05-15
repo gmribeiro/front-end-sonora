@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './meuperfil.css'; // Certifique-se de ter este arquivo CSS
@@ -19,9 +19,31 @@ function MeuPerfil() {
   const [localEventoNome, setLocalEventoNome] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadMessage, setUploadMessage] = useState('');
-  const [profileImageUrl, setProfileImageUrl] = useState('');
+  const [profileImageUrl, setProfileImageUrl] = useState(null); // Inicializado como null
   const navigate = useNavigate();
 
+  // **Função para buscar a foto de perfil (memorizada com useCallback)**
+  // Não depende de nenhum estado ou prop do componente, então seu array de dependências é vazio.
+  const fetchProfileImage = useCallback(async (token) => {
+    try {
+      const response = await axios.get('/user/me/profile-image', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        responseType: 'blob' // Define que a resposta esperada é um Blob (dados binários)
+      });
+
+      // Cria uma URL temporária a partir do Blob recebido para ser usada na tag <img>
+      const imageUrl = URL.createObjectURL(response.data);
+      setProfileImageUrl(imageUrl);
+      console.log("Foto de perfil carregada:", imageUrl);
+    } catch (error) {
+      console.error('Erro ao buscar foto de perfil:', error);
+      setProfileImageUrl(null); // Reseta a imagem se houver erro (ex: 404 Not Found)
+    }
+  }, []); // Array de dependências vazio
+
+  // **useEffect principal para carregar informações do usuário e a foto de perfil**
   useEffect(() => {
     const buscarInformacoesUsuario = async () => {
       try {
@@ -35,10 +57,11 @@ function MeuPerfil() {
           setNomeUsuario(response.data.nome || 'Usuário');
           setUserRole(response.data.role);
           setUserId(response.data.id);
-          setProfileImageUrl(response.data.foto || ''); // Se response.data.foto for null, profileImageUrl será ''
-          console.log("User Role:", response.data.role);
-          console.log("User ID:", response.data.id);
-          console.log("Profile Image URL:", response.data.foto);
+
+          // Chama a função para buscar a foto de perfil após a autenticação
+          // fetchProfileImage agora não causa re-renderização em loop
+          fetchProfileImage(token);
+
         } else {
           setMensagemSenha('Usuário não autenticado.');
           navigate('/acesso');
@@ -50,8 +73,16 @@ function MeuPerfil() {
     };
 
     buscarInformacoesUsuario();
-  }, [navigate]);
 
+    // **Função de limpeza para revogar a URL do objeto Blob**
+    // Esta função de limpeza **ainda precisa** de profileImageUrl como dependência,
+    // para garantir que ela seja executada quando profileImageUrl mudar ou o componente for desmontado.
+    return () => {
+      if (profileImageUrl) {
+        URL.revokeObjectURL(profileImageUrl);
+      }
+    };
+  }, [navigate, fetchProfileImage]); // **profileImageUrl REMOVIDO daqui**
 
   const formatDateTime = (dateTimeString) => {
     if (!dateTimeString) return '';
@@ -166,6 +197,7 @@ function MeuPerfil() {
     setSelectedFile(event.target.files[0]);
   };
 
+  // **Função para fazer upload da foto de perfil**
   const handleUploadProfileImage = async () => {
     if (!selectedFile) {
       setUploadMessage('Por favor, selecione uma imagem.');
@@ -173,27 +205,27 @@ function MeuPerfil() {
     }
 
     const formData = new FormData();
-    formData.append('profileImage', selectedFile);
+    formData.append('foto', selectedFile); // O nome do campo deve ser 'foto' para corresponder ao seu backend
 
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        const response = await axios.post('/auth/user/me/upload', formData, {
+        const response = await axios.post('/user/me/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${token}`,
           },
         });
         setUploadMessage('Foto de perfil atualizada com sucesso!');
-        setProfileImageUrl(response.data);
-        console.log('Foto de perfil atualizada:', response.data);
-        setSelectedFile(null);
+        // Após o upload, chame fetchProfileImage para recarregar a imagem atualizada
+        fetchProfileImage(token);
+        setSelectedFile(null); // Limpa o arquivo selecionado
       } else {
         setUploadMessage('Usuário não autenticado.');
       }
     } catch (error) {
       console.error('Erro ao fazer upload da foto de perfil:', error);
-      setUploadMessage(error.response?.data || 'Erro ao fazer upload da imagem.');
+      setUploadMessage(error.response?.data?.message || 'Erro ao fazer upload da imagem.');
     }
   };
 
@@ -205,6 +237,7 @@ function MeuPerfil() {
         <h1>Meu Perfil</h1>
         <div className="bem-vindo">
           <h2>Bem-vindo(a), {nomeUsuario}!</h2>
+          {/* Renderiza a foto de perfil apenas se profileImageUrl tiver um valor */}
           {profileImageUrl && (
               <div className="foto-perfil-preview">
                 <img src={profileImageUrl} alt="Foto de Perfil" style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%' }} />
