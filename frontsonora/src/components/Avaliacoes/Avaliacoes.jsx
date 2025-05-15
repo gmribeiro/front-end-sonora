@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./Avaliacoes.css"
+import "./Avaliacoes.css";
+import { useNavigate } from 'react-router-dom';
 
 const Avaliacoes = () => {
     const [nota, setNota] = useState(1);
@@ -9,6 +10,7 @@ const Avaliacoes = () => {
     const [usuarioId, setUsuarioId] = useState(null);
     const [eventos, setEventos] = useState([]);
     const [eventoSelecionadoId, setEventoSelecionadoId] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -90,6 +92,10 @@ const Avaliacoes = () => {
         }
     };
 
+    const handleVoltar = () => {
+        navigate(-1); // Volta para a página anterior
+    };
+
     if (userRole === "CLIENT") {
         return (
             <div className="avaliacoes-container">
@@ -124,10 +130,16 @@ const Avaliacoes = () => {
                     />
                 </div>
                 <button onClick={handleSubmitAvaliacao}>Enviar Avaliação</button>
+                <button onClick={handleVoltar}>Voltar</button>
             </div>
         );
     } else if (userRole) {
-        return <p>Você precisa ser um cliente para avaliar um evento.</p>;
+        return (
+            <div>
+                <p>Você precisa ser um cliente para avaliar um evento.</p>
+                <button onClick={handleVoltar}>Voltar</button>
+            </div>
+        );
     } else {
         return <p>Carregando informações...</p>;
     }
