@@ -2,6 +2,7 @@ import './cadastrar.css';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { IoMdCheckmarkCircle } from "react-icons/io";
 
 const Cadastrar = () => {
     const [formData, setFormData] = useState({
@@ -45,7 +46,7 @@ const Cadastrar = () => {
             <div className='area-cadastro'>
                 {cadastroConcluido ? (
                     <div className="mensagem-sucesso">
-                        <h1>🎉 Cadastro Concluído!</h1>
+                        <h1> Cadastro Concluído <IoMdCheckmarkCircle /> </h1>
                         <p>Indo para a pagina de acesso...</p>
                     </div>
                 ) : (
