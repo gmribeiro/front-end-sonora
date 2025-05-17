@@ -1,89 +1,51 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import './meuperfil.css'; // Certifique-se de ter este arquivo CSS
+import './meuperfil.css'; // Certifique-se de que este arquivo CSS existe e está correto
+
+// Se você não tem um axios.defaults.baseURL configurado globalmente,
+// você pode definir um aqui ou em um arquivo de configuração separado.
+// Ex: axios.defaults.baseURL = 'http://localhost:8080';
 
 function MeuPerfil() {
+  // 1. Estados para Informações do Usuário e Autenticação
   const [nomeUsuario, setNomeUsuario] = useState('');
   const [userId, setUserId] = useState(null);
   const [userRole, setUserRole] = useState('');
+  // Feedback para o usuário: mensagem e tipo (sucesso/erro)
+  const [feedbackMessage, setFeedbackMessage] = useState({ text: '', type: '' });
+  const navigate = useNavigate();
+
+  // 2. Estados para Alteração de Senha
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarNovaSenha, setConfirmarNovaSenha] = useState('');
-  const [mensagemSenha, setMensagemSenha] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false); // Para desabilitar o botão
+
+  // 3. Estados para Upload de Foto de Perfil
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [profileImageUrl, setProfileImageUrl] = useState(null); // URL do objeto Blob para exibição
+  const [isUploadingImage, setIsUploadingImage] = useState(false); // Para desabilitar o botão
+
+  // 4. Estados para Cadastro de Evento (se for HOST)
   const [exibirFormularioEvento, setExibirFormularioEvento] = useState(false);
   const [nomeEvento, setNomeEvento] = useState('');
   const [dataHora, setDataHora] = useState('');
   const [descricao, setDescricao] = useState('');
   const [nomeGenero, setNomeGenero] = useState('');
   const [localEventoNome, setLocalEventoNome] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadMessage, setUploadMessage] = useState('');
-  const [profileImageUrl, setProfileImageUrl] = useState(null); // Inicializado como null
-  const navigate = useNavigate();
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false); // Para desabilitar o botão
 
-  // **Função para buscar a foto de perfil (memorizada com useCallback)**
-  // Não depende de nenhum estado ou prop do componente, então seu array de dependências é vazio.
-  const fetchProfileImage = useCallback(async (token) => {
-    try {
-      const response = await axios.get('/user/me/profile-image', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        responseType: 'blob' // Define que a resposta esperada é um Blob (dados binários)
-      });
+  // --- Funções Auxiliares ---
 
-      // Cria uma URL temporária a partir do Blob recebido para ser usada na tag <img>
-      const imageUrl = URL.createObjectURL(response.data);
-      setProfileImageUrl(imageUrl);
-      console.log("Foto de perfil carregada:", imageUrl);
-    } catch (error) {
-      console.error('Erro ao buscar foto de perfil:', error);
-      setProfileImageUrl(null); // Reseta a imagem se houver erro (ex: 404 Not Found)
-    }
-  }, []); // Array de dependências vazio
+  // Função para exibir mensagens de feedback ao usuário
+  const showFeedback = (text, type) => {
+    setFeedbackMessage({ text, type });
+    // Opcional: esconder a mensagem após um tempo
+    setTimeout(() => setFeedbackMessage({ text: '', type: '' }), 5000);
+  };
 
-  // **useEffect principal para carregar informações do usuário e a foto de perfil**
-  useEffect(() => {
-    const buscarInformacoesUsuario = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (token) {
-          const response = await axios.get('/auth/user/me', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          setNomeUsuario(response.data.nome || 'Usuário');
-          setUserRole(response.data.role);
-          setUserId(response.data.id);
-
-          // Chama a função para buscar a foto de perfil após a autenticação
-          // fetchProfileImage agora não causa re-renderização em loop
-          fetchProfileImage(token);
-
-        } else {
-          setMensagemSenha('Usuário não autenticado.');
-          navigate('/acesso');
-        }
-      } catch (error) {
-        setMensagemSenha('Erro ao buscar informações do usuário.');
-        navigate('/acesso');
-      }
-    };
-
-    buscarInformacoesUsuario();
-
-    // **Função de limpeza para revogar a URL do objeto Blob**
-    // Esta função de limpeza **ainda precisa** de profileImageUrl como dependência,
-    // para garantir que ela seja executada quando profileImageUrl mudar ou o componente for desmontado.
-    return () => {
-      if (profileImageUrl) {
-        URL.revokeObjectURL(profileImageUrl);
-      }
-    };
-  }, [navigate, fetchProfileImage]); // **profileImageUrl REMOVIDO daqui**
-
+  // Função para formatar data e hora (já estava OK)
   const formatDateTime = (dateTimeString) => {
     if (!dateTimeString) return '';
     const date = new Date(dateTimeString);
@@ -96,42 +58,247 @@ function MeuPerfil() {
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
 
-  const handleAlterarSenha = async (event) => {
-    event.preventDefault();
-    setMensagemSenha('');
+  // --- Funções de Requisição ao Backend ---
 
-    if (novaSenha !== confirmarNovaSenha) {
-      setMensagemSenha('A nova senha e a confirmação não coincidem.');
+  // useCallback para memorizar a função de busca da foto de perfil
+  // Essencial para evitar loop no useEffect
+  const fetchProfileImage = useCallback(async (token) => {
+    if (!token) {
+      setProfileImageUrl(null);
+      return;
+    }
+    try {
+      // Usar a URL completa com o prefixo do AuthController
+      const response = await axios.get('/auth/user/me/profile-image', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        responseType: 'blob' // Indispensável para receber dados binários (imagem)
+      });
+
+      // Cria uma URL de objeto para a imagem (temporária no navegador)
+      const imageUrl = URL.createObjectURL(response.data);
+      setProfileImageUrl(imageUrl);
+      console.log("Foto de perfil carregada com sucesso.");
+    } catch (error) {
+      console.error('Erro ao buscar foto de perfil:', error);
+      // Se a imagem não existe (404), ou outro erro, resetar para null
+      setProfileImageUrl(null);
+      // Opcional: showFeedback('Não foi possível carregar a foto de perfil.', 'erro');
+    }
+  }, []); // Dependências vazias para useCallback: esta função não depende de nenhum estado do componente
+
+  // Função para fazer upload da foto de perfil
+  const handleUploadProfileImage = async () => {
+    if (!selectedFile) {
+      showFeedback('Por favor, selecione uma imagem para fazer upload.', 'erro');
       return;
     }
 
+    setIsUploadingImage(true);
+    const formData = new FormData();
+    formData.append('foto', selectedFile); // 'foto' deve ser o nome do parâmetro no Spring Boot @RequestParam
+
     try {
       const token = localStorage.getItem('token');
-      if (token) {
-        const response = await axios.post('/auth/change-password', {
-          currentPassword: senhaAtual,
-          newPassword: novaSenha,
-        }, {
+      if (!token) {
+        showFeedback('Usuário não autenticado. Por favor, faça login novamente.', 'erro');
+        navigate('/acesso');
+        return;
+      }
+
+      const response = await axios.post('/auth/user/me/upload', formData, {
+        headers: {
+          // Quando se usa FormData, o Content-Type 'multipart/form-data' é geralmente definido
+          // automaticamente pelo navegador/axios com o boundary. Não é necessário definir manualmente
+          // mas ter 'Content-Type': 'multipart/form-data' não prejudica.
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      showFeedback('Foto de perfil atualizada com sucesso!', 'sucesso');
+      fetchProfileImage(token); // Recarrega a imagem após o upload bem-sucedido
+      setSelectedFile(null); // Limpa o arquivo selecionado no input
+    } catch (error) {
+      console.error('Erro ao fazer upload da foto de perfil:', error);
+      showFeedback(error.response?.data || 'Erro ao fazer upload da imagem.', 'erro');
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  // Função para alterar a senha
+  const handleAlterarSenha = async (event) => {
+    event.preventDefault();
+    setFeedbackMessage({ text: '', type: '' }); // Limpa mensagens anteriores
+
+    if (!senhaAtual || !novaSenha || !confirmarNovaSenha) {
+      showFeedback('Todos os campos de senha são obrigatórios.', 'erro');
+      return;
+    }
+    if (novaSenha !== confirmarNovaSenha) {
+      showFeedback('A nova senha e a confirmação não coincidem.', 'erro');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showFeedback('Usuário não autenticado. Por favor, faça login novamente.', 'erro');
+        navigate('/acesso');
+        return;
+      }
+
+      const response = await axios.post('/auth/change-password', {
+        currentPassword: senhaAtual,
+        newPassword: novaSenha,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      showFeedback(response.data || 'Senha alterada com sucesso!', 'sucesso');
+      setSenhaAtual('');
+      setNovaSenha('');
+      setConfirmarNovaSenha('');
+    } catch (error) {
+      console.error('Erro ao alterar a senha:', error);
+      showFeedback(error.response?.data?.message || 'Erro ao alterar a senha.', 'erro');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  // Função para cadastrar evento (se for HOST)
+  const handleCadastrarEventoSubmit = async (event) => {
+    event.preventDefault();
+    setFeedbackMessage({ text: '', type: '' });
+
+    // Validação básica dos campos do evento
+    if (!nomeEvento || !dataHora || !descricao || !nomeGenero || !localEventoNome) {
+      showFeedback('Por favor, preencha todos os campos do evento.', 'erro');
+      return;
+    }
+
+    setIsCreatingEvent(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token || !userId) {
+        showFeedback('Usuário não autenticado ou ID do usuário não encontrado.', 'erro');
+        navigate('/acesso');
+        return;
+      }
+
+      // 1. Criar Gênero Musical
+      const genreResponse = await axios.post('/genres', { nomeGenero }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const genreData = genreResponse.data;
+
+      // 2. Criar Local do Evento
+      const placeResponse = await axios.post('/places', { local: localEventoNome }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const placeData = placeResponse.data;
+
+      // 3. Formatar Data e Hora para o Backend
+      const formattedDataHora = formatDateTime(dataHora); // Verifique se o backend aceita este formato
+
+      // 4. Cadastrar Evento
+      const eventResponse = await axios.post('/eventos', {
+        nomeEvento,
+        dataHora: formattedDataHora, // Certifique-se que o formato é compatível com o backend
+        descricao,
+        generoMusical: { idGeneroMusical: genreData.idGeneroMusical },
+        localEvento: { idLocalEvento: placeData.idLocalEvento },
+        host: { id: userId }, // Assumindo que o backend espera um objeto com o ID do host
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      showFeedback('Evento cadastrado com sucesso!', 'sucesso');
+      setExibirFormularioEvento(false); // Esconde o formulário
+      // Limpa os campos do formulário
+      setNomeEvento('');
+      setDataHora('');
+      setDescricao('');
+      setNomeGenero('');
+      setLocalEventoNome('');
+    } catch (error) {
+      console.error('Erro ao cadastrar evento:', error);
+      showFeedback(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`, 'erro');
+    } finally {
+      setIsCreatingEvent(false);
+    }
+  };
+
+
+  // --- Efeitos Colaterais (useEffect) ---
+
+  // useEffect para carregar informações do usuário e a foto de perfil na montagem do componente
+  useEffect(() => {
+    const buscarInformacoesUsuario = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          showFeedback('Usuário não autenticado. Redirecionando para a página de acesso.', 'erro');
+          navigate('/acesso');
+          return;
+        }
+
+        // Requisição para buscar dados do usuário
+        const userResponse = await axios.get('/auth/user/me', {
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
           },
         });
+        setNomeUsuario(userResponse.data.nome || 'Usuário');
+        setUserRole(userResponse.data.role);
+        setUserId(userResponse.data.id);
 
-        setMensagemSenha(response.data || 'Senha alterada com sucesso!');
-        setSenhaAtual('');
-        setNovaSenha('');
-        setConfirmarNovaSenha('');
-      } else {
-        setMensagemSenha('Usuário não autenticado.');
+        // Chamada para buscar a foto de perfil usando o token obtido
+        fetchProfileImage(token);
+
+      } catch (error) {
+        console.error('Erro ao buscar informações do usuário:', error);
+        showFeedback('Erro ao buscar informações do usuário. Por favor, tente novamente.', 'erro');
+        navigate('/acesso'); // Redireciona em caso de erro na busca inicial do usuário
       }
-    } catch (error) {
-      setMensagemSenha('Erro de conexão ao alterar a senha.');
-    }
+    };
+
+    buscarInformacoesUsuario();
+
+    // Função de limpeza para revogar a URL do objeto Blob quando o componente é desmontado
+    // ou quando `profileImageUrl` muda (para evitar vazamentos de memória).
+    return () => {
+      if (profileImageUrl) {
+        URL.revokeObjectURL(profileImageUrl);
+        // console.log("URL de objeto de imagem revogada."); // Opcional para depuração
+      }
+    };
+  }, [navigate, fetchProfileImage, profileImageUrl]); // `profileImageUrl` aqui é crucial para a função de limpeza
+
+  // --- Handlers de Eventos simples ---
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    showFeedback('Logout realizado com sucesso!', 'sucesso');
     navigate('/acesso');
   };
 
@@ -139,95 +306,8 @@ function MeuPerfil() {
     setExibirFormularioEvento(true);
   };
 
-  const handleCadastrarEventoSubmit = async (event) => {
-    event.preventDefault();
-    setMensagemSenha('');
 
-    try {
-      const token = localStorage.getItem('token');
-      if (token && userId) {
-        const genreResponse = await axios.post('/genres', { nomeGenero }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        const genreData = genreResponse.data;
-
-        const placeResponse = await axios.post('/places', { local: localEventoNome }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        const placeData = placeResponse.data;
-
-        const formattedDataHora = formatDateTime(dataHora);
-
-        const eventResponse = await axios.post('/eventos', {
-          nomeEvento,
-          dataHora: formattedDataHora,
-          descricao,
-          generoMusical: { idGeneroMusical: genreData.idGeneroMusical },
-          localEvento: { idLocalEvento: placeData.idLocalEvento },
-          host: { id: userId },
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        setMensagemSenha('Evento cadastrado com sucesso!');
-        setExibirFormularioEvento(false);
-        setNomeEvento('');
-        setDataHora('');
-        setDescricao('');
-        setNomeGenero('');
-        setLocalEventoNome('');
-      } else {
-        setMensagemSenha('Usuário não autenticado ou ID do usuário não encontrado.');
-      }
-    } catch (error) {
-      setMensagemSenha(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
-    }
-  };
-
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
-  };
-
-  // **Função para fazer upload da foto de perfil**
-  const handleUploadProfileImage = async () => {
-    if (!selectedFile) {
-      setUploadMessage('Por favor, selecione uma imagem.');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('foto', selectedFile); // O nome do campo deve ser 'foto' para corresponder ao seu backend
-
-    try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        const response = await axios.post('/user/me/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        setUploadMessage('Foto de perfil atualizada com sucesso!');
-        // Após o upload, chame fetchProfileImage para recarregar a imagem atualizada
-        fetchProfileImage(token);
-        setSelectedFile(null); // Limpa o arquivo selecionado
-      } else {
-        setUploadMessage('Usuário não autenticado.');
-      }
-    } catch (error) {
-      console.error('Erro ao fazer upload da foto de perfil:', error);
-      setUploadMessage(error.response?.data?.message || 'Erro ao fazer upload da imagem.');
-    }
-  };
+  // --- Renderização do Componente ---
 
   return (
       <div className="meu-perfil-container">
@@ -235,22 +315,37 @@ function MeuPerfil() {
           Voltar para Home
         </Link>
         <h1>Meu Perfil</h1>
+
+        {/* Exibir feedback ao usuário */}
+        {feedbackMessage.text && (
+            <p className={`mensagem ${feedbackMessage.type === 'sucesso' ? 'sucesso' : 'erro'}`}>
+              {feedbackMessage.text}
+            </p>
+        )}
+
         <div className="bem-vindo">
           <h2>Bem-vindo(a), {nomeUsuario}!</h2>
-          {/* Renderiza a foto de perfil apenas se profileImageUrl tiver um valor */}
-          {profileImageUrl && (
+          {/* Exibir a foto de perfil se profileImageUrl estiver definido */}
+          {profileImageUrl ? (
               <div className="foto-perfil-preview">
                 <img src={profileImageUrl} alt="Foto de Perfil" style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%' }} />
+              </div>
+          ) : (
+              <div className="foto-perfil-placeholder">
+                {/* Opcional: mostrar um placeholder ou um ícone se não houver foto */}
+                <p>Nenhuma foto de perfil</p>
               </div>
           )}
         </div>
 
+        {/* Seção para Cliente */}
         {userRole === 'CLIENT' && (
             <Link to="/avaliacoes" className="avaliacoes-btn">
-              Avaliações
+              Minhas Avaliações
             </Link>
         )}
 
+        {/* Seção para Host */}
         {userRole === 'HOST' && (
             <div className="cadastrar-evento-container">
               <button onClick={handleCadastrarEventoClick} className="cadastrar-evento-btn">
@@ -269,6 +364,7 @@ function MeuPerfil() {
                             value={nomeEvento}
                             onChange={(e) => setNomeEvento(e.target.value)}
                             required
+                            disabled={isCreatingEvent}
                         />
                       </div>
                       <div className="form-group">
@@ -279,6 +375,7 @@ function MeuPerfil() {
                             value={dataHora}
                             onChange={(e) => setDataHora(e.target.value)}
                             required
+                            disabled={isCreatingEvent}
                         />
                       </div>
                       <div className="form-group">
@@ -288,6 +385,7 @@ function MeuPerfil() {
                             value={descricao}
                             onChange={(e) => setDescricao(e.target.value)}
                             required
+                            disabled={isCreatingEvent}
                         />
                       </div>
                       <div className="form-group">
@@ -298,6 +396,7 @@ function MeuPerfil() {
                             value={nomeGenero}
                             onChange={(e) => setNomeGenero(e.target.value)}
                             required
+                            disabled={isCreatingEvent}
                         />
                       </div>
                       <div className="form-group">
@@ -308,12 +407,13 @@ function MeuPerfil() {
                             value={localEventoNome}
                             onChange={(e) => setLocalEventoNome(e.target.value)}
                             required
+                            disabled={isCreatingEvent}
                         />
                       </div>
-                      <button type="submit" className="cadastrar-evento-submit-btn">
-                        Cadastrar Evento
+                      <button type="submit" className="cadastrar-evento-submit-btn" disabled={isCreatingEvent}>
+                        {isCreatingEvent ? 'Cadastrando...' : 'Cadastrar Evento'}
                       </button>
-                      <button type="button" onClick={() => setExibirFormularioEvento(false)} className="cancelar-evento-btn">
+                      <button type="button" onClick={() => setExibirFormularioEvento(false)} className="cancelar-evento-btn" disabled={isCreatingEvent}>
                         Cancelar
                       </button>
                     </form>
@@ -322,23 +422,31 @@ function MeuPerfil() {
             </div>
         )}
 
+        {/* Seção de Upload de Foto de Perfil */}
         <div className="upload-foto-perfil-container">
           <h3>Foto de Perfil</h3>
           <div className="upload-area">
-            <input type="file" accept="image/*" onChange={handleFileChange} id="profileImageInput" style={{ display: 'none' }} />
-            <label htmlFor="profileImageInput" className="selecionar-foto-btn">
+            <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                id="profileImageInput"
+                style={{ display: 'none' }}
+                disabled={isUploadingImage}
+            />
+            <label htmlFor="profileImageInput" className="selecionar-foto-btn" style={isUploadingImage ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
               {selectedFile ? 'Selecionar outra foto' : 'Selecionar Foto'}
             </label>
             {selectedFile && (
                 <p>Arquivo selecionado: {selectedFile.name}</p>
             )}
-            <button onClick={handleUploadProfileImage} disabled={!selectedFile} className="enviar-foto-btn">
-              Enviar Foto
+            <button onClick={handleUploadProfileImage} disabled={!selectedFile || isUploadingImage} className="enviar-foto-btn">
+              {isUploadingImage ? 'Enviando...' : 'Enviar Foto'}
             </button>
-            {uploadMessage && <p className={`mensagem ${uploadMessage.includes('sucesso') ? 'sucesso' : 'erro'}`}>{uploadMessage}</p>}
           </div>
         </div>
 
+        {/* Seção de Alterar Senha */}
         <div className="alterar-senha-container">
           <h3>Alterar Senha</h3>
           <form onSubmit={handleAlterarSenha}>
@@ -350,6 +458,7 @@ function MeuPerfil() {
                   value={senhaAtual}
                   onChange={(e) => setSenhaAtual(e.target.value)}
                   required
+                  disabled={isChangingPassword}
               />
             </div>
             <div className="form-group">
@@ -360,6 +469,7 @@ function MeuPerfil() {
                   value={novaSenha}
                   onChange={(e) => setNovaSenha(e.target.value)}
                   required
+                  disabled={isChangingPassword}
               />
             </div>
             <div className="form-group">
@@ -370,15 +480,16 @@ function MeuPerfil() {
                   value={confirmarNovaSenha}
                   onChange={(e) => setConfirmarNovaSenha(e.target.value)}
                   required
+                  disabled={isChangingPassword}
               />
             </div>
-            <button type="submit" className="alterar-senha-btn">
-              Alterar Senha
+            <button type="submit" className="alterar-senha-btn" disabled={isChangingPassword}>
+              {isChangingPassword ? 'Alterando...' : 'Alterar Senha'}
             </button>
           </form>
-          {mensagemSenha && <p className={`mensagem ${mensagemSenha.includes('sucesso') ? 'sucesso' : 'erro'}`}>{mensagemSenha}</p>}
         </div>
 
+        {/* Botão de Sair (Logout) */}
         <button onClick={handleLogout} className="logout-btn">
           Sair
         </button>
