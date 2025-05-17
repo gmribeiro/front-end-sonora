@@ -1,17 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // Adicione useCallback
 import { FaSearch, FaBell } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { FaUserCircle } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom'; // Importe useNavigate
+import axios from 'axios'; // Importe axios
+// Remova FaUserCircle se você for usar a imagem de perfil no lugar
+// import { FaUserCircle } from 'react-icons/fa';
 import './headercadastrado.css';
 
 function HeaderCadastrado() {
     const [nomeUsuario, setNomeUsuario] = useState('');
+    const [profileImageUrl, setProfileImageUrl] = useState(null); // Novo estado para a URL da imagem
+    const navigate = useNavigate(); // Inicialize useNavigate
+
+    // Função para buscar a foto de perfil (memorizada com useCallback)
+    const fetchProfileImage = useCallback(async (token) => {
+        if (!token) {
+            setProfileImageUrl(null);
+            return;
+        }
+        try {
+            const response = await axios.get('/auth/user/me/profile-image', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                responseType: 'blob' // Espera uma resposta binária (imagem)
+            });
+
+            const imageUrl = URL.createObjectURL(response.data);
+            setProfileImageUrl(imageUrl);
+            console.log("Foto de perfil do HeaderCadastrado carregada.");
+        } catch (error) {
+            console.error('Erro ao buscar foto de perfil no HeaderCadastrado:', error);
+            setProfileImageUrl(null); // Reseta a imagem se houver erro
+        }
+    }, []); // Dependências vazias, pois só depende do token passado como argumento
 
     useEffect(() => {
-        const buscarNomeUsuario = async () => {
+        const buscarInformacoesUsuario = async () => {
             try {
                 const token = localStorage.getItem('token');
                 if (token) {
+                    // Fetch para o nome do usuário
                     const response = await fetch('/auth/user/me', {
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -19,22 +47,49 @@ function HeaderCadastrado() {
                     });
                     if (response.ok) {
                         const userData = await response.json();
-                        setNomeUsuario(userData.nome || 'Usuário'); // Use userData.nome se existir, senão 'Usuário'
+                        setNomeUsuario(userData.nome || 'Usuário');
                     } else {
-                        console.error('Erro ao buscar informações do usuário');
-                        setNomeUsuario('Usuário'); // Define um nome padrão em caso de erro
+                        // Lidar com erros de resposta HTTP (ex: 401 Unauthorized)
+                        if (response.status === 401) {
+                            console.log('Token expirado ou inválido. Redirecionando para login.');
+                            localStorage.removeItem('token'); // Limpa token inválido
+                            navigate('/acesso'); // Redireciona para login
+                        }
+                        console.error('Erro ao buscar informações do usuário:', response.statusText);
+                        setNomeUsuario('Usuário'); // Pode definir para um valor padrão ou vazio
                     }
+
+                    // Fetch para a foto de perfil
+                    fetchProfileImage(token);
+
                 } else {
-                    setNomeUsuario('Usuário Não Logado'); // Mensagem se não houver token
+                    setNomeUsuario('Usuário Não Logado');
+                    setProfileImageUrl(null); // Limpa a imagem se não estiver logado
                 }
             } catch (error) {
-                console.error('Erro ao buscar nome do usuário:', error);
-                setNomeUsuario('Erro ao Carregar'); // Mensagem em caso de erro na requisição
+                console.error('Erro ao buscar informações do usuário:', error);
+                setNomeUsuario('Erro ao Carregar');
+                setProfileImageUrl(null);
             }
         };
 
-        buscarNomeUsuario();
-    }, []);
+        buscarInformacoesUsuario();
+
+        // Função de limpeza para revogar a URL do objeto Blob.
+        // Ela captura o valor de `profileImageUrl` do momento em que o efeito foi executado.
+        return () => {
+            if (profileImageUrl) {
+                URL.revokeObjectURL(profileImageUrl);
+                console.log("URL de objeto da foto de perfil do HeaderCadastrado revogada.");
+            }
+        };
+        // **AQUI ESTÁ A CORREÇÃO PRINCIPAL:**
+        // Removemos `profileImageUrl` do array de dependências.
+        // O `useEffect` só será executado quando `Maps` ou `WorkspaceProfileImage` (a instância da função useCallback) mudarem.
+        // Como `WorkspaceProfileImage` é memorizada e tem dependências vazias, ela não muda.
+        // `Maps` também é estável.
+        // Assim, o efeito será executado apenas uma vez na montagem do componente.
+    }, [navigate, fetchProfileImage]); // <-- ARRAY DE DEPENDÊNCIAS CORRETO PARA EVITAR O LOOP!
 
     return (
         <header className="header">
@@ -64,8 +119,19 @@ function HeaderCadastrado() {
                     <Link to="/meusconvites" className="nav-link">Meus Convites</Link>
                 </nav>
                 <Link to="/perfil" className="perfil-link">
-                    <FaUserCircle className="perfil-icon" />
-                    <span className="perfil-nome">{nomeUsuario}</span> {/* Exibe o nome do usuário */}
+                    {profileImageUrl ? (
+                        <img
+                            src={profileImageUrl}
+                            alt="Foto de Perfil"
+                            className="perfil-foto" // Nova classe para estilização
+                        />
+                    ) : (
+                        // Placeholder para quando não há foto
+                        <div className="perfil-foto-placeholder">
+                            {nomeUsuario.charAt(0).toUpperCase()}
+                        </div>
+                    )}
+                    <span className="perfil-nome">{nomeUsuario}</span>
                 </Link>
                 <Link to="/notificacao" className="perfil-link">
                     <div className="icon-button">
