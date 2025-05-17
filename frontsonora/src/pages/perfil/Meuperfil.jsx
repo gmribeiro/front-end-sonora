@@ -3,15 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './meuperfil.css'; // Certifique-se de que este arquivo CSS existe e está correto
 
-// Se você não tem um axios.defaults.baseURL configurado globalmente,
-// você pode definir um aqui ou em um arquivo de configuração separado.
-// Ex: axios.defaults.baseURL = 'http://localhost:8080';
-
 function MeuPerfil() {
   // 1. Estados para Informações do Usuário e Autenticação
   const [nomeUsuario, setNomeUsuario] = useState('');
   const [userId, setUserId] = useState(null);
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setuserRole] = useState('');
   // Feedback para o usuário: mensagem e tipo (sucesso/erro)
   const [feedbackMessage, setFeedbackMessage] = useState({ text: '', type: '' });
   const navigate = useNavigate();
@@ -59,36 +55,27 @@ function MeuPerfil() {
   };
 
   // --- Funções de Requisição ao Backend ---
-
-  // useCallback para memorizar a função de busca da foto de perfil
-  // Essencial para evitar loop no useEffect
   const fetchProfileImage = useCallback(async (token) => {
     if (!token) {
       setProfileImageUrl(null);
       return;
     }
     try {
-      // Usar a URL completa com o prefixo do AuthController
       const response = await axios.get('/auth/user/me/profile-image', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-        responseType: 'blob' // Indispensável para receber dados binários (imagem)
+        responseType: 'blob'
       });
-
-      // Cria uma URL de objeto para a imagem (temporária no navegador)
       const imageUrl = URL.createObjectURL(response.data);
       setProfileImageUrl(imageUrl);
       console.log("Foto de perfil carregada com sucesso.");
     } catch (error) {
       console.error('Erro ao buscar foto de perfil:', error);
-      // Se a imagem não existe (404), ou outro erro, resetar para null
       setProfileImageUrl(null);
-      // Opcional: showFeedback('Não foi possível carregar a foto de perfil.', 'erro');
     }
-  }, []); // Dependências vazias para useCallback: esta função não depende de nenhum estado do componente
+  }, []); // <-- ARRAY DE DEPENDÊNCIAS VAZIO PARA useCallback. Isso é crucial!
 
-  // Função para fazer upload da foto de perfil
   const handleUploadProfileImage = async () => {
     if (!selectedFile) {
       showFeedback('Por favor, selecione uma imagem para fazer upload.', 'erro');
@@ -109,15 +96,14 @@ function MeuPerfil() {
 
       const response = await axios.post('/auth/user/me/upload', formData, {
         headers: {
-          // Quando se usa FormData, o Content-Type 'multipart/form-data' é geralmente definido
-          // automaticamente pelo navegador/axios com o boundary. Não é necessário definir manualmente
-          // mas ter 'Content-Type': 'multipart/form-data' não prejudica.
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
         },
       });
       showFeedback('Foto de perfil atualizada com sucesso!', 'sucesso');
-      fetchProfileImage(token); // Recarrega a imagem após o upload bem-sucedido
+      // Recarrega a imagem após o upload bem-sucedido.
+      // fetchProfileImage precisa ser chamada aqui para atualizar a imagem na tela.
+      fetchProfileImage(token);
       setSelectedFile(null); // Limpa o arquivo selecionado no input
     } catch (error) {
       console.error('Erro ao fazer upload da foto de perfil:', error);
@@ -265,7 +251,7 @@ function MeuPerfil() {
           },
         });
         setNomeUsuario(userResponse.data.nome || 'Usuário');
-        setUserRole(userResponse.data.role);
+        setuserRole(userResponse.data.role); // Corrigi o set do userRole aqui
         setUserId(userResponse.data.id);
 
         // Chamada para buscar a foto de perfil usando o token obtido
@@ -281,14 +267,21 @@ function MeuPerfil() {
     buscarInformacoesUsuario();
 
     // Função de limpeza para revogar a URL do objeto Blob quando o componente é desmontado
-    // ou quando `profileImageUrl` muda (para evitar vazamentos de memória).
+    // ou quando o effect é re-executado (o que não deve acontecer muito com as dependências corretas).
+    // Esta função de limpeza CAPTURA o valor de `profileImageUrl` do momento em que o effect foi executado.
     return () => {
       if (profileImageUrl) {
         URL.revokeObjectURL(profileImageUrl);
-        // console.log("URL de objeto de imagem revogada."); // Opcional para depuração
+        console.log("URL de objeto de imagem revogada:", profileImageUrl); // Opcional para depuração
       }
     };
-  }, [navigate, fetchProfileImage, profileImageUrl]); // `profileImageUrl` aqui é crucial para a função de limpeza
+    // **AQUI ESTÁ A CORREÇÃO MAIS IMPORTANTE:**
+    // Removemos `profileImageUrl` do array de dependências.
+    // O `useEffect` só será disparado quando `Maps` ou `WorkspaceProfileImage` (a instância da função useCallback) mudarem.
+    // Como `WorkspaceProfileImage` está memorizada com `useCallback` e tem dependências vazias, ela não muda.
+    // `Maps` também é estável.
+    // Assim, o efeito será executado apenas uma vez na montagem do componente.
+  }, [navigate, fetchProfileImage]); // <--- ARRAY DE DEPENDÊNCIAS CORRETO!
 
   // --- Handlers de Eventos simples ---
 
