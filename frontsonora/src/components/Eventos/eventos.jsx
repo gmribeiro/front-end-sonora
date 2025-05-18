@@ -20,6 +20,9 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
     const [formMessage, setFormMessage] = useState('');
     const [isAnimating, setIsAnimating] = useState(false);
     const [generos, setGeneros] = useState([]);
+    // NOVO ESTADO para o arquivo da imagem
+    const [eventImageFile, setEventImageFile] = useState(null);
+
     const eventosPorPagina = 6;
     const totalPaginas = Math.ceil(eventosFiltrados.length / eventosPorPagina);
     const indiceInicial = (currentPage - 1) * eventosPorPagina;
@@ -47,6 +50,7 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 .catch(error => console.error('Erro ao carregar gêneros:', error));
         }
     }, []);
+
     const formatDateTime = (dateTimeString) => {
         if (!dateTimeString) return '';
         const date = new Date(dateTimeString);
@@ -58,9 +62,11 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
         const seconds = String(date.getSeconds()).padStart(2, '0');
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
+
     const handleEventoClick = (eventoId) => {
         navigate(`/detalhes/${eventoId}`);
     };
+
     const handleReservar = async (eventoId) => {
         setReservandoId(eventoId);
         setMensagemReserva('');
@@ -101,6 +107,7 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             }, 3000);
         }
     };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name === 'local') {
@@ -119,15 +126,25 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             setNumero(value);
         }
     };
+
+    const handleImageChange = (e) => {
+        setEventImageFile(e.target.files[0]);
+    };
+
     const handleCadastrarEvento = async (e) => {
         e.preventDefault();
         setFormMessage('');
         const token = localStorage.getItem('token');
 
         if (!token || usuarioLogado?.role !== 'HOST' || !userId || !selectedGeneroId || !localEventoNome || !cep || !numero) {
-            setFormMessage('Preencha todos os campos para cadastrar o evento.');
+            setFormMessage('Preencha todos os campos obrigatórios para cadastrar o evento.');
             return;
         }
+        if (!eventImageFile) {
+            setFormMessage('Por favor, selecione uma imagem para o evento.');
+            return;
+        }
+
 
         try {
             const formattedDataHora = formatDateTime(dataHora);
@@ -153,58 +170,79 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 host: { id: userId }
             };
 
-            const response = await axios.post('/eventos', eventData, {
+            const eventResponse = await axios.post('/eventos', eventData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-            if (response.status === 201) {
-                setFormMessage('Evento cadastrado com sucesso!');
-                setNomeEvento('');
-                setDataHora('');
-                setDescricao('');
-                setSelectedGeneroId('');
-                setLocalEventoNome('');
-                setCep('');
-                setNumero('');
 
-                const novoEventoDoBackend = response.data;
+            const novoEventoDoBackend = eventResponse.data;
 
-                const novoEventoParaHome = {
-                    id: novoEventoDoBackend.idEvento,
-                    titulo: nomeEvento,
-                    local: localEventoNome,
-                    hora: formatDateTime(dataHora).split(' ')[1],
-                    imagem: null,
-                    genero: generos.find(g => g.idGeneroMusical === selectedGeneroId)?.nomeGenero || 'Outro'
-                };
+            if (eventImageFile && novoEventoDoBackend.idEvento) {
+                const formData = new FormData();
+                formData.append('foto', eventImageFile);
 
-                if (onEventoCadastrado) {
-                    onEventoCadastrado(novoEventoParaHome);
-                }
-                const notificationMessage = `Novo evento ${novoEventoParaHome.titulo} postado pelo anfitrião ${usuarioLogado.nome}.`;
-                await axios.post('/notifications', {
-                    usuarioId: userId,
-                    mensagem: notificationMessage
-                }, {
+                const uploadResponse = await axios.post(`/eventos/${novoEventoDoBackend.idEvento}/upload`, formData, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'multipart/form-data'
                     }
                 });
-                console.log('Notificação de novo evento enviada.');
 
-                setTimeout(() => {
-                    setShowCadastro(false);
-                    setFormMessage('');
-                }, 2000);
+                if (uploadResponse.status !== 200) {
+                    console.warn('Upload de imagem falhou, mas o evento foi criado.', uploadResponse.data);
+                    setFormMessage('Evento cadastrado, mas o upload da imagem falhou. Tente novamente mais tarde.');
+                } else {
+                    console.log('Imagem do evento carregada com sucesso!', uploadResponse.data);
+                    setFormMessage('Evento cadastrado com sucesso e imagem enviada!');
+                }
             } else {
-                setFormMessage('Erro ao cadastrar evento.');
+                setFormMessage('Evento cadastrado, mas nenhuma imagem foi selecionada ou o ID do evento não foi retornado.');
             }
 
+            // Limpar formulário e estados
+            setNomeEvento('');
+            setDataHora('');
+            setDescricao('');
+            setSelectedGeneroId('');
+            setLocalEventoNome('');
+            setCep('');
+            setNumero('');
+            setEventImageFile(null); // Limpar o arquivo selecionado
+
+            const novoEventoParaHome = {
+                id: novoEventoDoBackend.idEvento,
+                titulo: nomeEvento,
+                local: localEventoNome,
+                hora: formatDateTime(dataHora).split(' ')[1],
+                imagem: novoEventoDoBackend.foto ? `/uploads/event-images/${novoEventoDoBackend.foto}` : null, // Supondo que 'foto' esteja no DTO
+                genero: generos.find(g => g.idGeneroMusical === selectedGeneroId)?.nomeGenero || 'Outro'
+            };
+
+            if (onEventoCadastrado) {
+                onEventoCadastrado(novoEventoParaHome);
+            }
+
+            const notificationMessage = `Novo evento ${novoEventoParaHome.titulo} postado pelo anfitrião ${usuarioLogado.nome}.`;
+            await axios.post('/notifications', {
+                usuarioId: userId,
+                mensagem: notificationMessage
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log('Notificação de novo evento enviada.');
+
+            setTimeout(() => {
+                setShowCadastro(false);
+                setFormMessage('');
+            }, 2000);
+
         } catch (error) {
-            console.error('Erro ao cadastrar evento:', error);
+            console.error('Erro ao cadastrar evento ou fazer upload da imagem:', error);
             setFormMessage(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
         }
     };
@@ -231,6 +269,7 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                         <div className="cadastro-evento-form">
                             <h3>Cadastrar Novo Evento</h3>
                             <form onSubmit={handleCadastrarEvento}>
+                                {/* Campos existentes */}
                                 <div className="form-group">
                                     <label htmlFor="nomeEvento">Nome do Evento:</label>
                                     <input type="text" id="nomeEvento" name="nomeEvento" value={nomeEvento} onChange={handleInputChange} required />
@@ -272,6 +311,19 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                                     <label htmlFor="numero">Número do Local:</label>
                                     <input type="text" id="numero" name="numero" value={numero} onChange={handleInputChange} />
                                 </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="eventImage">Foto do Evento:</label>
+                                    <input
+                                        type="file"
+                                        id="eventImage"
+                                        name="eventImage"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        required
+                                    />
+                                </div>
+
                                 <button type="submit" className="btn-cadastrar">Cadastrar</button>
                                 <button type="button" onClick={() => setShowCadastro(false)} className="btn-cancelar">Cancelar</button>
                                 {formMessage && <p className={`form-message ${formMessage.startsWith('Erro') ? 'error' : 'success'}`}>{formMessage}</p>}
@@ -294,6 +346,7 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                     >
                         <div className="evento-imagem-container">
                             <img
+
                                 src={evento.imagem || '/images/evento_padrao.png'}
                                 alt={evento.titulo}
                                 className="evento-imagem"
@@ -314,7 +367,7 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                             </button>
                         )}
                         {mensagemReserva && reservandoId === evento.id && (
-                            <p className="mensagem-reserva">{mensagemReserva}</p>
+                            <p className="mensagem-reserva">{mensagemResagemReserva}</p>
                         )}
                     </div>
                 ))}

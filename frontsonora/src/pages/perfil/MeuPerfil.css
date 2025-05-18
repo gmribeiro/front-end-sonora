@@ -5,12 +5,12 @@
     --cinza-escuro: #333;
     --branco: #fff;
   }
-  
+
   body {
     background-color: var(--rosa-claro);
     font-family: 'Segoe UI', sans-serif;
   }
-  
+
   .meu-perfil-container {
     max-width: 1000px;
     margin: 2rem auto;
@@ -19,20 +19,20 @@
     border-radius: 20px;
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
   }
-  
+
   h1 {
     text-align: center;
     color: var(--roxo-principal);
     font-size: 2rem;
     margin-bottom: 2rem;
   }
-  
+
   .perfil-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 2rem;
   }
-  
+
   .perfil-header button {
     background-color: var(--roxo-principal);
     color: var(--branco);
@@ -43,11 +43,11 @@
     cursor: pointer;
     transition: background 0.3s;
   }
-  
+
   .perfil-header button:hover {
     background-color: #5e3b71;
   }
-  
+
   .foto-perfil {
     width: 120px;
     height: 120px;
@@ -63,7 +63,7 @@
     cursor: pointer;
     margin-bottom: 1rem;
   }
-  
+
   .secao {
     background-color: var(--branco);
     border-radius: 16px;
@@ -71,24 +71,24 @@
     margin-bottom: 1.5rem;
     box-shadow: 0 0 10px rgba(117, 81, 140, 0.1);
   }
-  
+
   .secao h3 {
     color: var(--roxo-principal);
     font-size: 1.1rem;
     margin-bottom: 1rem;
   }
-  
+
   .info-linha {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.8rem;
   }
-  
+
   .info-linha span {
     color: var(--cinza-escuro);
   }
-  
+
   .info-linha button {
     background-color: var(--roxo-claro);
     color: var(--cinza-escuro);
@@ -99,11 +99,11 @@
     cursor: pointer;
     transition: background 0.3s;
   }
-  
+
   .info-linha button:hover {
     background-color: #caa0e4;
   }
-  
+
   /* Botões grandes (logout e alterar senha) */
   .logout-btn,
   .alterar-senha-btn {
@@ -119,31 +119,30 @@
     cursor: pointer;
     transition: background 0.3s ease;
   }
-  
+
   .logout-btn:hover,
   .alterar-senha-btn:hover {
     background-color: #5e3b71;
   }
-  
+
   /* Responsivo */
   @media (max-width: 700px) {
     .info-linha {
       flex-direction: column;
       align-items: flex-start;
     }
-  
+
     .info-linha button {
       margin-top: 5px;
     }
-  
+
     .perfil-header {
       flex-direction: column;
       gap: 10px;
     }
-  
+
     .foto-perfil {
       width: 100px;
       height: 100px;
     }
   }
-  

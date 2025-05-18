@@ -482,7 +482,6 @@ function MeuPerfil() {
           </form>
         </div>
 
-        {/* Botão de Sair (Logout) */}
         <button onClick={handleLogout} className="logout-btn">
           Sair
         </button>
