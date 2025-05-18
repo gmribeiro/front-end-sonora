@@ -82,7 +82,7 @@ function MeusEventosHost() {
             }
         });
 
-        totalReservasUnicas = reservasCount; // Agora contamos o total de entradas de reserva
+        totalReservasUnicas = reservasCount;
 
         const totalEventos = todosEventos.length;
         const mediaReservas = totalEventos > 0 ? reservasCount / totalEventos : 0;
@@ -119,14 +119,14 @@ function MeusEventosHost() {
                 setIsArtista(userRole === 'ARTISTA');
                 if (userRole === 'HOST') {
                     const hostId = userResponse.data.id;
-                    const futurosResponse = await axios.get(`/eventos/future`, {
+                    const futurosResponse = await axios.get(`/eventos/host/${hostId}/future`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         },
                     });
                     setEventosFuturos(futurosResponse.data);
 
-                    const passadosResponse = await axios.get(`/eventos/past`, {
+                    const passadosResponse = await axios.get(`/eventos/host/${hostId}/past`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
 
@@ -142,7 +142,6 @@ function MeusEventosHost() {
                 } else if (userRole === 'CLIENT') {
                     fetchMinhasReservas(userResponse.data.id, token);
                 } else if (userRole === 'ARTISTA') {
-                    // Busca todos os músicos
                     try {
                         const musicosResponse = await axios.get('/musicos', {
                             headers: {
