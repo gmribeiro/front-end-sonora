@@ -13,8 +13,8 @@ const EventoDetalhes = () => {
     const [reservando, setReservando] = useState(false);
     const [mensagemReserva, setMensagemReserva] = useState('');
     const [carregandoUsuarioReserva, setCarregandoUsuarioReserva] = useState(false);
+    const [eventImageUrl, setEventImageUrl] = useState(null);
 
-    // State for evaluation form
     const [showAvaliacaoForm, setShowAvaliacaoForm] = useState(false);
     const [avaliacaoForm, setAvaliacaoForm] = useState({
         nota: '3',
@@ -28,13 +28,33 @@ const EventoDetalhes = () => {
                 setCarregando(true);
                 setErro(null);
 
-                const [eventoResponse, usuarioResponse] = await Promise.all([
+                const [eventoResponse, usuarioResponseData] = await Promise.all([
                     axios.get(`/eventos/${id}`),
                     verificarUsuarioLogado()
                 ]);
 
-                setEvento(eventoResponse.data);
-                setUsuarioLogado(usuarioResponse?.data || null);
+                const eventoData = eventoResponse.data;
+                setEvento(eventoData);
+                setUsuarioLogado(usuarioResponseData || null);
+
+                if (eventoData && eventoData.idEvento) {
+                    try {
+                        const token = localStorage.getItem('token');
+                        const imageResponse = await axios.get(`/eventos/${eventoData.idEvento}/image`, {
+                            responseType: 'blob',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+                        setEventImageUrl(URL.createObjectURL(imageResponse.data));
+                    } catch (imageError) {
+                        console.error('Erro ao carregar imagem do evento:', imageError);
+                        setEventImageUrl('/images/evento_padrao.png');
+                    }
+                } else {
+                    setEventImageUrl('/images/evento_padrao.png');
+                }
+
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
                 setErro(error.response?.data?.message || 'Erro ao carregar evento');
@@ -61,24 +81,22 @@ const EventoDetalhes = () => {
         carregarDados();
     }, [id]);
 
-    const formatarDataHoraParaReserva = (dataHora) => {
-        if (!dataHora) return null;
-        try {
-            const [data, tempo] = dataHora.split(' ');
-            const [dia, mes, ano] = data.split('/');
-            return `${dia}/${mes}/${ano} ${tempo}`;
-        } catch (error) {
-            console.error('Erro ao formatar data/hora para reserva:', error);
-            return null;
-        }
-    };
-
     const handleReservar = async () => {
+        // Nova verificação de role no início do método
+        if (usuarioLogado?.role !== 'CLIENT') {
+            setMensagemReserva('Apenas clientes podem fazer reservas.');
+            return;
+        }
+
         if (!evento?.idEvento) {
             alert('Dados do evento incompletos');
             return;
         }
 
+        // Esta parte do código verifica se o usuário está logado e, se não, tenta carregá-lo.
+        // Se o usuário não estiver logado, ele será redirecionado para a tela de acesso.
+        // A verificação de role já deve ter capturado não-clientes, então esta parte é mais para
+        // garantir que o usuário está autenticado.
         if (!usuarioLogado?.id) {
             setCarregandoUsuarioReserva(true);
             const token = localStorage.getItem('token');
@@ -88,6 +106,13 @@ const EventoDetalhes = () => {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     setUsuarioLogado(userResponse.data);
+                    // Após carregar o usuário, re-chamar a função para continuar o processo.
+                    // Isso pode ser uma forma de garantir que o estado `usuarioLogado` seja atualizado
+                    // antes de prosseguir com a reserva, evitando que o botão fique disabled
+                    // por mais tempo do que o necessário após o login.
+                    // Contudo, se o usuário chegou aqui sem usuarioLogado.id, ele será redirecionado
+                    // para login, então este bloco pode ser simplificado.
+                    // Para evitar um loop, o melhor é redirecionar imediatamente se não estiver logado.
                 } catch (error) {
                     console.error('Erro ao carregar usuário para reserva:', error);
                     setMensagemReserva('Erro ao carregar informações do usuário.');
@@ -100,8 +125,17 @@ const EventoDetalhes = () => {
                 navigate('/acesso', { state: { from: `/detalhes/${id}` } });
                 return;
             }
-            return; // Importante: sair da função após tentar carregar o usuário
+            // Retorna após a tentativa de carregar o usuário ou redirecionar.
+            // O ideal é que se o usuárioLogado.id não estiver presente, ele já seja redirecionado.
+            // A lógica de tentar carregar o usuário dentro do handleReservar pode ser um pouco redundante
+            // se o useEffect já faz isso ao carregar o componente.
+            // Para simplificar, vou assumir que usuarioLogado já está carregado pelo useEffect.
+            if (!usuarioLogado?.id) { // Re-check after potential load
+                setMensagemReserva('É necessário estar logado para fazer reservas.');
+                return;
+            }
         }
+
 
         setReservando(true);
         setMensagemReserva('');
@@ -238,6 +272,13 @@ const EventoDetalhes = () => {
         );
     }
 
+    // Variável para determinar se o botão de reserva deve ser exibido/habilitado
+    const podeReservar = usuarioLogado && usuarioLogado.role === 'CLIENT';
+    const textoBotaoReserva = usuarioLogado && usuarioLogado.role !== 'CLIENT'
+        ? 'Apenas clientes podem reservar'
+        : (carregandoUsuarioReserva ? 'Carregando informações...' : (reservando ? 'Processando...' : 'Reservar Ingresso'));
+
+
     return (
         <div className="evento-detalhes-container">
             <div className="cabecalho">
@@ -246,6 +287,12 @@ const EventoDetalhes = () => {
             </div>
 
             <div className="conteudo-principal">
+                {eventImageUrl && (
+                    <div className="evento-imagem-detalhes">
+                        <img src={eventImageUrl} alt={evento.nomeEvento || evento.titulo} />
+                    </div>
+                )}
+
                 <div className="detalhes-content">
                     <div className="info-section">
                         <div className="info-item">
@@ -279,11 +326,12 @@ const EventoDetalhes = () => {
                     </div>
 
                     <div className="acoes-section">
+                        {/* Condição para exibir/desabilitar e mudar o texto do botão */}
                         <button
                             onClick={handleReservar}
-                            disabled={reservando || carregandoUsuarioReserva}
+                            disabled={!podeReservar || reservando || carregandoUsuarioReserva}
                         >
-                            {carregandoUsuarioReserva ? 'Carregando informações...' : (reservando ? 'Processando...' : 'Reservar Ingresso')}
+                            {textoBotaoReserva}
                         </button>
                         {mensagemReserva && (
                             <p className={`mensagem-reserva ${mensagemReserva.includes('sucesso') ? 'sucesso' : 'erro'}`}>

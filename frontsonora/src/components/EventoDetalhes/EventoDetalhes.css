@@ -1,337 +1,335 @@
+/* Geral */
 .evento-detalhes-container {
-    max-width: 960px;
-    margin: 2rem auto;
-    padding: 3rem; /* Aumentei o padding para mais espaço interno */
-    font-family: 'Nunito', sans-serif; /* Fonte moderna e amigável */
-    background-color: #f4f4f4; /* Fundo levemente mais escuro */
-    border-radius: 15px; /* Bordas ainda mais arredondadas */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Sombra mais pronunciada e suave */
-    border: none; /* Removi a borda sutil anterior */
+    font-family: 'Arial', sans-serif; /* Ou sua fonte preferida */
+    color: #333;
+    max-width: 900px; /* Largura máxima do conteúdo */
+    margin: 40px auto; /* Centraliza o container na página com margem superior/inferior */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
-/* Estilos para o cabeçalho */
+/* Cabeçalho */
 .cabecalho {
     display: flex;
     align-items: center;
-    margin-bottom: 3rem; /* Mais espaço abaixo do cabeçalho */
-    border-bottom: 3px solid #ddd; /* Linha divisória mais destacada */
-    padding-bottom: 2rem;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee; /* Linha divisória */
+    padding-bottom: 15px;
 }
 
-/* Botão de Voltar - Estilizado e Chamativo */
-.btn-voltar {
-    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); /* Gradiente roxo vibrante */
-    border: none;
-    color: #fff;
-    font-size: 1.1rem; /* Fonte ligeiramente maior */
+.cabecalho button {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+    border-radius: 5px;
     cursor: pointer;
-    padding: 1rem 2rem; /* Aumentei o padding */
-    margin-right: 2.5rem; /* Mais espaço do título */
-    border-radius: 15px; /* Bordas bem arredondadas */
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
-    font-weight: 600; /* Texto em negrito */
+    font-size: 1rem;
+    color: #555;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.btn-voltar:hover {
-    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); /* Gradiente roxo mais escuro no hover */
-    transform: translateY(-3px); /* Elevação maior no hover */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior no hover */
+.cabecalho button:hover {
+    background-color: #e0e0e0;
+    color: #333;
 }
 
-.titulo-evento {
+.cabecalho h1 {
+    flex-grow: 1; /* Permite que o título ocupe o espaço restante */
+    text-align: center;
+    font-size: 2.2rem;
+    color: #2c3e50; /* Cor mais escura para o título */
     margin: 0;
-    color: #374151; /* Cinza escuro moderno */
-    font-size: 3rem; /* Título ainda maior */
-    font-weight: 700; /* Título bem negrito */
-    letter-spacing: -0.02em;
+    margin-left: 20px; /* Espaço entre o botão e o título */
 }
 
-/* Estilos para o conteúdo principal */
+/* Conteúdo Principal */
 .conteudo-principal {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 3rem; /* Mais espaço entre as seções */
-}
-
-.detalhes-content {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem; /* Mais espaço entre os elementos */
+    gap: 30px; /* Espaço entre as seções principais */
 }
 
-/* Estilos para a seção de informações */
+/* Imagem do Evento */
+.evento-imagem-detalhes {
+    width: 100%; /* Ocupa a largura total do container */
+    max-height: 400px; /* Altura máxima para a imagem */
+    overflow: hidden; /* Garante que a imagem não transborde */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex; /* Para centralizar a imagem dentro do container */
+    justify-content: center;
+    align-items: center;
+}
+
+.evento-imagem-detalhes img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Recorta a imagem para cobrir a área sem distorcer */
+    display: block;
+}
+
+/* Detalhes do Conteúdo */
+.detalhes-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Seções de Informação (Data, Local, Gênero) */
 .info-section {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Largura mínima maior */
-    gap: 1.5rem; /* Mais espaço entre os itens */
-    margin-bottom: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Colunas flexíveis */
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
 .info-item {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
-    padding: 1.5rem; /* Mais padding interno */
-    background-color: #fff; /* Fundo branco */
-    border-radius: 15px; /* Bordas bem arredondadas */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    border: none; /* Removi a borda */
+    gap: 15px;
+    background-color: #eaf6ff; /* Fundo azul claro */
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid #3498db; /* Borda lateral colorida */
 }
 
-.info-icone {
-    font-size: 1.6rem; /* Ícones maiores */
-    color: #6366f1; /* Azul arroxeado vibrante */
+.info-item span {
+    font-size: 2rem; /* Tamanho do ícone */
+    color: #3498db;
 }
 
 .info-item h3 {
-    margin: 0 0 0.5rem 0;
-    color: #4b5563; /* Cinza médio moderno */
-    font-size: 1.2rem; /* Título maior */
-    font-weight: 600;
+    margin: 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
 }
 
 .info-item p {
     margin: 0;
-    color: #1e293b; /* Cinza bem escuro */
-    font-size: 1.3rem; /* Texto maior */
-    line-height: 1.7;
+    font-size: 0.95rem;
+    color: #555;
 }
 
-/* Estilos para a seção de descrição */
+/* Seção de Descrição */
 .descricao-section {
-    background-color: #fff; /* Fundo branco */
-    padding: 2.5rem; /* Mais padding */
-    border-radius: 15px; /* Bordas bem arredondadas */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    margin-bottom: 2.5rem;
-    border: none; /* Removi a borda */
+    margin-bottom: 30px;
 }
 
 .descricao-section h3 {
-    margin-top: 0;
-    color: #4b5563;
-    font-size: 1.4rem; /* Título maior */
-    font-weight: 600;
-    margin-bottom: 1.2rem;
-    border-bottom: 3px solid #ddd; /* Linha divisória mais destacada */
-    padding-bottom: 0.8rem;
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 10px;
 }
 
 .descricao-section p {
-    line-height: 1.9; /* Melhor legibilidade */
-    color: #1e293b;
-    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #555;
 }
 
-/* Estilos para a seção de ações (botão de reservar) - Estilizado e Chamativo */
+/* Seção de Ações (Botão Reservar) */
 .acoes-section {
-    margin-top: 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-
-
-/* Botão de Avaliar - Estilizado e Chamativo */
-.btn-avaliar {
-    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); /* Gradiente azul vibrante */
-    color: white;
-    border: none;
-    border-radius: 15px; /* Bordas bem arredondadas */
-    padding: 1rem 2rem; /* Aumentei o padding */
-    font-size: 1.1rem; /* Fonte ligeiramente maior */
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
-    font-weight: 600; /* Texto em negrito */
-}
-
-.btn-avaliar:hover {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); /* Gradiente azul mais escuro no hover */
-    transform: translateY(-3px); /* Elevação maior */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior */
-}
-
-.form-avaliacao {
-    margin-top: 2rem; /* Mais espaço abaixo do botão */
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem; /* Mais espaço entre os elementos */
-}
-
-.form-avaliacao h4 {
-    color: #4b5563;
-    font-size: 1.3rem; /* Título maior */
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    color: #1e293b;
-    font-size: 1.1rem; /* Fonte maior */
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.form-group select,
-.form-group textarea {
-    padding: 1.2rem; /* Mais padding */
-    border: 2px solid #ccc; /* Borda mais grossa */
-    border-radius: 12px; /* Bordas mais arredondadas */
-    font-size: 1.1rem;
-    background-color: #f9f9f9; /* Fundo levemente acinzentado */
-}
-
-.form-buttons {
-    display: flex;
-    gap: 1.5rem; /* Mais espaço entre os botões */
-    margin-top: 2rem; /* Mais espaço acima dos botões */
-}
-
-/* Botão de Enviar Avaliação - Estilizado e Chamativo */
-.btn-enviar {
-    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%); /* Gradiente azul arroxeado vibrante */
-    color: white;
-    border: none;
-    border-radius: 15px; /* Bordas bem arredondadas */
-    padding: 1.1rem 2.2rem; /* Padding maior */
-    font-size: 1.1rem; /* Fonte ligeiramente maior */
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
-    font-weight: 600; /* Texto em negrito */
-}
-
-.btn-enviar:hover {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); /* Gradiente mais escuro */
-    transform: translateY(-3px); /* Elevação maior */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior */
-}
-
-/* Botão de Cancelar Avaliação - Estilizado e Chamativo */
-.btn-cancelar {
-    background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%); /* Gradiente vermelho vibrante */
-    color: white;
-    border: none;
-    border-radius: 15px; /* Bordas bem arredondadas */
-    padding: 1.1rem 2.2rem; /* Padding maior */
-    font-size: 1.1rem; /* Fonte ligeiramente maior */
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
-    font-weight: 600; /* Texto em negrito */
-}
-
-.btn-cancelar:hover {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); /* Gradiente mais escuro */
-    transform: translateY(-3px); /* Elevação maior */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior */
-}
-
-.mensagem {
-    margin-top: 1.5rem;
-    padding: 1.5rem;
-    border-radius: 15px; /* Bordas bem arredondadas */
     text-align: center;
-    font-weight: 600; /* Texto em negrito */
+    margin-top: 30px;
+}
+
+.acoes-section button {
+    background-color: #28a745; /* Verde para ação principal */
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
     font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.mensagem.sucesso {
-    background-color: #d1fae5;
-    color: #10b981;
-    border: 2px solid #a7f3d0;
+.acoes-section button:hover:not(:disabled) {
+    background-color: #218838;
 }
 
-.mensagem.erro {
-    background-color: #fee2e2;
-    color: #ef4444;
-    border: 2px solid #fca5a5;
+.acoes-section button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
-/* Estilos para estados de carregamento e erro */
+.mensagem-reserva {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.mensagem-reserva.sucesso {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.mensagem-reserva.erro {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Seção de Avaliação */
+.avaliacao-container {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.avaliacao-container button {
+    background-color: #007bff; /* Azul para avaliação */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.avaliacao-container button:hover {
+    background-color: #0056b3;
+}
+
+.avaliacao-form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center; /* Centraliza os itens do formulário */
+}
+
+.avaliacao-form h4 {
+    font-size: 1.3rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.avaliacao-form .form-group {
+    width: 100%;
+    max-width: 400px; /* Largura máxima para os campos do formulário */
+    text-align: left;
+}
+
+.avaliacao-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.avaliacao-form select,
+.avaliacao-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura */
+}
+
+.avaliacao-form textarea {
+    min-height: 80px;
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+.avaliacao-form button {
+    margin-top: 10px;
+    margin-right: 10px; /* Espaço entre os botões */
+}
+
+.avaliacao-form button:last-child {
+    background-color: #dc3545; /* Vermelho para cancelar */
+}
+
+.avaliacao-form button:last-child:hover {
+    background-color: #c82333;
+}
+
+.avaliacao-message {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #007bff; /* Cor para mensagens de avaliação */
+}
+
+/* Mensagens de Carregamento e Erro */
 .carregando-container,
 .erro-container,
 .sem-dados {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 40vh;
-    gap: 1.5rem;
     text-align: center;
-    color: #718096; /* Cinza mais escuro */
-}
-
-.spinner {
-    border: 5px solid rgba(0, 0, 0, 0.15); /* Borda mais grossa */
-    border-radius: 50%;
-    border-top: 5px solid #48bb78; /* Verde mais chamativo */
-    width: 70px; /* Spinner maior */
-    height: 70px; /* Spinner maior */
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate rotate(360deg); }
-}
-
-.erro-mensagem {
-    color: #e53e3e; /* Vermelho mais chamativo */
-    margin-bottom: 1rem;
+    padding: 50px;
     font-size: 1.2rem;
-    font-weight: 600;
+    color: #666;
 }
 
-/* Botões de Tentar Novamente e Voltar à Lista - Estilizados e Chamativos */
-.btn-tentar-novamente,
-.btn-voltar-lista {
-    background: linear-gradient(135deg, #fbb6ce 0%, #f768a1 100%); /* Gradiente rosa vibrante */
+.erro-container p, .sem-dados p {
+    margin-bottom: 20px;
+}
+
+.erro-container button, .sem-dados button {
+    background-color: #6c757d; /* Cinza para botões de utilidade */
     color: white;
+    padding: 10px 20px;
     border: none;
-    border-radius: 15px; /* Bordas bem arredondadas */
-    padding: 1.1rem 2.2rem; /* Padding maior */
-    font-size: 1.1rem; /* Fonte ligeiramente maior */
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
-    font-weight: 600; /* Texto em negrito */
+    transition: background-color 0.3s ease;
 }
 
-.btn-tentar-novamente:hover,
-.btn-voltar-lista:hover {
-    background: linear-gradient(135deg, #f768a1 0%, #ed64a6 100%); /* Gradiente rosa mais escuro no hover */
-    transform: translateY(-3px); /* Elevação maior */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra maior */
+.erro-container button:hover, .sem-dados button:hover {
+    background-color: #5a6268;
 }
 
-/* Media query para telas menores */
+/* Responsividade Básica */
 @media (max-width: 768px) {
-    .cabecalho {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.5rem; /* Mais espaço no cabeçalho em telas menores */
+    .evento-detalhes-container {
+        margin: 20px;
+        padding: 15px;
     }
 
-    .conteudo-principal {
-        grid-template-columns: 1fr;
-        gap: 2.5rem; /* Reduzi um pouco o gap em telas menores */
+    .cabecalho h1 {
+        font-size: 1.8rem;
     }
 
     .info-section {
-        grid-template-columns: 1fr;
-        gap: 1rem; /* Reduzi um pouco o gap em telas menores */
+        grid-template-columns: 1fr; /* Uma coluna em telas menores */
     }
 
     .info-item {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 1.2rem; /* Reduzi um pouco o padding em telas menores */
-        gap: 0.8rem; /* Reduzi um pouco o gap interno em telas menores */
+        padding: 10px;
     }
 
+    .info-item span {
+        font-size: 1.5rem;
+    }
 
+    .acoes-section button {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cabecalho {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .cabecalho h1 {
+        margin-left: 0;
+        margin-top: 15px;
+        text-align: left;
+        font-size: 1.5rem;
+    }
 }

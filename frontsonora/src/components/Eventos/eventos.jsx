@@ -20,7 +20,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
     const [formMessage, setFormMessage] = useState('');
     const [isAnimating, setIsAnimating] = useState(false);
     const [generos, setGeneros] = useState([]);
-    // NOVO ESTADO para o arquivo da imagem
     const [eventImageFile, setEventImageFile] = useState(null);
 
     const eventosPorPagina = 6;
@@ -78,7 +77,7 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             return;
         }
         try {
-            const response = await axios.post('/reservas', {
+            const response = await axios.post('http://localhost:8080/reservas', { // Certifique-se de que a URL base está correta
                 usuario: {
                     id: usuarioLogado.id
                 },
@@ -94,6 +93,11 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             });
             if (response.status === 201) {
                 setMensagemReserva(`Reserva para o evento ${eventosFiltrados.find(e => e.id === eventoId)?.titulo} realizada com sucesso!`);
+                // Redireciona para /meusconvites após a reserva bem-sucedida
+                // Adicione um pequeno delay para que a mensagem seja visível antes do redirecionamento
+                setTimeout(() => {
+                    navigate('/meusconvites');
+                }, 1500); // Redireciona após 1.5 segundos
             } else {
                 setMensagemReserva(`Erro ao reservar o evento.`);
             }
@@ -101,10 +105,11 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             console.error('Erro ao reservar evento:', error);
             setMensagemReserva(`Erro ao reservar o evento: ${error.response?.data?.message || error.message}`);
         } finally {
-            setTimeout(() => {
-                setReservandoId(null);
-                setMensagemReserva('');
-            }, 3000);
+            // O setTimeout para limpar a mensagem e o reservandoId agora é opcional aqui,
+            // já que estamos redirecionando. Se quiser que a mensagem apareça brevemente
+            // antes do redirecionamento, mantenha o setTimeout acima.
+            // setReservandoId(null);
+            // setMensagemReserva('');
         }
     };
 
@@ -144,7 +149,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             setFormMessage('Por favor, selecione uma imagem para o evento.');
             return;
         }
-
 
         try {
             const formattedDataHora = formatDateTime(dataHora);
@@ -209,14 +213,14 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             setLocalEventoNome('');
             setCep('');
             setNumero('');
-            setEventImageFile(null); // Limpar o arquivo selecionado
+            setEventImageFile(null);
 
             const novoEventoParaHome = {
                 id: novoEventoDoBackend.idEvento,
                 titulo: nomeEvento,
                 local: localEventoNome,
                 hora: formatDateTime(dataHora).split(' ')[1],
-                imagem: novoEventoDoBackend.foto ? `/uploads/event-images/${novoEventoDoBackend.foto}` : null, // Supondo que 'foto' esteja no DTO
+                imagem: novoEventoDoBackend.foto ? `/uploads/event-images/${novoEventoDoBackend.foto}` : null,
                 genero: generos.find(g => g.idGeneroMusical === selectedGeneroId)?.nomeGenero || 'Outro'
             };
 
@@ -346,7 +350,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                     >
                         <div className="evento-imagem-container">
                             <img
-
                                 src={evento.imagem || '/images/evento_padrao.png'}
                                 alt={evento.titulo}
                                 className="evento-imagem"
@@ -367,7 +370,8 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                             </button>
                         )}
                         {mensagemReserva && reservandoId === evento.id && (
-                            <p className="mensagem-reserva">{mensagemResagemReserva}</p>
+                            // Corrigido o erro de digitação de 'mensagemResagemReserva' para 'mensagemReserva'
+                            <p className="mensagem-reserva">{mensagemReserva}</p>
                         )}
                     </div>
                 ))}
