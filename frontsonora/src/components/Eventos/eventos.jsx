@@ -77,7 +77,7 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             return;
         }
         try {
-            const response = await axios.post('http://localhost:8080/reservas', { // Certifique-se de que a URL base está correta
+            const response = await axios.post('/reservas', {
                 usuario: {
                     id: usuarioLogado.id
                 },
@@ -93,23 +93,15 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             });
             if (response.status === 201) {
                 setMensagemReserva(`Reserva para o evento ${eventosFiltrados.find(e => e.id === eventoId)?.titulo} realizada com sucesso!`);
-                // Redireciona para /meusconvites após a reserva bem-sucedida
-                // Adicione um pequeno delay para que a mensagem seja visível antes do redirecionamento
                 setTimeout(() => {
                     navigate('/meusconvites');
-                }, 1500); // Redireciona após 1.5 segundos
+                }, 1500);
             } else {
                 setMensagemReserva(`Erro ao reservar o evento.`);
             }
         } catch (error) {
             console.error('Erro ao reservar evento:', error);
             setMensagemReserva(`Erro ao reservar o evento: ${error.response?.data?.message || error.message}`);
-        } finally {
-            // O setTimeout para limpar a mensagem e o reservandoId agora é opcional aqui,
-            // já que estamos redirecionando. Se quiser que a mensagem apareça brevemente
-            // antes do redirecionamento, mantenha o setTimeout acima.
-            // setReservandoId(null);
-            // setMensagemReserva('');
         }
     };
 
@@ -205,7 +197,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
                 setFormMessage('Evento cadastrado, mas nenhuma imagem foi selecionada ou o ID do evento não foi retornado.');
             }
 
-            // Limpar formulário e estados
             setNomeEvento('');
             setDataHora('');
             setDescricao('');
@@ -229,7 +220,7 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
             }
 
             const notificationMessage = `Novo evento ${novoEventoParaHome.titulo} postado pelo anfitrião ${usuarioLogado.nome}.`;
-            await axios.post('/notifications', {
+            await axios.post('/notifications/broadcast', {
                 usuarioId: userId,
                 mensagem: notificationMessage
             }, {
@@ -273,7 +264,6 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
         <div className="cadastro-evento-form">
             <h3>Cadastrar Novo Evento</h3>
             <form onSubmit={handleCadastrarEvento}>
-                {/* Campos existentes */}
                 <div className="form-group">
                     <label htmlFor="nomeEvento">Nome do Evento:</label>
                     <input type="text" id="nomeEvento" name="nomeEvento" value={nomeEvento} onChange={handleInputChange} required />

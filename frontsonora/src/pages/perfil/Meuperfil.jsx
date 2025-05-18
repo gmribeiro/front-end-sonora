@@ -28,7 +28,6 @@ function MeuPerfil() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
 
-  // Função para exibir mensagens de feedback ao usuário
   const showFeedback = (text, type) => {
     setFeedbackMessage({ text, type });
     setTimeout(() => setFeedbackMessage({ text: '', type: '' }), 5000);
@@ -127,7 +126,7 @@ function MeuPerfil() {
       setSenhaAtual('');
       setNovaSenha('');
       setConfirmarNovaSenha('');
-      return true; // Retorna true para indicar sucesso
+      return true;
     } catch (error) {
       console.error('Erro ao alterar a senha:', error);
       showFeedback(error.response?.data?.message || 'Erro ao alterar a senha.', 'erro');
@@ -232,8 +231,6 @@ function MeuPerfil() {
 
   }, [navigate, fetchProfileImage]);
 
-  // --- Handlers de Eventos simples ---
-
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -337,6 +334,28 @@ function MeuPerfil() {
                       disabled={isUpdatingProfile || isChangingPassword}
                   />
                 </div>
+                <div className="upload-foto-perfil-container" style={{ marginTop: '30px' }}>
+                  <h4>Atualizar Foto de Perfil</h4>
+                  <div className="upload-area">
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        id="profileImageInput"
+                        style={{ display: 'none' }}
+                        disabled={isUploadingImage || isUpdatingProfile}
+                    />
+                    <label htmlFor="profileImageInput" className="selecionar-foto-btn" style={isUploadingImage || isUpdatingProfile ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
+                      {selectedFile ? 'Selecionar outra foto' : 'Selecionar Foto'}
+                    </label>
+                    {selectedFile && (
+                        <p>Arquivo selecionado: {selectedFile.name}</p>
+                    )}
+                    <button onClick={handleUploadProfileImage} type="button" disabled={!selectedFile || isUploadingImage || isUpdatingProfile} className="enviar-foto-btn">
+                      {isUploadingImage ? 'Enviando...' : 'Enviar Foto'}
+                    </button>
+                  </div>
+                </div>
 
                 <button type="submit" className="salvar-perfil-btn" disabled={isUpdatingProfile || isChangingPassword}>
                   {isUpdatingProfile ? 'Salvando...' : 'Salvar Alterações'}
@@ -348,34 +367,6 @@ function MeuPerfil() {
             </div>
         )}
 
-        {userRole === 'CLIENT' && (
-            <Link to="/avaliacoes" className="avaliacoes-btn">
-              Minhas Avaliações
-            </Link>
-        )}
-
-        <div className="upload-foto-perfil-container">
-          <h3>Foto de Perfil</h3>
-          <div className="upload-area">
-            <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                id="profileImageInput"
-                style={{ display: 'none' }}
-                disabled={isUploadingImage}
-            />
-            <label htmlFor="profileImageInput" className="selecionar-foto-btn" style={isUploadingImage ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
-              {selectedFile ? 'Selecionar outra foto' : 'Selecionar Foto'}
-            </label>
-            {selectedFile && (
-                <p>Arquivo selecionado: {selectedFile.name}</p>
-            )}
-            <button onClick={handleUploadProfileImage} disabled={!selectedFile || isUploadingImage} className="enviar-foto-btn">
-              {isUploadingImage ? 'Enviando...' : 'Enviar Foto'}
-            </button>
-          </div>
-        </div>
 
         <button onClick={handleLogout} className="logout-btn">
           Sair
