@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Artistas.css';
+// REMOVIDO: import placeholderImage from './placeholder-profile.png';
 
 const Artistas = () => {
     const [artistaIds, setArtistaIds] = useState([]);
@@ -15,7 +16,45 @@ const Artistas = () => {
     const [contratandoId, setContratandoId] = useState(null);
     const [contratacaoStatus, setContratacaoStatus] = useState(null);
     const [contratacaoDetalhes, setContratacaoDetalhes] = useState({});
-    const [showContratarForm, setShowContratarForm] = useState(null); // ID do artista para o qual o form está aberto
+    const [showContratarForm, setShowContratarForm] = useState(null);
+
+    const [profileImages, setProfileImages] = useState({});
+
+    // Função para buscar a foto de perfil de um usuário específico
+    const fetchProfileImage = async (userId) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            return;
+        }
+
+        try {
+            const response = await axios.get(`auth/users/${userId}/profile-image`, { // Endpoint para pegar a imagem
+                headers: { 'Authorization': `Bearer ${token}` },
+                responseType: 'arraybuffer'
+            });
+
+            if (response.data && response.data.byteLength > 0) {
+
+                const blob = new Blob([response.data], { type: response.headers['content-type'] });
+                const imageUrl = URL.createObjectURL(blob);
+                setProfileImages(prevImages => ({
+                    ...prevImages,
+                    [userId]: imageUrl
+                }));
+            } else {
+                setProfileImages(prevImages => ({
+                    ...prevImages,
+                    [userId]: null
+                }));
+            }
+        } catch (error) {
+            console.error(`Erro ao buscar imagem de perfil para o usuário ${userId}:`, error);
+            setProfileImages(prevImages => ({
+                ...prevImages,
+                [userId]: null
+            }));
+        }
+    };
 
     useEffect(() => {
         const buscarArtistas = async () => {
@@ -27,6 +66,22 @@ const Artistas = () => {
                     setArtistas(response.data);
                     const ids = response.data.map(artista => artista.idMusico);
                     setArtistaIds(ids);
+
+                    response.data.forEach(artista => {
+                        if (artista.usuario?.id) {
+                            setProfileImages(prevImages => ({
+                                ...prevImages,
+                                [artista.usuario.id]: null
+                            }));
+                            fetchProfileImage(artista.usuario.id);
+                        } else {
+                            setProfileImages(prevImages => ({
+                                ...prevImages,
+                                [artista.idMusico]: null
+                            }));
+                        }
+                    });
+
                 } else {
                     setErrorArtistas('Formato de dados inválido recebido do servidor (artistas).');
                     setArtistas([]);
@@ -56,13 +111,18 @@ const Artistas = () => {
             }
         };
 
+        buscarArtistas();
+        buscarUsuario();
+    }, []);
+
+    useEffect(() => {
         const buscarEventosHost = async () => {
             setIsLoadingEventos(true);
             setErrorEventos(null);
             const token = localStorage.getItem('token');
-            if (token && usuarioLogado?.role === 'HOST') {
+            if (token && usuarioLogado?.role === 'HOST' && usuarioLogado?.id) {
                 try {
-                    const response = await axios.get(`/eventos/host/${usuarioLogado.id}`, { // Endpoint atualizado
+                    const response = await axios.get(`/eventos/host/${usuarioLogado.id}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (response && response.data && Array.isArray(response.data)) {
@@ -82,11 +142,19 @@ const Artistas = () => {
                 setIsLoadingEventos(false);
             }
         };
-
-        buscarArtistas();
-        buscarUsuario();
         buscarEventosHost();
-    }, [usuarioLogado?.id, usuarioLogado?.role]);
+    }, [usuarioLogado]);
+
+    useEffect(() => {
+        return () => {
+            Object.values(profileImages).forEach(url => {
+                if (url && typeof url === 'string' && url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url);
+                }
+            });
+        };
+    }, [profileImages]);
+
 
     const handleContratarClick = (artistaId) => {
         if (!eventoSelecionado) {
@@ -122,23 +190,20 @@ const Artistas = () => {
                 },
                 valor: parseFloat(contratacaoDetalhes.valor),
                 detalhes: contratacaoDetalhes.detalhes,
-                // Outros detalhes do contrato podem ser adicionados aqui, se necessário
             }, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             setContratacaoStatus({ type: 'success', message: `Artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico} contratado com sucesso para o evento!` });
-            setShowContratarForm(null); // Fechar o formulário após a contratação
+            setShowContratarForm(null);
             setTimeout(() => setContratacaoStatus(null), 5000);
 
-            // Enviar notificação para o artista contratado
             const artistaContratado = artistas.find(a => a.idMusico === artistaId);
             const evento = eventosHost.find(e => e.idEvento === parseInt(eventoSelecionado));
             if (artistaContratado?.usuario?.id && evento) {
                 try {
                     await axios.post(`/notifications/user/${artistaContratado.usuario.id}`, {
                         mensagem: `Você foi convidado para o evento ${evento.nome || evento.nomeEvento} pelo anfitrião ${usuarioLogado?.nome || usuarioLogado?.username}!`,
-                        tipo: 'CONVITE_EVENTO', // Opcional: tipo da notificação
-                        // Outros detalhes da notificação, se necessário
+                        tipo: 'CONVITE_EVENTO',
                     }, {
                         headers: { 'Authorization': `Bearer ${token}` },
                     });
@@ -150,7 +215,7 @@ const Artistas = () => {
 
         } catch (error) {
             console.error('Erro ao contratar artista:', error);
-            setContratacaoStatus({ type: 'error', message: `Erro ao contratar o artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico}.` });
+            setContratacaoStatus({ type: 'error', message: `Erro ao contratar o artista ${error.response?.data?.message || error.message}.` });
         } finally {
             setContratandoId(null);
         }
@@ -201,6 +266,23 @@ const Artistas = () => {
                 <div className="artistas-lista">
                     {artistas.map(artista => (
                         <div key={artista.idMusico} className="artista-card">
+                            <div className="profile-image-container">
+                                {/* Renderiza a imagem SOMENTE se profileImages[artista.usuario?.id] tiver um valor válido */}
+                                {profileImages[artista.usuario?.id] && (
+                                    <img
+                                        src={profileImages[artista.usuario.id]}
+                                        alt={`Foto de perfil de ${artista.nomeArtistico}`}
+                                        className="profile-image"
+                                    />
+                                )}
+                                {/* OPCIONAL: Pode adicionar um ícone de fallback SVG ou uma div colorida se a imagem não carregar */}
+                                {!profileImages[artista.usuario?.id] && (
+                                    <div className="profile-placeholder">
+                                        {/* Você pode colocar um ícone de usuário aqui, por exemplo */}
+                                        <span>{artista.nomeArtistico.charAt(0).toUpperCase()}</span>
+                                    </div>
+                                )}
+                            </div>
                             <h3>{artista.nomeArtistico}</h3>
                             {artista.redesSociais && (
                                 <p>Rede Social: <a href={artista.redesSociais} target="_blank" rel="noopener noreferrer">{artista.redesSociais}</a></p>
