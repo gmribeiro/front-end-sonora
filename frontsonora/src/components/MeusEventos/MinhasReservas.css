@@ -90,13 +90,12 @@ h2 {
     margin-top: 5px;
 }
 
-/* ESTILOS PARA O BOTÃO E MENSAGEM DE CANCELAMENTO */
 .reserva-item button.cancel-button {
-    background-color: #dc3545; /* Cor vermelha para cancelar */
+    background-color: #dc3545;
 }
 
 .reserva-item button.cancel-button:hover {
-    background-color: #c82333; /* Tom mais escuro ao passar o mouse */
+    background-color: #c82333;
 }
 
 .mensagem-cancelamento {
