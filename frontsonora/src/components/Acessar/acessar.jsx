@@ -19,7 +19,6 @@ const Acessar = () => {
     const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
 
-    // Check authentication status on component mount
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -30,7 +29,7 @@ const Acessar = () => {
     const checkAuthStatus = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8080/auth/user/me', {
+            const response = await axios.get('/auth/user/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -58,18 +57,16 @@ const Acessar = () => {
 
         try {
             // 1. Faz login (recebe apenas o token string)
-            const { data: token } = await axios.post('http://localhost:8080/auth/login', formData);
+            const { data: token } = await axios.post('/auth/login', formData);
 
             // 2. Validação básica do token
             if (!token || typeof token !== 'string') {
                 throw new Error('Token inválido');
             }
 
-            // 3. Armazena token e configura axios
             localStorage.setItem('token', token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            // 4. Mostra mensagem de sucesso
             setStatus({
                 loading: false,
                 message: 'Login realizado com sucesso!',
@@ -100,15 +97,12 @@ const Acessar = () => {
         setStatus({ loading: true, message: '', success: false });
 
         try {
-            // 1. Autenticação com Google
-            const authResponse = await axios.post('http://localhost:8080/auth/google', {
+            const authResponse = await axios.post('/auth/google', {
                 token: credentialResponse.credential
             });
 
             localStorage.setItem('token', authResponse.data.token);
-
-            // 2. Obter dados completos do usuário
-            const userResponse = await axios.get('http://localhost:8080/auth/user/me', {
+            const userResponse = await axios.get('/auth/user/me', {
                 headers: {
                     'Authorization': `Bearer ${authResponse.data.token}`
                 }
@@ -116,16 +110,14 @@ const Acessar = () => {
 
             const userData = userResponse.data;
 
-            // Verificação robusta do ID
             if (!userData.id) {
                 throw new Error('ID do usuário não retornado pela API');
             }
 
             localStorage.setItem('user', JSON.stringify(userData));
 
-            // 3. Redirecionamento baseado no role
             if (userData.role === 'CLIENT') {
-                setUserId(userData.id); // Usando o ID retornado pelo endpoint /me
+                setUserId(userData.id);
                 setShowRoleSelector(true);
             } else {
                 setStatus({

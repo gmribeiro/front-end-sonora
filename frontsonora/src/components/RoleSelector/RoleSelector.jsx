@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './RoleSelector.css';
@@ -6,12 +6,52 @@ import './RoleSelector.css';
 const RoleSelector = () => {
     const navigate = useNavigate();
     const [selectedRole, setSelectedRole] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true); // Começa como true para a verificação inicial
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         nome_artistico: '',
         redes_sociais: ''
     });
+
+    // useEffect para verificar o perfil do usuário ao carregar o componente
+    useEffect(() => {
+        const checkUserProfile = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                // Se não há token, o usuário não está logado.
+                // Permite que o componente seja exibido para que o usuário possa interagir.
+                setLoading(false);
+                // Opcional: Redirecionar para a página de login se a ausência de token for um erro
+                // navigate('/login');
+                return;
+            }
+
+            try {
+                const userResponse = await axios.get('/auth/user/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const userRole = userResponse.data.role;
+
+                // Se o papel do usuário já for 'HOST', 'ARTISTA' ou 'CLIENT',
+                // navegue diretamente para '/perfil'.
+                if (userRole === 'HOST' || userRole === 'ARTISTA' || userRole === 'CLIENT') {
+                    navigate('/perfil');
+                } else {
+                    // Se o papel não for um dos "completos", permita que o usuário selecione um papel.
+                    setLoading(false);
+                }
+            } catch (err) {
+                console.error('Erro ao verificar o perfil do usuário:', err);
+                // Em caso de erro na verificação (ex: token inválido, servidor fora do ar),
+                // permite que o usuário prossiga com a seleção de papel ou trata o erro.
+                setError('Não foi possível verificar seu perfil. Tente novamente.');
+                setLoading(false);
+            }
+        };
+
+        checkUserProfile();
+    }, [navigate]); // navigate é uma dependência para useEffect
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,19 +65,20 @@ const RoleSelector = () => {
             setLoading(true);
             const token = localStorage.getItem('token');
 
-            // Obter ID do usuário logado
-            const userResponse = await axios.get('http://localhost:8080/auth/user/me', {
+            // Pega o ID do usuário logado
+            const userResponse = await axios.get('/auth/user/me', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const userId = userResponse.data.id;
 
-            // Atualiza o role (apenas se não for CLIENT)
             if (selectedRole) {
+                // 1. Atualiza o papel do usuário no backend
                 await axios.put(
-                    `http://localhost:8080/users/${userId}`,
+                    `/users/${userId}`, // Endpoint para atualizar o usuário
                     {
                         role: selectedRole,
-                        id_usuario: userId
+                        // 'id_usuario: userId' pode ser omitido aqui se o backend
+                        // já obtém o userId pelo path variable ou token JWT.
                     },
                     {
                         headers: {
@@ -47,28 +88,58 @@ const RoleSelector = () => {
                     }
                 );
 
-                // Se for ARTISTA, cria o registro de Músico
+                // 2. Se o papel selecionado for ARTISTA, cria ou verifica o registro de músico
                 if (selectedRole === 'ARTISTA') {
-                    await axios.post(
-                        'http://localhost:8080/musicos',
-                        {
-                            nomeArtistico: formData.nome_artistico.trim(),
-                            redesSociais: formData.redes_sociais.trim(),
-                            idUsuario: userId
-                        },
-                        {
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            }
+                    let musicoExists = false;
+                    try {
+                        // Tenta verificar se já existe um músico associado a este userId
+                        const musicoResponse = await axios.get(`http://localhost:8080/musicos/user/${userId}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        // Se a requisição for bem-sucedida e retornar dados, o músico já existe
+                        if (musicoResponse.data) {
+                            musicoExists = true;
                         }
-                    );
+                    } catch (checkError) {
+                        // Se o erro for 404 Not Found, significa que o músico não existe, o que é esperado.
+                        // Outros erros (ex: 500 Internal Server Error) devem ser tratados.
+                        if (checkError.response && checkError.response.status !== 404) {
+                            console.error('Erro ao verificar existência do músico:', checkError);
+                            setError('Erro ao verificar perfil de artista.');
+                            setLoading(false);
+                            return; // Interrompe o processo em caso de erro grave
+                        }
+                    }
+
+                    if (!musicoExists) {
+                        // Se o músico não existe, cria um novo registro de músico
+                        await axios.post(
+                            'http://localhost:8080/musicos',
+                            {
+                                nomeArtistico: formData.nome_artistico.trim(),
+                                redesSociais: formData.redes_sociais.trim(),
+                                idUsuario: userId
+                            },
+                            {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                }
+                            }
+                        );
+                    } else {
+                        // Se o músico já existe, não é necessário criar um novo.
+                        // Opcional: Você pode adicionar aqui uma lógica para ATUALIZAR
+                        // os dados do músico (nome artístico, redes sociais) se necessário.
+                        console.log('Músico já existe para este usuário. Dados não serão recriados.');
+                    }
                 }
             }
 
+            // Após todas as operações, navega para o perfil
             navigate('/perfil');
         } catch (err) {
-            console.error('Erro:', err);
+            console.error('Erro ao atualizar perfil:', err);
             setError(err.response?.data?.message || err.message || 'Erro ao atualizar perfil');
         } finally {
             setLoading(false);
@@ -77,12 +148,51 @@ const RoleSelector = () => {
 
     const handleRoleSelect = (role) => {
         setSelectedRole(role);
-        setError('');
+        setError(''); // Limpa o erro ao selecionar um novo papel
     };
 
-    const handleContinueAsClient = () => {
-        navigate('/perfil');
+    const handleContinueAsClient = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                setLoading(true);
+                // Pega o ID do usuário logado
+                const userResponse = await axios.get('/auth/user/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const userId = userResponse.data.id;
+
+                // Define o papel do usuário como 'CLIENT' no backend
+                await axios.put(
+                    `/users/${userId}`,
+                    {
+                        role: 'CLIENT', // Define explicitamente o papel como 'CLIENT'
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                navigate('/perfil');
+            } catch (err) {
+                console.error('Erro ao continuar como cliente:', err);
+                setError(err.response?.data?.message || err.message || 'Erro ao definir papel de cliente.');
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            // Se não há token, o usuário não está logado, então apenas navega.
+            // Idealmente, a página de login deveria lidar com a falta de token.
+            navigate('/perfil');
+        }
     };
+
+    // Exibe uma mensagem de carregamento enquanto o perfil está sendo verificado
+    if (loading) {
+        return <div className="loading-message">Carregando perfil...</div>;
+    }
 
     return (
         <div className="role-selector-container">
