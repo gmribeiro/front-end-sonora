@@ -15,13 +15,6 @@ const EventoDetalhes = () => {
     const [carregandoUsuarioReserva, setCarregandoUsuarioReserva] = useState(false);
     const [eventImageUrl, setEventImageUrl] = useState(null);
 
-    const [showAvaliacaoForm, setShowAvaliacaoForm] = useState(false);
-    const [avaliacaoForm, setAvaliacaoForm] = useState({
-        nota: '3',
-        mensagem: ''
-    });
-    const [avaliacaoMessage, setAvaliacaoMessage] = useState('');
-
     useEffect(() => {
         const carregarDados = async () => {
             try {
@@ -82,7 +75,6 @@ const EventoDetalhes = () => {
     }, [id]);
 
     const handleReservar = async () => {
-        // Nova verificação de role no início do método
         if (usuarioLogado?.role !== 'CLIENT') {
             setMensagemReserva('Apenas clientes podem fazer reservas.');
             return;
@@ -93,10 +85,6 @@ const EventoDetalhes = () => {
             return;
         }
 
-        // Esta parte do código verifica se o usuário está logado e, se não, tenta carregá-lo.
-        // Se o usuário não estiver logado, ele será redirecionado para a tela de acesso.
-        // A verificação de role já deve ter capturado não-clientes, então esta parte é mais para
-        // garantir que o usuário está autenticado.
         if (!usuarioLogado?.id) {
             setCarregandoUsuarioReserva(true);
             const token = localStorage.getItem('token');
@@ -106,13 +94,7 @@ const EventoDetalhes = () => {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     setUsuarioLogado(userResponse.data);
-                    // Após carregar o usuário, re-chamar a função para continuar o processo.
-                    // Isso pode ser uma forma de garantir que o estado `usuarioLogado` seja atualizado
-                    // antes de prosseguir com a reserva, evitando que o botão fique disabled
-                    // por mais tempo do que o necessário após o login.
-                    // Contudo, se o usuário chegou aqui sem usuarioLogado.id, ele será redirecionado
-                    // para login, então este bloco pode ser simplificado.
-                    // Para evitar um loop, o melhor é redirecionar imediatamente se não estiver logado.
+
                 } catch (error) {
                     console.error('Erro ao carregar usuário para reserva:', error);
                     setMensagemReserva('Erro ao carregar informações do usuário.');
@@ -125,12 +107,8 @@ const EventoDetalhes = () => {
                 navigate('/acesso', { state: { from: `/detalhes/${id}` } });
                 return;
             }
-            // Retorna após a tentativa de carregar o usuário ou redirecionar.
-            // O ideal é que se o usuárioLogado.id não estiver presente, ele já seja redirecionado.
-            // A lógica de tentar carregar o usuário dentro do handleReservar pode ser um pouco redundante
-            // se o useEffect já faz isso ao carregar o componente.
-            // Para simplificar, vou assumir que usuarioLogado já está carregado pelo useEffect.
-            if (!usuarioLogado?.id) { // Re-check after potential load
+
+            if (!usuarioLogado?.id) {
                 setMensagemReserva('É necessário estar logado para fazer reservas.');
                 return;
             }
@@ -157,7 +135,7 @@ const EventoDetalhes = () => {
 
             console.log('Enviando reserva:', reservaData);
 
-            const response = await axios.post('http://localhost:8080/reservas', reservaData, {
+            const response = await axios.post('/reservas', reservaData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -193,63 +171,6 @@ const EventoDetalhes = () => {
         }
     };
 
-    const handleAvaliarClick = () => {
-        setShowAvaliacaoForm(true);
-        setAvaliacaoForm({ nota: '3', mensagem: '' });
-        setAvaliacaoMessage('');
-    };
-
-    const handleNotaChange = (event) => {
-        const value = parseInt(event.target.value, 10);
-        if (!isNaN(value) && value >= 1 && value <= 5) {
-            setAvaliacaoForm(prev => ({ ...prev, nota: value }));
-        }
-    };
-
-    const handleMensagemChange = (event) => {
-        setAvaliacaoForm(prev => ({ ...prev, mensagem: event.target.value }));
-    };
-
-    const handleSubmitAvaliacao = async () => {
-        if (!evento?.idEvento) {
-            alert('Dados do evento incompletos para avaliação');
-            return;
-        }
-
-        const token = localStorage.getItem('token');
-        if (token && usuarioLogado?.role === "CLIENT" && usuarioLogado?.id) {
-            try {
-                await axios.post(
-                    "/avaliacoes",
-                    {
-                        nota: parseInt(avaliacaoForm.nota),
-                        mensagem: avaliacaoForm.mensagem,
-                        usuarioId: usuarioLogado.id,
-                        eventoId: evento.idEvento,
-                    },
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-                setAvaliacaoMessage("Avaliação enviada com sucesso!");
-                setShowAvaliacaoForm(false);
-                setTimeout(() => setAvaliacaoMessage(''), 3000);
-            } catch (error) {
-                console.error("Erro ao enviar avaliação:", error);
-                setAvaliacaoMessage("Erro ao enviar avaliação.");
-            }
-        } else if (usuarioLogado?.role !== "CLIENT") {
-            setAvaliacaoMessage("Apenas clientes podem fazer avaliações.");
-        } else if (!usuarioLogado?.id) {
-            setAvaliacaoMessage("Informações do usuário ausentes.");
-        } else {
-            setAvaliacaoMessage("Token de autenticação não encontrado.");
-        }
-    };
-
     if (carregando) {
         return <div className="carregando-container">Carregando...</div>;
     }
@@ -272,7 +193,6 @@ const EventoDetalhes = () => {
         );
     }
 
-    // Variável para determinar se o botão de reserva deve ser exibido/habilitado
     const podeReservar = usuarioLogado && usuarioLogado.role === 'CLIENT';
     const textoBotaoReserva = usuarioLogado && usuarioLogado.role !== 'CLIENT'
         ? 'Apenas clientes podem reservar'
@@ -326,7 +246,6 @@ const EventoDetalhes = () => {
                     </div>
 
                     <div className="acoes-section">
-                        {/* Condição para exibir/desabilitar e mudar o texto do botão */}
                         <button
                             onClick={handleReservar}
                             disabled={!podeReservar || reservando || carregandoUsuarioReserva}
@@ -339,45 +258,6 @@ const EventoDetalhes = () => {
                             </p>
                         )}
                     </div>
-
-                    {usuarioLogado?.role === 'CLIENT' && (
-                        <div className="avaliacao-container">
-                            {!showAvaliacaoForm ? (
-                                <button onClick={handleAvaliarClick}>Avaliar Evento</button>
-                            ) : (
-                                <div className="avaliacao-form">
-                                    <h4>Avaliar {evento.nomeEvento || evento.titulo}</h4>
-                                    <div className="form-group">
-                                        <label htmlFor="nota">Nota (1-5):</label>
-                                        <select
-                                            id="nota"
-                                            name="nota"
-                                            value={avaliacaoForm.nota}
-                                            onChange={handleNotaChange}
-                                        >
-                                            <option value="1">★</option>
-                                            <option value="2">★★</option>
-                                            <option value="3">★★★</option>
-                                            <option value="4">★★★★</option>
-                                            <option value="5">★★★★★</option>
-                                        </select>
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="mensagem">Mensagem (opcional):</label>
-                                        <textarea
-                                            id="mensagem"
-                                            name="mensagem"
-                                            value={avaliacaoForm.mensagem}
-                                            onChange={handleMensagemChange}
-                                        />
-                                    </div>
-                                    <button onClick={handleSubmitAvaliacao}>Enviar Avaliação</button>
-                                    <button onClick={() => setShowAvaliacaoForm(false)}>Cancelar</button>
-                                    {avaliacaoMessage && <p className="avaliacao-message">{avaliacaoMessage}</p>}
-                                </div>
-                            )}
-                        </div>
-                    )}
                 </div>
             </div>
         </div>
