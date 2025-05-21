@@ -8,7 +8,9 @@ function MeusContratos() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [artistaIdLogado, setArtistaIdLogado] = useState(null);
+    const [nomeArtistaLogado, setNomeArtistaLogado] = useState(''); // Novo estado para o nome do artista
 
+    // Função para buscar os contratos do artista
     const fetchMeusContratosArtista = useCallback(async (artistaId, token) => {
         try {
             const response = await axios.get(`/contratos/musico/${artistaId}`, {
@@ -45,6 +47,7 @@ function MeusContratos() {
 
                 if (musicoLogado && musicoLogado.idMusico) {
                     setArtistaIdLogado(musicoLogado.idMusico);
+                    setNomeArtistaLogado(musicoLogado.nomeMusico || 'Artista Desconhecido'); // Armazena o nome do artista
                     fetchMeusContratosArtista(musicoLogado.idMusico, token);
                 } else {
                     console.warn('Nenhum músico encontrado para este usuário.');
@@ -61,7 +64,25 @@ function MeusContratos() {
         carregarContratosArtista();
     }, [fetchMeusContratosArtista]);
 
-    const handleAceitarContrato = async (idEvento, idMusico) => {
+    // Função para enviar a notificação
+    const enviarNotificacao = async (idHost, mensagem, token) => {
+        try {
+            await axios.post(`/notifications/user/${idHost}`, {
+                message: mensagem
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log('Notificação enviada com sucesso ao host.');
+        } catch (notificationError) {
+            console.error('Erro ao enviar notificação ao host:', notificationError);
+        }
+    };
+
+
+    const handleAceitarContrato = async (idEvento, idMusico, nomeEvento) => {
         const confirmacao = window.confirm("Você tem certeza que deseja aceitar este contrato?");
         if (!confirmacao) {
             return;
@@ -74,11 +95,29 @@ function MeusContratos() {
                 return;
             }
 
-            await axios.put(`/contratos/${idEvento}/${idMusico}/activate`, {}, { // A URL no backend está como /ativar, corrigindo aqui
+            // 1. Ativar o contrato
+            await axios.put(`/contratos/${idEvento}/${idMusico}/activate`, {}, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             alert('Contrato aceito com sucesso!');
+
+            // 2. Obter o ID do host através do evento
+            const hostResponse = await axios.get(`/eventos/host/${idEvento}`, { // USANDO O NOVO ENDPOINT
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            // Supondo que a resposta de /eventos/host/{idEvento} seja o ID do host diretamente ou um objeto com um campo 'id'
+            const idHost = hostResponse.data?.id || hostResponse.data; // Adapte conforme a sua API retornar (ex: se retorna só o id, use hostResponse.data)
+
+            if (idHost) {
+                const mensagem = `O artista ${nomeArtistaLogado} aceitou seu convite para o evento ${nomeEvento}!`;
+                await enviarNotificacao(idHost, mensagem, token);
+            } else {
+                console.warn('Não foi possível encontrar o ID do host para o evento:', idEvento);
+            }
+
+            // 3. Recarregar a lista de contratos
             if (artistaIdLogado) {
                 fetchMeusContratosArtista(artistaIdLogado, token);
             }
@@ -87,7 +126,7 @@ function MeusContratos() {
             console.error('Erro ao aceitar contrato:', error);
             if (error.response) {
                 if (error.response.status === 404) {
-                    alert('Contrato não encontrado. Ele pode ter sido removido.');
+                    alert('Contrato ou Evento não encontrado. Ele pode ter sido removido.');
                 } else if (error.response.status === 409) {
                     alert('Este contrato já foi aceito ou está em um estado inválido.');
                 } else {
@@ -99,7 +138,7 @@ function MeusContratos() {
         }
     };
 
-    const handleRecusarContrato = async (idEvento, idMusico) => {
+    const handleRecusarContrato = async (idEvento, idMusico, nomeEvento) => {
         const confirmacao = window.confirm("Você tem certeza que deseja recusar e excluir este contrato? Esta ação é irreversível.");
         if (!confirmacao) {
             return;
@@ -112,11 +151,29 @@ function MeusContratos() {
                 return;
             }
 
+            // 1. Obter o ID do host através do evento ANTES de deletar o contrato
+            const hostResponse = await axios.get(`/eventos/host/${idEvento}`, { // USANDO O NOVO ENDPOINT
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const idHost = hostResponse.data?.id || hostResponse.data; // Adapte conforme a sua API retornar
+
+
+            // 2. Excluir o contrato
             await axios.delete(`/contratos/${idEvento}/${idMusico}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             alert('Contrato recusado e removido com sucesso!');
+
+            // 3. Enviar notificação APÓS a exclusão bem-sucedida
+            if (idHost) {
+                const mensagem = `O artista ${nomeArtistaLogado} recusou seu convite para o evento ${nomeEvento}.`;
+                await enviarNotificacao(idHost, mensagem, token);
+            } else {
+                console.warn('Não foi possível encontrar o ID do host para o evento:', idEvento);
+            }
+
+            // 4. Recarregar a lista de contratos
             if (artistaIdLogado) {
                 fetchMeusContratosArtista(artistaIdLogado, token);
             }
@@ -125,7 +182,7 @@ function MeusContratos() {
             console.error('Erro ao recusar contrato:', error);
             if (error.response) {
                 if (error.response.status === 404) {
-                    alert('Contrato não encontrado. Ele pode já ter sido removido.');
+                    alert('Contrato ou Evento não encontrado. Ele pode já ter sido removido.');
                 } else {
                     alert(`Erro ao recusar contrato: ${error.response.status} - ${error.response.data?.message || 'Erro desconhecido'}`);
                 }
@@ -161,13 +218,21 @@ function MeusContratos() {
                                 <div className="contrato-actions">
                                     <button
                                         className="accept-button"
-                                        onClick={() => handleAceitarContrato(contrato.idContrato.evento.idEvento, contrato.idContrato.musico.idMusico)}
+                                        onClick={() => handleAceitarContrato(
+                                            contrato.idContrato.evento.idEvento,
+                                            contrato.idContrato.musico.idMusico,
+                                            contrato.idContrato.evento.nomeEvento // Passa o nome do evento
+                                        )}
                                     >
                                         Aceitar Contrato
                                     </button>
                                     <button
                                         className="reject-button"
-                                        onClick={() => handleRecusarContrato(contrato.idContrato.evento.idEvento, contrato.idContrato.musico.idMusico)}
+                                        onClick={() => handleRecusarContrato(
+                                            contrato.idContrato.evento.idEvento,
+                                            contrato.idContrato.musico.idMusico,
+                                            contrato.idContrato.evento.nomeEvento // Passa o nome do evento
+                                        )}
                                     >
                                         Recusar Contrato
                                     </button>
