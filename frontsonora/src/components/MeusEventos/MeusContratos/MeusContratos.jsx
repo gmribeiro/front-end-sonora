@@ -9,6 +9,7 @@ function MeusContratos() {
     const [error, setError] = useState('');
     const [artistaIdLogado, setArtistaIdLogado] = useState(null);
 
+    // Função para buscar os contratos do artista
     const fetchMeusContratosArtista = useCallback(async (artistaId, token) => {
         try {
             const response = await axios.get(`/contratos/musico/${artistaId}`, {
@@ -27,17 +28,20 @@ function MeusContratos() {
             setError('');
             try {
                 const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Token de autenticação não encontrado.');
+                    setLoading(false);
+                    return;
+                }
+
                 const userResponse = await axios.get('/auth/user/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    headers: { 'Authorization': `Bearer ${token}` },
                 });
 
                 const musicosResponse = await axios.get('/musicos', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    headers: { 'Authorization': `Bearer ${token}` },
                 });
+
                 const musicoLogado = musicosResponse.data.find(musico => musico.usuario?.id === userResponse.data.id);
 
                 if (musicoLogado && musicoLogado.idMusico) {
@@ -45,10 +49,11 @@ function MeusContratos() {
                     fetchMeusContratosArtista(musicoLogado.idMusico, token);
                 } else {
                     console.warn('Nenhum músico encontrado para este usuário.');
+                    setError('Você não está associado a um perfil de músico.');
                 }
             } catch (error) {
-                console.error('Erro ao buscar informações de artista:', error);
-                setError('Erro ao carregar seus contratos.');
+                console.error('Erro ao buscar informações de artista ou contratos:', error);
+                setError('Erro ao carregar seus contratos. Verifique sua conexão ou tente novamente.');
             } finally {
                 setLoading(false);
             }
@@ -56,6 +61,45 @@ function MeusContratos() {
 
         carregarContratosArtista();
     }, [fetchMeusContratosArtista]);
+
+    const handleAceitarContrato = async (idEvento, idMusico) => {
+        const confirmacao = window.confirm("Você tem certeza que deseja aceitar este contrato?");
+        if (!confirmacao) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Token de autenticação não encontrado. Faça login novamente.');
+                return;
+            }
+
+            await axios.put(`/contratos/${idEvento}/${idMusico}/activate`, {}, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            alert('Contrato aceito com sucesso!');
+            if (artistaIdLogado) {
+                fetchMeusContratosArtista(artistaIdLogado, token);
+            }
+
+        } catch (error) {
+            console.error('Erro ao aceitar contrato:', error);
+            if (error.response) {
+                // Erros retornados pela API (e.g., 404, 409)
+                if (error.response.status === 404) {
+                    alert('Contrato não encontrado. Ele pode ter sido removido.');
+                } else if (error.response.status === 409) {
+                    alert('Este contrato já foi aceito ou está em um estado inválido.');
+                } else {
+                    alert(`Erro ao aceitar contrato: ${error.response.status} - ${error.response.data?.message || 'Erro desconhecido'}`);
+                }
+            } else {
+                alert('Erro ao aceitar contrato. Verifique sua conexão.');
+            }
+        }
+    };
 
     if (loading) {
         return <div>Carregando seus contratos...</div>;
@@ -73,12 +117,20 @@ function MeusContratos() {
             ) : (
                 <ul className="contratos-lista">
                     {meusContratosArtista.map(contrato => (
-                        <li key={contrato.idContrato.contratoId} className="contrato-item">
+                        <li key={`${contrato.idContrato.evento.idEvento}-${contrato.idContrato.musico.idMusico}`} className="contrato-item">
                             <p><strong>Evento:</strong> <Link to={`/detalhes/${contrato.idContrato.evento.idEvento}`}>{contrato.idContrato.evento.nomeEvento || 'Nome não disponível'}</Link></p>
-                            <p><strong>Valor:</strong> {contrato.valor}</p>
+                            <p><strong>Valor:</strong> R$ {contrato.valor ? contrato.valor.toFixed(2) : '0.00'}</p>
                             <p><strong>Detalhes:</strong> {contrato.detalhes || 'Nenhum detalhe fornecido'}</p>
-                            <p><strong>Status:</strong> {contrato.status || 'Pendente'}</p>
-                            {/* Adicione mais detalhes do contrato conforme necessário */}
+                            <p><strong>Status:</strong> {contrato.status ? 'Aceito' : 'Pendente'}</p> {/* Exibe "Aceito" ou "Pendente" */}
+
+                            {!contrato.status && (
+                                <button
+                                    className="accept-button"
+                                    onClick={() => handleAceitarContrato(contrato.idContrato.evento.idEvento, contrato.idContrato.musico.idMusico)}
+                                >
+                                    Aceitar Contrato
+                                </button>
+                            )}
                         </li>
                     ))}
                 </ul>
