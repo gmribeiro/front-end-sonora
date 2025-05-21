@@ -9,7 +9,6 @@ function MeusContratos() {
     const [error, setError] = useState('');
     const [artistaIdLogado, setArtistaIdLogado] = useState(null);
 
-    // Função para buscar os contratos do artista
     const fetchMeusContratosArtista = useCallback(async (artistaId, token) => {
         try {
             const response = await axios.get(`/contratos/musico/${artistaId}`, {
@@ -75,7 +74,7 @@ function MeusContratos() {
                 return;
             }
 
-            await axios.put(`/contratos/${idEvento}/${idMusico}/activate`, {}, {
+            await axios.put(`/contratos/${idEvento}/${idMusico}/activate`, {}, { // A URL no backend está como /ativar, corrigindo aqui
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -87,7 +86,6 @@ function MeusContratos() {
         } catch (error) {
             console.error('Erro ao aceitar contrato:', error);
             if (error.response) {
-                // Erros retornados pela API (e.g., 404, 409)
                 if (error.response.status === 404) {
                     alert('Contrato não encontrado. Ele pode ter sido removido.');
                 } else if (error.response.status === 409) {
@@ -97,6 +95,42 @@ function MeusContratos() {
                 }
             } else {
                 alert('Erro ao aceitar contrato. Verifique sua conexão.');
+            }
+        }
+    };
+
+    const handleRecusarContrato = async (idEvento, idMusico) => {
+        const confirmacao = window.confirm("Você tem certeza que deseja recusar e excluir este contrato? Esta ação é irreversível.");
+        if (!confirmacao) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Token de autenticação não encontrado. Faça login novamente.');
+                return;
+            }
+
+            await axios.delete(`/contratos/${idEvento}/${idMusico}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            alert('Contrato recusado e removido com sucesso!');
+            if (artistaIdLogado) {
+                fetchMeusContratosArtista(artistaIdLogado, token);
+            }
+
+        } catch (error) {
+            console.error('Erro ao recusar contrato:', error);
+            if (error.response) {
+                if (error.response.status === 404) {
+                    alert('Contrato não encontrado. Ele pode já ter sido removido.');
+                } else {
+                    alert(`Erro ao recusar contrato: ${error.response.status} - ${error.response.data?.message || 'Erro desconhecido'}`);
+                }
+            } else {
+                alert('Erro ao recusar contrato. Verifique sua conexão.');
             }
         }
     };
@@ -121,15 +155,26 @@ function MeusContratos() {
                             <p><strong>Evento:</strong> <Link to={`/detalhes/${contrato.idContrato.evento.idEvento}`}>{contrato.idContrato.evento.nomeEvento || 'Nome não disponível'}</Link></p>
                             <p><strong>Valor:</strong> R$ {contrato.valor ? contrato.valor.toFixed(2) : '0.00'}</p>
                             <p><strong>Detalhes:</strong> {contrato.detalhes || 'Nenhum detalhe fornecido'}</p>
-                            <p><strong>Status:</strong> {contrato.status ? 'Aceito' : 'Pendente'}</p> {/* Exibe "Aceito" ou "Pendente" */}
+                            <p><strong>Status:</strong> {contrato.status ? 'Aceito' : 'Pendente'}</p>
 
                             {!contrato.status && (
-                                <button
-                                    className="accept-button"
-                                    onClick={() => handleAceitarContrato(contrato.idContrato.evento.idEvento, contrato.idContrato.musico.idMusico)}
-                                >
-                                    Aceitar Contrato
-                                </button>
+                                <div className="contrato-actions">
+                                    <button
+                                        className="accept-button"
+                                        onClick={() => handleAceitarContrato(contrato.idContrato.evento.idEvento, contrato.idContrato.musico.idMusico)}
+                                    >
+                                        Aceitar Contrato
+                                    </button>
+                                    <button
+                                        className="reject-button"
+                                        onClick={() => handleRecusarContrato(contrato.idContrato.evento.idEvento, contrato.idContrato.musico.idMusico)}
+                                    >
+                                        Recusar Contrato
+                                    </button>
+                                </div>
+                            )}
+                            {contrato.status && (
+                                <p className="accepted-message">Contrato aceito. Aguarde os detalhes do evento!</p>
                             )}
                         </li>
                     ))}
