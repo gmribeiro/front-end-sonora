@@ -8,9 +8,8 @@ function MeusContratos() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [artistaIdLogado, setArtistaIdLogado] = useState(null);
-    const [nomeArtistaLogado, setNomeArtistaLogado] = useState(''); // Novo estado para o nome do artista
+    const [nomeArtistaLogado, setNomeArtistaLogado] = useState('');
 
-    // Função para buscar os contratos do artista
     const fetchMeusContratosArtista = useCallback(async (artistaId, token) => {
         try {
             const response = await axios.get(`/contratos/musico/${artistaId}`, {
@@ -47,7 +46,7 @@ function MeusContratos() {
 
                 if (musicoLogado && musicoLogado.idMusico) {
                     setArtistaIdLogado(musicoLogado.idMusico);
-                    setNomeArtistaLogado(musicoLogado.nomeMusico || 'Artista Desconhecido'); // Armazena o nome do artista
+                    setNomeArtistaLogado(musicoLogado.nomeArtistico || 'Artista Desconhecido');
                     fetchMeusContratosArtista(musicoLogado.idMusico, token);
                 } else {
                     console.warn('Nenhum músico encontrado para este usuário.');
@@ -64,11 +63,11 @@ function MeusContratos() {
         carregarContratosArtista();
     }, [fetchMeusContratosArtista]);
 
-    // Função para enviar a notificação
+
     const enviarNotificacao = async (idHost, mensagem, token) => {
         try {
             await axios.post(`/notifications/user/${idHost}`, {
-                message: mensagem
+                mensagem: mensagem
             }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -103,7 +102,7 @@ function MeusContratos() {
             alert('Contrato aceito com sucesso!');
 
             // 2. Obter o ID do host através do evento
-            const hostResponse = await axios.get(`/eventos/host/${idEvento}`, { // USANDO O NOVO ENDPOINT
+            const hostResponse = await axios.get(`/eventos/${idEvento}/host-id`, { // USANDO O NOVO ENDPOINT
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -152,7 +151,7 @@ function MeusContratos() {
             }
 
             // 1. Obter o ID do host através do evento ANTES de deletar o contrato
-            const hostResponse = await axios.get(`/eventos/host/${idEvento}`, { // USANDO O NOVO ENDPOINT
+            const hostResponse = await axios.get(`/eventos/${idEvento}/host-id`, { // USANDO O NOVO ENDPOINT
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const idHost = hostResponse.data?.id || hostResponse.data; // Adapte conforme a sua API retornar
