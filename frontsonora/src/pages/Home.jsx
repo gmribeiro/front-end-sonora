@@ -69,6 +69,7 @@ function Home() {
   return (
       <main className='body'>
         <Header />
+        <h1 className="text-3xl font-bold underline">Isso foi feito em Tailwind</h1>
         <Carrossel onGeneroSelecionado={handleGeneroSelecionado} />
 
         <Routes>
