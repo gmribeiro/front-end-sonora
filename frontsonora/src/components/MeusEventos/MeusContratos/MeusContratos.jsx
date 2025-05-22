@@ -8,8 +8,9 @@ function MeusContratos() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [artistaIdLogado, setArtistaIdLogado] = useState(null);
-    const [nomeArtistaLogado, setNomeArtistaLogado] = useState('');
+    const [nomeArtistaLogado, setNomeArtistaLogado] = useState(''); // Novo estado para o nome do artista
 
+    // Função para buscar os contratos do artista
     const fetchMeusContratosArtista = useCallback(async (artistaId, token) => {
         try {
             const response = await axios.get(`/contratos/musico/${artistaId}`, {
@@ -46,7 +47,7 @@ function MeusContratos() {
 
                 if (musicoLogado && musicoLogado.idMusico) {
                     setArtistaIdLogado(musicoLogado.idMusico);
-                    setNomeArtistaLogado(musicoLogado.nomeMusico || 'Artista Desconhecido');
+                    setNomeArtistaLogado(musicoLogado.nomeMusico || 'Artista Desconhecido'); // Armazena o nome do artista
                     fetchMeusContratosArtista(musicoLogado.idMusico, token);
                 } else {
                     console.warn('Nenhum músico encontrado para este usuário.');
@@ -63,10 +64,11 @@ function MeusContratos() {
         carregarContratosArtista();
     }, [fetchMeusContratosArtista]);
 
+    // Função para enviar a notificação
     const enviarNotificacao = async (idHost, mensagem, token) => {
         try {
             await axios.post(`/notifications/user/${idHost}`, {
-                mensagem: mensagem // Corrigido aqui, como discutido anteriormente
+                message: mensagem
             }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +82,7 @@ function MeusContratos() {
     };
 
 
-    const handleAceitarContrato = async (idEvento, idMusico, nomeEvento, idGeneroMusical) => { // Adicionado idGeneroMusical
+    const handleAceitarContrato = async (idEvento, idMusico, nomeEvento) => {
         const confirmacao = window.confirm("Você tem certeza que deseja aceitar este contrato?");
         if (!confirmacao) {
             return;
@@ -100,28 +102,13 @@ function MeusContratos() {
 
             alert('Contrato aceito com sucesso!');
 
-            const escalaData = {
-                idEscala: {
-                    evento: { idEvento: idEvento },
-                    genero: { idGeneroMusical: idGeneroMusical }
-                },
-                musico: { idMusico: idMusico }
-            };
-
-            await axios.post(`/escalas`, escalaData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            console.log('Entrada na escala criada com sucesso!');
-
-
-            const hostResponse = await axios.get(`/eventos/${idEvento}/host-id`, {
+            // 2. Obter o ID do host através do evento
+            const hostResponse = await axios.get(`/eventos/host/${idEvento}`, { // USANDO O NOVO ENDPOINT
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            const idHost = hostResponse.data?.id || hostResponse.data;
+            // Supondo que a resposta de /eventos/host/{idEvento} seja o ID do host diretamente ou um objeto com um campo 'id'
+            const idHost = hostResponse.data?.id || hostResponse.data; // Adapte conforme a sua API retornar (ex: se retorna só o id, use hostResponse.data)
 
             if (idHost) {
                 const mensagem = `O artista ${nomeArtistaLogado} aceitou seu convite para o evento ${nomeEvento}!`;
@@ -130,17 +117,18 @@ function MeusContratos() {
                 console.warn('Não foi possível encontrar o ID do host para o evento:', idEvento);
             }
 
+            // 3. Recarregar a lista de contratos
             if (artistaIdLogado) {
                 fetchMeusContratosArtista(artistaIdLogado, token);
             }
 
         } catch (error) {
-            console.error('Erro ao aceitar contrato ou criar escala:', error);
+            console.error('Erro ao aceitar contrato:', error);
             if (error.response) {
                 if (error.response.status === 404) {
-                    alert('Contrato, Evento ou Gênero Musical não encontrado. Ele pode ter sido removido.');
+                    alert('Contrato ou Evento não encontrado. Ele pode ter sido removido.');
                 } else if (error.response.status === 409) {
-                    alert('Este contrato já foi aceito ou já existe uma escala para este músico no evento/gênero.');
+                    alert('Este contrato já foi aceito ou está em um estado inválido.');
                 } else {
                     alert(`Erro ao aceitar contrato: ${error.response.status} - ${error.response.data?.message || 'Erro desconhecido'}`);
                 }
@@ -163,18 +151,21 @@ function MeusContratos() {
                 return;
             }
 
-            const hostResponse = await axios.get(`/eventos/${idEvento}/host-id`, {
+            // 1. Obter o ID do host através do evento ANTES de deletar o contrato
+            const hostResponse = await axios.get(`/eventos/host/${idEvento}`, { // USANDO O NOVO ENDPOINT
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            const idHost = hostResponse.data?.id || hostResponse.data;
+            const idHost = hostResponse.data?.id || hostResponse.data; // Adapte conforme a sua API retornar
 
 
+            // 2. Excluir o contrato
             await axios.delete(`/contratos/${idEvento}/${idMusico}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             alert('Contrato recusado e removido com sucesso!');
 
+            // 3. Enviar notificação APÓS a exclusão bem-sucedida
             if (idHost) {
                 const mensagem = `O artista ${nomeArtistaLogado} recusou seu convite para o evento ${nomeEvento}.`;
                 await enviarNotificacao(idHost, mensagem, token);
@@ -182,6 +173,7 @@ function MeusContratos() {
                 console.warn('Não foi possível encontrar o ID do host para o evento:', idEvento);
             }
 
+            // 4. Recarregar a lista de contratos
             if (artistaIdLogado) {
                 fetchMeusContratosArtista(artistaIdLogado, token);
             }
@@ -229,8 +221,7 @@ function MeusContratos() {
                                         onClick={() => handleAceitarContrato(
                                             contrato.idContrato.evento.idEvento,
                                             contrato.idContrato.musico.idMusico,
-                                            contrato.idContrato.evento.nomeEvento,
-                                            contrato.idContrato.evento.generoMusical?.idGeneroMusical // <-- Adicionado: Obtém o ID do gênero musical do evento
+                                            contrato.idContrato.evento.nomeEvento // Passa o nome do evento
                                         )}
                                     >
                                         Aceitar Contrato
@@ -240,7 +231,7 @@ function MeusContratos() {
                                         onClick={() => handleRecusarContrato(
                                             contrato.idContrato.evento.idEvento,
                                             contrato.idContrato.musico.idMusico,
-                                            contrato.idContrato.evento.nomeEvento
+                                            contrato.idContrato.evento.nomeEvento // Passa o nome do evento
                                         )}
                                     >
                                         Recusar Contrato
