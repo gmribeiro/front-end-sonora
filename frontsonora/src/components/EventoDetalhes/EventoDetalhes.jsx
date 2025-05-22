@@ -6,14 +6,24 @@ import './EventoDetalhes.css';
 const EventoDetalhes = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+
+    // Estados para os dados do evento
     const [evento, setEvento] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
+
+    // Estado para o usuário logado
     const [usuarioLogado, setUsuarioLogado] = useState(null);
+
+    // Estados para a funcionalidade de reserva
     const [reservando, setReservando] = useState(false);
     const [mensagemReserva, setMensagemReserva] = useState('');
     const [carregandoUsuarioReserva, setCarregandoUsuarioReserva] = useState(false);
+
+    // Estado para a imagem do evento
     const [eventImageUrl, setEventImageUrl] = useState(null);
+
+    // Estados para as escalas (artistas) do evento
     const [escalasDoEvento, setEscalasDoEvento] = useState([]);
     const [carregandoEscalas, setCarregandoEscalas] = useState(false);
     const [erroEscalas, setErroEscalas] = useState(null);
@@ -78,7 +88,6 @@ const EventoDetalhes = () => {
         carregarDados();
     }, [id]);
 
-
     useEffect(() => {
         const fetchEscalasDoEvento = async () => {
             if (!id) return;
@@ -98,10 +107,23 @@ const EventoDetalhes = () => {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                setEscalasDoEvento(response.data);
+                console.log('Resposta da API para escalas (response.data):', response.data);
+                if (Array.isArray(response.data)) {
+                    setEscalasDoEvento(response.data);
+                } else {
+                    console.error('Dados de escalas recebidos da API não são um array:', response.data);
+                    setErroEscalas('Formato de dados inesperado para artistas escalados.');
+                    setEscalasDoEvento([]);
+                }
             } catch (error) {
                 console.error('Erro ao carregar escalas do evento:', error);
-                setErroEscalas('Erro ao carregar os artistas escalados.');
+                if (axios.isAxiosError(error) && error.response && error.response.status === 204) {
+                    console.log('API retornou 204 No Content, definindo escalas como array vazio.');
+                    setEscalasDoEvento([]);
+                } else {
+                    setErroEscalas('Erro ao carregar os artistas escalados.');
+                    setEscalasDoEvento([]);
+                }
             } finally {
                 setCarregandoEscalas(false);
             }
@@ -149,8 +171,6 @@ const EventoDetalhes = () => {
                 return;
             }
         }
-
-
         setReservando(true);
         setMensagemReserva('');
 
@@ -282,35 +302,46 @@ const EventoDetalhes = () => {
                             <p>Carregando artistas...</p>
                         ) : erroEscalas ? (
                             <p className="erro-mensagem-escalas">{erroEscalas}</p>
-                        ) : escalasDoEvento.length === 0 ? (
-                            <p>Nenhum artista escalado para este evento ainda.</p>
                         ) : (
-                            <div className="artistas-escalados-list">
-                                {escalasDoEvento.map((escala, index) => (
-                                    <div key={index} className="escala-item">
-                                        <h4>Gênero: {escala.idEscala?.genero?.nomeGenero || 'Não especificado'}</h4>
-                                        {escala.musicos && escala.musicos.length > 0 ? (
-                                            <ul>
-                                                {escala.musicos.map((musico, musicoIndex) => (
-                                                    <li key={`${index}-${musicoIndex}`}>
-                                                        {musico.nomeArtistico || 'Nome indisponível'}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <p>Nenhum músico para este gênero ainda.</p>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
+                            <React.Fragment>
+                                {Array.isArray(escalasDoEvento) && escalasDoEvento.length === 0 ? (
+                                    <p>Nenhum artista escalado para este evento ainda.</p>
+                                ) : (
+                                    Array.isArray(escalasDoEvento) ? (
+                                        <div className="artistas-escalados-list">
+                                            {escalasDoEvento.map((escala, index) => (
+                                                <div key={index} className="escala-item">
+                                                    <h4>Gênero: {escala.idEscala?.genero?.nomeGenero || 'Não especificado'}</h4>
+                                                    {escala.musicos && escala.musicos.length > 0 ? (
+                                                        <ul>
+                                                            {escala.musicos.map((musico, musicoIndex) => (
+                                                                <li key={`${index}-${musicoIndex}`}>
+                                                                    {musico.nomeArtistico || 'Nome indisponível'}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <p>Nenhum músico para este gênero neste slot.</p>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        // Fallback caso escalasDoEvento não seja um array (deveria ser pego pelo erroEscalas)
+                                        <p className="erro-mensagem-escalas">Erro: Dados dos artistas escalados não são válidos.</p>
+                                    )
+                                )}
+                            </React.Fragment>
                         )}
                     </div>
 
+                    {/* Seção de Descrição */}
                     <div className="descricao-section">
                         <h3>Descrição</h3>
                         <p>{evento.descricao || 'Descrição não disponível.'}</p>
                     </div>
 
+                    {/* Seção de Ações (Botão Reservar) */}
                     <div className="acoes-section">
                         <button
                             onClick={handleReservar}
