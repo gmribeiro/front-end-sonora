@@ -187,7 +187,6 @@ function MinhasReservas() {
 
     return (
         <div className="minhas-reservas-container">
-            {/* Seção de Todas as Minhas Reservas (incluindo pendentes e confirmadas) */}
             <h2>Minhas Reservas</h2>
             {minhasReservas.length === 0 ? (
                 <p>Você ainda não fez nenhuma reserva.</p>
@@ -215,7 +214,6 @@ function MinhasReservas() {
                 </ul>
             )}
 
-            {/* Seção: Minhas Reservas Confirmadas com botão de cancelar */}
             <h2 style={{ marginTop: '30px' }}>Reservas Confirmadas</h2>
             {minhasReservasConfirmadas.length === 0 ? (
                 <p>Você ainda não tem reservas confirmadas.</p>
@@ -228,7 +226,6 @@ function MinhasReservas() {
                             <p><strong>Local:</strong> {reserva.evento?.localEvento?.local || 'Local não disponível'}</p>
                             <p><strong>Status:</strong> <span className="status-confirmada">Confirmada</span></p>
 
-                            {/* Botão de Cancelar Reserva */}
                             <button
                                 onClick={() => handleCancelarReserva(reserva.idReserva)}
                                 disabled={cancelandoId === reserva.idReserva || confirmandoId === reserva.idReserva}
@@ -244,7 +241,6 @@ function MinhasReservas() {
                 </ul>
             )}
 
-            {/* Nova seção para o histórico de eventos confirmados com botão de avaliação */}
             <h2 style={{ marginTop: '30px' }}>Histórico de Eventos</h2>
             {historicoReservas.length === 0 ? (
                 <p>Você não possui histórico de eventos confirmados.</p>
@@ -256,7 +252,6 @@ function MinhasReservas() {
                             <p><strong>Data e Hora:</strong> {reserva.evento?.dataHora ? formatDateTime(reserva.evento.dataHora) : 'Data/Hora não disponível'}</p>
                             <p><strong>Local:</strong> {reserva.evento?.localEvento?.local || 'Local não disponível'}</p>
                             <p><strong>Status:</strong> <span className="status-concluido">Concluído</span></p>
-                            {/* Botão de Avaliar Evento */}
                             <Link to="/avaliacoes" state={{ eventoId: reserva.evento?.idEvento }}>
                                 <button className="avaliar-button">Avaliar Evento</button>
                             </Link>

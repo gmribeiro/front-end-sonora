@@ -66,7 +66,7 @@ function MeusContratos() {
     const enviarNotificacao = async (idHost, mensagem, token) => {
         try {
             await axios.post(`/notifications/user/${idHost}`, {
-                mensagem: mensagem // Corrigido aqui, como discutido anteriormente
+                mensagem: mensagem
             }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,8 +92,6 @@ function MeusContratos() {
                 alert('Token de autenticação não encontrado. Faça login novamente.');
                 return;
             }
-
-            // 1. Ativar o contrato
             await axios.put(`/contratos/${idEvento}/${idMusico}/activate`, {}, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -101,14 +99,12 @@ function MeusContratos() {
             alert('Contrato aceito com sucesso!');
 
             const escalaData = {
-                idEscala: {
-                    evento: { idEvento: idEvento },
-                    genero: { idGeneroMusical: idGeneroMusical }
-                },
-                musico: { idMusico: idMusico }
+                idEvento: idEvento,
+                idGeneroMusical: idGeneroMusical,
+                idsMusicos: [idMusico]
             };
 
-            await axios.post(`/escalas`, escalaData, {
+            await axios.post(`/escalas/musicos`, escalaData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`

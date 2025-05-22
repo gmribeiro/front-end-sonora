@@ -14,6 +14,10 @@ const EventoDetalhes = () => {
     const [mensagemReserva, setMensagemReserva] = useState('');
     const [carregandoUsuarioReserva, setCarregandoUsuarioReserva] = useState(false);
     const [eventImageUrl, setEventImageUrl] = useState(null);
+    const [escalasDoEvento, setEscalasDoEvento] = useState([]);
+    const [carregandoEscalas, setCarregandoEscalas] = useState(false);
+    const [erroEscalas, setErroEscalas] = useState(null);
+
 
     useEffect(() => {
         const carregarDados = async () => {
@@ -21,9 +25,11 @@ const EventoDetalhes = () => {
                 setCarregando(true);
                 setErro(null);
 
+                const token = localStorage.getItem('token');
+
                 const [eventoResponse, usuarioResponseData] = await Promise.all([
                     axios.get(`/eventos/${id}`),
-                    verificarUsuarioLogado()
+                    verificarUsuarioLogado(token)
                 ]);
 
                 const eventoData = eventoResponse.data;
@@ -32,7 +38,6 @@ const EventoDetalhes = () => {
 
                 if (eventoData && eventoData.idEvento) {
                     try {
-                        const token = localStorage.getItem('token');
                         const imageResponse = await axios.get(`/eventos/${eventoData.idEvento}/image`, {
                             responseType: 'blob',
                             headers: {
@@ -56,8 +61,7 @@ const EventoDetalhes = () => {
             }
         };
 
-        const verificarUsuarioLogado = async () => {
-            const token = localStorage.getItem('token');
+        const verificarUsuarioLogado = async (token) => {
             if (!token) return null;
 
             try {
@@ -72,6 +76,38 @@ const EventoDetalhes = () => {
         };
 
         carregarDados();
+    }, [id]);
+
+
+    useEffect(() => {
+        const fetchEscalasDoEvento = async () => {
+            if (!id) return;
+
+            setCarregandoEscalas(true);
+            setErroEscalas(null);
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setErroEscalas('Token de autenticação não encontrado para carregar escalas.');
+                    setCarregandoEscalas(false);
+                    return;
+                }
+
+                const response = await axios.get(`/escalas/event/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setEscalasDoEvento(response.data);
+            } catch (error) {
+                console.error('Erro ao carregar escalas do evento:', error);
+                setErroEscalas('Erro ao carregar os artistas escalados.');
+            } finally {
+                setCarregandoEscalas(false);
+            }
+        };
+
+        fetchEscalasDoEvento();
     }, [id]);
 
     const handleReservar = async () => {
@@ -238,6 +274,36 @@ const EventoDetalhes = () => {
                                 <p>{evento.generoMusical?.nomeGenero || evento.genero || 'Não especificado'}</p>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="escalas-section">
+                        <h3>Artistas Escalados</h3>
+                        {carregandoEscalas ? (
+                            <p>Carregando artistas...</p>
+                        ) : erroEscalas ? (
+                            <p className="erro-mensagem-escalas">{erroEscalas}</p>
+                        ) : escalasDoEvento.length === 0 ? (
+                            <p>Nenhum artista escalado para este evento ainda.</p>
+                        ) : (
+                            <div className="artistas-escalados-list">
+                                {escalasDoEvento.map((escala, index) => (
+                                    <div key={index} className="escala-item">
+                                        <h4>Gênero: {escala.idEscala?.genero?.nomeGenero || 'Não especificado'}</h4>
+                                        {escala.musicos && escala.musicos.length > 0 ? (
+                                            <ul>
+                                                {escala.musicos.map((musico, musicoIndex) => (
+                                                    <li key={`${index}-${musicoIndex}`}>
+                                                        {musico.nomeArtistico || 'Nome indisponível'}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p>Nenhum músico para este gênero ainda.</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="descricao-section">
