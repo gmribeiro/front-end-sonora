@@ -112,7 +112,7 @@ const EventoDetalhes = () => {
                     setEscalasDoEvento(response.data);
                 } else {
                     console.error('Dados de escalas recebidos da API não são um array:', response.data);
-                    setErroEscalas('Formato de dados inesperado para artistas escalados.');
+                    setErroEscalas('Os artistas escalados serão anunciados em breve!');
                     setEscalasDoEvento([]);
                 }
             } catch (error) {
@@ -142,9 +142,6 @@ const EventoDetalhes = () => {
             alert('Dados do evento incompletos');
             return;
         }
-
-        // Verifica se o usuário logado tem o ID antes de tentar a reserva
-        // Se não tiver, tenta buscar novamente ou redireciona
         if (!usuarioLogado?.id) {
             setCarregandoUsuarioReserva(true);
             const token = localStorage.getItem('token');
@@ -154,8 +151,6 @@ const EventoDetalhes = () => {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     setUsuarioLogado(userResponse.data);
-                    // Atualiza o estado para garantir que o ID esteja disponível para a próxima etapa
-                    // (Embora o useEffect do usuário logado já faria isso, é uma garantia aqui)
 
                 } catch (error) {
                     console.error('Erro ao carregar usuário para reserva:', error);
@@ -170,10 +165,7 @@ const EventoDetalhes = () => {
                 return;
             }
 
-            // Após a tentativa de carregar o usuário, verifica novamente se o ID está presente
-            if (!usuarioLogado?.id) { // Isso pode ser um problema de closure se o estado não for atualizado imediatamente.
-                // O ideal é usar o userResponse.data.id diretamente aqui após o sucesso da requisição
-                // ou reestruturar para que o estado do usuário seja totalmente carregado antes de entrar em handleReservar.
+            if (!usuarioLogado?.id) {
                 setMensagemReserva('É necessário estar logado para fazer reservas.');
                 return;
             }
@@ -189,7 +181,7 @@ const EventoDetalhes = () => {
             }
 
             const reservaData = {
-                usuario: { id: usuarioLogado.id }, // Usa o ID do usuário logado
+                usuario: { id: usuarioLogado.id },
                 evento: {
                     idEvento: evento.idEvento,
                 },
@@ -233,7 +225,7 @@ const EventoDetalhes = () => {
             const [hora, minuto] = tempo.split(':');
             return `${dia}/${mes}/${ano} às ${hora}h${minuto}`;
         } catch {
-            return dataHora; // Retorna o original se houver erro na formatação
+            return dataHora;
         }
     };
 
@@ -259,7 +251,6 @@ const EventoDetalhes = () => {
         );
     }
 
-    // Lógica para desabilitar o botão de reserva e exibir texto
     const podeReservar = usuarioLogado && usuarioLogado.role === 'CLIENT';
     const textoBotaoReserva = usuarioLogado && usuarioLogado.role !== 'CLIENT'
         ? 'Apenas clientes podem reservar'
@@ -325,12 +316,9 @@ const EventoDetalhes = () => {
                                                     <h4>Gênero: {escala.idEscala?.genero?.nomeGenero || 'Não especificado'}</h4>
                                                     {escala.musicos && escala.musicos.length > 0 ? (
                                                         <ul>
-                                                            {/* Mapeia e exibe CADA músico dentro desta escala */}
                                                             {escala.musicos.map((musico, musicoIndex) => (
                                                                 <li key={`${index}-${musicoIndex}`}>
                                                                     {musico.nomeArtistico || 'Nome indisponível'}
-                                                                    {/* Você pode adicionar mais detalhes aqui, se quiser, ex: */}
-                                                                    {/* {musico.instrumento ? ` (${musico.instrumento})` : ''} */}
                                                                 </li>
                                                             ))}
                                                         </ul>
