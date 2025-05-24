@@ -1,80 +1,126 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './header.css';
 
-const Header = ({ nomeUsuario, handleNomeClick, profileImageUrl }) => {
-  return (
-    <header className="bg-[#564A72] w-full py-2">
-      <div className="max-w-[1800px] mx-auto px-8 flex items-center justify-between">
-        <div className="flex items-center gap-12">
-        <div className="w-[140px] h-[80px] flex items-center justify-end">
-  <Link to="/">
-    <img
-      src="../images/logosemfundo.png"
-      alt="Logo"
-      className="h-[60px] w-auto object-contain"
-    />
-  </Link>
-</div>
+function Header() {
+    const [nomeUsuario, setNomeUsuario] = useState('');
+    const [profileImageUrl, setProfileImageUrl] = useState(null);
+    const navigate = useNavigate();
 
-          <div className="flex items-center border-2 border-[#c2a0bb] rounded-[22px] px-6 py-2">
-            <FaSearch className="text-[#c2a0bb] mr-3 text-[15px]" />
-            <input
-              type="text"
-              placeholder="Pesquisar eventos, shows, teatros, cursos"
-              className="bg-transparent border-none outline-none text-[#c2a0bb] text-[16px] w-[500px] placeholder:text-[#c2a0bb]"
-            />
-          </div>
-        </div>
+    const fetchProfileImage = useCallback(async (token) => {
+        if (!token) {
+            setProfileImageUrl(null);
+            return;
+        }
+        try {
+            const response = await axios.get('/auth/user/me/profile-image', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                responseType: 'blob'
+            });
 
-        <div className="flex items-center gap-15 mr-6">
-          <div className="h-[45px] w-[2px] bg-[#c2a0bb] mx-4"></div>
-          <nav className="flex gap-15 whitespace-nowrap">
-            <Link to="/" className="text-[#c2a0bb] font-semibold no-underline hover:text-white transition-colors">
-              Home
-            </Link>
-            <Link to="/meusconvites" className="text-[#c2a0bb] font-semibold no-underline hover:text-white transition-colors">
-              Meus Convites
-            </Link>
-            <Link to="/artistas" className="text-[#c2a0bb] font-semibold no-underline hover:text-white transition-colors">
-              Catálogo de Artistas
-            </Link>
-          </nav>
-          {nomeUsuario ? (
-            <div
-              onClick={handleNomeClick}
-              className="flex items-center cursor-pointer px-3 py-2 rounded-full transition-colors hover:bg-[#c2a0bb33]"
-            >
-              {profileImageUrl ? (
+            const imageUrl = URL.createObjectURL(response.data);
+            setProfileImageUrl(imageUrl);
+            console.log("Foto de perfil do Header carregada.");
+        } catch (error) {
+            console.error('Erro ao buscar foto de perfil no Header:', error);
+            setProfileImageUrl(null);
+        }
+    }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetch('/auth/user/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            console.log('Token expirado ou inválido. Redirecionando para login.');
+                            localStorage.removeItem('token');
+                            navigate('/acesso');
+                        }
+                        throw new Error(`Erro HTTP: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => setNomeUsuario(data.nome || ''))
+                .catch(error => console.error('Erro ao buscar nome do usuário:', error));
+            fetchProfileImage(token);
+
+        } else {
+            setNomeUsuario('');
+            setProfileImageUrl(null);
+        }
+
+        return () => {
+            if (profileImageUrl) {
+                URL.revokeObjectURL(profileImageUrl);
+                console.log("URL de objeto da foto de perfil do Header revogada.");
+            }
+        };
+
+    }, [navigate, fetchProfileImage]);
+
+    const handleNomeClick = () => {
+        if (nomeUsuario) {
+            navigate('/perfil');
+        }
+    };
+
+    return (
+        <header className="header">
+            <div className="header-left">
                 <img
-                  src={profileImageUrl}
-                  alt="Foto de Perfil"
-                  className="w-10 h-10 rounded-full object-cover mr-2 border-2 border-[#c2a0bb]"
+                    src="../images/logosemfundo.png"
+                    alt="Logo"
+                    className="logo"
+                    style={{ maxHeight: '60px' }}
                 />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-[#927AA3] text-white text-lg font-bold flex items-center justify-center mr-2 border-2 border-[#c2a0bb]">
-                  {nomeUsuario.charAt(0).toUpperCase()}
+                <div className="search-container">
+                    <FaSearch className="search-icon" />
+                    <input
+                        type="text"
+                        placeholder="Pesquisar eventos, shows, teatros, cursos"
+                        className="search-input"
+                    />
                 </div>
-              )}
-              <span className="text-[#c2a0bb] font-semibold text-base max-w-[120px] truncate">
-                {nomeUsuario}
-              </span>
             </div>
-          ) : (
-          <div className="flex items-center justify-center">
-            <Link
-            to="/acesso"
-            className="bg-white text-[#564A72] font-bold text-lg px-15 py-10 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-95"
-            >
-            Entrar
-            </Link>
-          </div>
 
-          )}
-        </div>
-      </div>
-    </header>
-  );
-};
+            <div className="header-right">
+                <div className="divider"></div>
+                <nav className="nav">
+                    <Link to="/" className="nav-link">Home</Link>
+                    <Link to="/meusconvites" className="nav-link">Meus Convites</Link>
+                    <Link to="/artistas" className="nav-link">Catálogo de Artistas</Link>
+                </nav>
+                {nomeUsuario ? (
+                    <div className="user-info-container" onClick={handleNomeClick} style={{ cursor: 'pointer' }}>
+                        {profileImageUrl ? (
+                            <img
+                                src={profileImageUrl}
+                                alt="Foto de Perfil"
+                                className="header-profile-pic"
+                            />
+                        ) : (
+                            <div className="header-profile-pic-placeholder">
+                                {nomeUsuario.charAt(0).toUpperCase()}
+                            </div>
+                        )}
+                        <span className="user-greeting">{nomeUsuario}</span>
+                    </div>
+                ) : (
+                    <Link to="/acesso" className="login-button">Entrar</Link>
+                )}
+            </div>
+        </header>
+    );
+}
 
 export default Header;

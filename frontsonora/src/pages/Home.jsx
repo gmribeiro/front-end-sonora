@@ -1,4 +1,4 @@
-import Header from '../components/header/header';
+import Header from '../components/Header/header';
 import Footer from '../components/Footer/footer';
 import Eventos from '../components/Eventos/eventos';
 import Carrossel from '../components/Carrossel/carrossel.jsx';
