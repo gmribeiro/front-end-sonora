@@ -9,10 +9,9 @@ function MeusContratos() {
     const [error, setError] = useState('');
     const [artistaIdLogado, setArtistaIdLogado] = useState(null);
     const [nomeArtistaLogado, setNomeArtistaLogado] = useState('');
+    // Novo estado para controlar o carregamento/envio de cada contrato individualmente
     const [submittingContractId, setSubmittingContractId] = useState(null);
 
-    // O estado 'musicosCadastradosResponse' não é mais necessário,
-    // pois a função que o preenchia será removida.
 
     const fetchMeusContratosArtista = useCallback(async (artistaId, token) => {
         setLoading(true);
@@ -30,10 +29,6 @@ function MeusContratos() {
             setLoading(false);
         }
     }, []);
-
-    // A função 'postMusicosCadastrados' será REMOVIDA
-    // porque ela enviava POST para '/escalas/musicos',
-    // que não corresponde ao endpoint de criação de Escala no backend.
 
     useEffect(() => {
         const carregarDadosIniciais = async () => {
@@ -58,11 +53,6 @@ function MeusContratos() {
                     setArtistaIdLogado(musicoLogado.idMusico);
                     setNomeArtistaLogado(musicoLogado.nomeMusico || 'Artista Desconhecido');
                     await fetchMeusContratosArtista(musicoLogado.idMusico, token);
-
-                    // A CHAMADA PARA 'postMusicosCadastrados' FOI REMOVIDA AQUI
-                    // const allMusicoIds = musicosResponse.data.map(musico => musico.idMusico).filter(Boolean);
-                    // await postMusicosCadastrados(allMusicoIds, token);
-
                 } else {
                     console.warn('Nenhum perfil de músico encontrado para o usuário logado.');
                     setError('Você não possui um perfil de músico associado. Por favor, contate o suporte.');
@@ -73,7 +63,6 @@ function MeusContratos() {
             }
         };
 
-        // 'postMusicosCadastrados' removido das dependências
         carregarDadosIniciais();
     }, [fetchMeusContratosArtista]);
 
@@ -117,7 +106,6 @@ function MeusContratos() {
                 musicos: [{ idMusico: idMusico }]
             };
 
-            // Requisição POST para /escalas
             await axios.post(`/escalas`, escalaData, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,14 +114,12 @@ function MeusContratos() {
             });
             console.log('Entrada na escala criada com sucesso!');
 
-            // Atualização do contrato para 'ativo'
             await axios.put(`/contratos/${idEvento}/${idMusico}/activate`, {}, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             alert('Contrato aceito e sua participação no evento registrada!');
 
-            // Atualiza o estado local para refletir o status aceito
             setMeusContratosArtista(prevContratos =>
                 prevContratos.map(contrato =>
                     (contrato.idContrato.evento.idEvento === idEvento && contrato.idContrato.musico.idMusico === idMusico)
@@ -142,12 +128,12 @@ function MeusContratos() {
                 )
             );
 
-            // Envio de notificação ao host
             const hostResponse = await axios.get(`/eventos/${idEvento}/host-id`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const idHost = hostResponse.data?.id || hostResponse.data;
 
+            // 4. Enviar notificação ao host
             if (idHost) {
                 const mensagem = `O artista ${nomeArtistaLogado} aceitou seu convite para o evento "${nomeEvento}" e está escalado!`;
                 await enviarNotificacao(idHost, mensagem, token);
@@ -165,11 +151,8 @@ function MeusContratos() {
                     errorMessage = 'Sessão expirada. Por favor, faça login novamente.';
                 } else if (status === 404) {
                     errorMessage = 'Contrato, Evento ou Gênero Musical não encontrado. Ele pode ter sido removido ou há dados inválidos.';
-                } else if (status === 400 && data?.message?.includes('Essa escala já existe no banco de dados!')) {
-                    // Captura a mensagem específica do seu backend para escala já existente
-                    errorMessage = 'Você já está escalado para este evento e gênero musical!';
-                    // Opcional: Se já existe, atualize o contrato para "aceito" no frontend,
-                    // pois o músico já estaria na escala.
+                } else if (status === 409) {
+                    errorMessage = 'Este contrato já foi aceito, ou você já está escalado para este evento/gênero.';
                     setMeusContratosArtista(prevContratos =>
                         prevContratos.map(contrato =>
                             (contrato.idContrato.evento.idEvento === idEvento && contrato.idContrato.musico.idMusico === idMusico)
@@ -177,17 +160,13 @@ function MeusContratos() {
                                 : contrato
                         )
                     );
-                } else if (status === 409) { // Para outros casos de conflito que o backend possa enviar
-                    errorMessage = 'Conflito de dados: ' + (data?.message || 'Já existe um registro similar.');
-                }
-                else {
+                } else {
                     errorMessage = data?.message || `Erro do servidor (${status}).`;
                 }
             } else {
                 errorMessage = 'Não foi possível conectar ao servidor. Verifique sua conexão com a internet.';
             }
             alert(errorMessage);
-            // Re-carrega os contratos para garantir a consistência após o erro
             if (artistaIdLogado && localStorage.getItem('token')) {
                 fetchMeusContratosArtista(artistaIdLogado, localStorage.getItem('token'));
             }
@@ -271,14 +250,13 @@ function MeusContratos() {
     return (
         <div className="meus-contratos-artista-container">
             <h2>Meus Contratos como Artista</h2>
-            {/* O bloco para 'musicosCadastradosResponse' foi removido aqui */}
             {meusContratosArtista.length === 0 ? (
                 <p className="no-contracts-message">Você ainda não possui nenhum contrato.</p>
             ) : (
                 <ul className="contratos-lista">
                     {meusContratosArtista.map(contrato => {
                         const contractKey = `${contrato.idContrato.evento.idEvento}-${contrato.idContrato.musico.idMusico}`;
-                        const isSubmitting = submittingContractId === contractKey;
+                        const isSubmitting = submittingContractId === contractKey; // Verifica se este contrato está em envio
 
                         return (
                             <li key={contractKey} className="contrato-item">
@@ -290,7 +268,7 @@ function MeusContratos() {
                                 <p><strong>Detalhes:</strong> {contrato.detalhes || 'Nenhum detalhe fornecido'}</p>
                                 <p><strong>Status:</strong> {contrato.status ? 'Aceito' : 'Pendente'}</p>
 
-                                {!contrato.status && (
+                                {!contrato.status && ( // Mostra os botões apenas se o contrato for pendente
                                     <div className="contrato-actions">
                                         <button
                                             className="accept-button"
