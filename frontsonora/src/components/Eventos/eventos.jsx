@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import './eventos.css';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
@@ -38,8 +37,6 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 .then(response => {
                     setUsuarioLogado(response.data);
                     setUserId(response.data.id);
-                    console.log("User Role:", response.data.role);
-                    console.log("User ID:", response.data.id);
                 })
                 .catch(error => console.error('Erro ao carregar usuário:', error));
 
@@ -195,7 +192,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                     setFormMessage('Evento cadastrado com sucesso e imagem enviada!');
                 }
             } else {
-                setFormMessage('Evento cadastrado, mas nenhuma imagem foi selecionada ou o ID do evento não foi retornado.');
+                setFormMessage('Evento cadastrado, mas nenhima imagem foi selecionada ou o ID do evento não foi retornado.');
             }
 
             setNomeEvento('');
@@ -254,37 +251,67 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
     };
 
     return (
-        <div className='espaco-eventos'>
+        <div className="bg-[#EDE6F2] px-4 py-8 min-h-[70vh] mb-20">
             {usuarioLogado?.role === 'HOST' && (
-                <div className="host-actions">
-                    <button onClick={() => setShowCadastro(!showCadastro)} className="btn-cadastrar-evento">
+                <div className="max-w-6xl mx-auto mb-6">
+                    <button 
+                        onClick={() => setShowCadastro(!showCadastro)} 
+                        className="bg-[#573765] hover:bg-[#6C3483] text-white px-4 py-2 text-sm sm:px-6 sm:py-3 sm:text-base rounded-lg transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg"
+                    >
                         {showCadastro ? 'Cancelar Cadastro' : 'Cadastrar Novo Evento'}
                     </button>
 
                     {showCadastro && (
-                        <div className="cadastro-evento-form">
-                            <h3>Cadastrar Novo Evento</h3>
-                            <form onSubmit={handleCadastrarEvento}>
-                                <div className="form-group">
-                                    <label htmlFor="nomeEvento">Nome do Evento:</label>
-                                    <input type="text" id="nomeEvento" name="nomeEvento" value={nomeEvento} onChange={handleInputChange} required />
+                        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mt-4 max-w-3xl mx-auto">
+                            <h3 className="text-[#8E44AD] text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center">Cadastrar Novo Evento</h3>
+                            <form onSubmit={handleCadastrarEvento} className="space-y-3 sm:space-y-4">
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="nomeEvento" className="block text-gray-700 text-sm sm:text-base font-medium">Nome do Evento:</label>
+                                    <input 
+                                        type="text" 
+                                        id="nomeEvento" 
+                                        name="nomeEvento" 
+                                        value={nomeEvento} 
+                                        onChange={handleInputChange} 
+                                        required 
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                    />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="dataHora">Data e Hora:</label>
-                                    <input type="datetime-local" id="dataHora" name="dataHora" value={dataHora} onChange={handleInputChange} required />
+                                
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="dataHora" className="block text-gray-700 text-sm sm:text-base font-medium">Data e Hora:</label>
+                                    <input 
+                                        type="datetime-local" 
+                                        id="dataHora" 
+                                        name="dataHora" 
+                                        value={dataHora} 
+                                        onChange={handleInputChange} 
+                                        required 
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                    />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="descricao">Descrição:</label>
-                                    <textarea id="descricao" name="descricao" value={descricao} onChange={handleInputChange} required />
+                                
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="descricao" className="block text-gray-700 text-sm sm:text-base font-medium">Descrição:</label>
+                                    <textarea 
+                                        id="descricao" 
+                                        name="descricao" 
+                                        value={descricao} 
+                                        onChange={handleInputChange} 
+                                        required 
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD] min-h-[80px] sm:min-h-[100px]"
+                                    />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="generoMusical">Gênero Musical:</label>
+                                
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="generoMusical" className="block text-gray-700 text-sm sm:text-base font-medium">Gênero Musical:</label>
                                     <select
                                         id="generoMusical"
                                         name="generoMusical"
                                         value={selectedGeneroId}
                                         onChange={handleInputChange}
                                         required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
                                     >
                                         <option value="">Selecione um gênero</option>
                                         {generos.map(genero => (
@@ -294,21 +321,48 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         ))}
                                     </select>
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="local">Local:</label>
-                                    <input type="text" id="local" name="local" value={localEventoNome} onChange={handleInputChange} required />
+                                
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="local" className="block text-gray-700 text-sm sm:text-base font-medium">Local:</label>
+                                    <input 
+                                        type="text" 
+                                        id="local" 
+                                        name="local" 
+                                        value={localEventoNome} 
+                                        onChange={handleInputChange} 
+                                        required 
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                    />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="cep">CEP do Local:</label>
-                                    <input type="text" id="cep" name="cep" value={cep} onChange={handleInputChange} />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="numero">Número do Local:</label>
-                                    <input type="text" id="numero" name="numero" value={numero} onChange={handleInputChange} />
+                                
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div className="space-y-1 sm:space-y-2">
+                                        <label htmlFor="cep" className="block text-gray-700 text-sm sm:text-base font-medium">CEP do Local:</label>
+                                        <input 
+                                            type="text" 
+                                            id="cep" 
+                                            name="cep" 
+                                            value={cep} 
+                                            onChange={handleInputChange} 
+                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                        />
+                                    </div>
+                                    
+                                    <div className="space-y-1 sm:space-y-2">
+                                        <label htmlFor="numero" className="block text-gray-700 text-sm sm:text-base font-medium">Número do Local:</label>
+                                        <input 
+                                            type="text" 
+                                            id="numero" 
+                                            name="numero" 
+                                            value={numero} 
+                                            onChange={handleInputChange} 
+                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                        />
+                                    </div>
                                 </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="eventImage">Foto do Evento:</label>
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="eventImage" className="block text-gray-700 text-sm sm:text-base font-medium">Foto do Evento:</label>
                                     <input
                                         type="file"
                                         id="eventImage"
@@ -316,70 +370,95 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         accept="image/*"
                                         onChange={handleImageChange}
                                         required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
                                     />
                                 </div>
 
-                                <button type="submit" className="btn-cadastrar">Cadastrar</button>
-                                <button type="button" onClick={() => setShowCadastro(false)} className="btn-cancelar">Cancelar</button>
-                                {formMessage && <p className={`form-message ${formMessage.startsWith('Erro') ? 'error' : 'success'}`}>{formMessage}</p>}
+                                <div className="flex flex-wrap gap-2 sm:gap-3 pt-1 sm:pt-2">
+                                    <button 
+                                        type="submit" 
+                                        className="bg-[#613176] hover:bg-[#6C3483] text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
+                                    >
+                                        Cadastrar
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowCadastro(false)} 
+                                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                                
+                                {formMessage && (
+                                    <p className={`mt-2 text-sm sm:text-base font-medium ${formMessage.startsWith('Erro') ? 'text-red-600' : 'text-green-600'}`}>
+                                        {formMessage}
+                                    </p>
+                                )}
                             </form>
                         </div>
                     )}
                 </div>
             )}
 
-            <div className={`container-eventos ${isAnimating ? 'animating' : ''}`} style={{ minHeight: '600px' }}>
-                {eventosPaginaAtual.map(evento => (
-                    <div
+            <div className={`max-w-7xl mx-auto ${isAnimating ? 'opacity-0 translate-y-5' : 'opacity-100 translate-y-0'} transition-all duration-300`}>
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 justify-items-center">
+                    {eventosPaginaAtual.map(evento => (
+                        <div
                         key={evento.id}
-                        className="evento"
                         onClick={() => handleEventoClick(evento.id)}
-                        style={{ cursor: 'pointer' }}
+                        className="bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[ 350px] xs:max-w-[200px] sm:max-w-[220px] md:max-w-[350px] mx-auto"
                     >
-                        <div className="evento-imagem-container">
-                            <img
-                                src={evento.imagem || '/images/evento_padrao.png'}
-                                alt={evento.titulo}
-                                className="evento-imagem"
-                            />
+                            <div className="relative w-full h-54    sm:h-72   md:h-100 overflow-hidden">
+                                <img
+                                    src={evento.imagem || '/images/evento_padrao.png'}
+                                    alt={evento.titulo}
+                                    className="absolute top-0 left-0 w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="p-5 sm:p-6 flex-grow flex flex-col">
+                                <h3 className="text-white text-sm sm:text-base font-semibold truncate mb-1 sm:mb-2">{evento.titulo}</h3>
+                                <p className="text-[#E8DFEC] text-xs sm:text-sm mb-2 sm:mb-3">{evento.local} - {evento.hora}</p>
+                                
+                                {usuarioLogado?.role === 'CLIENT' && (
+                                    <div className="mt-auto">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleReservar(evento.id);
+                                            }}
+                                            disabled={reservandoId === evento.id}
+                                            className="w-full bg-[#5A4E75] hover:bg-[#2E284E] text-white py-2 px-4 sm:py-3 sm:px-5 text-sm sm:text-base rounded-md transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+                                        >
+                                            {reservandoId === evento.id ? 'Reservando...' : 'Reservar'}
+                                        </button>
+                                    </div>
+                                )}
+                                {mensagemReserva && reservandoId === evento.id && (
+                                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-center text-white">{mensagemReserva}</p>
+                                )}
+                            </div>
                         </div>
-                        <h3>{evento.titulo}</h3>
-                        <p>{evento.local} - {evento.hora}</p>
-                        {usuarioLogado?.role === 'CLIENT' && (
-                            <button
-                                className="btn-reservar"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleReservar(evento.id);
-                                }}
-                                disabled={reservandoId === evento.id}
-                            >
-                                {reservandoId === evento.id ? 'Reservando...' : 'Reservar'}
-                            </button>
-                        )}
-                        {mensagemReserva && reservandoId === evento.id && (
-                            <p className="mensagem-reserva">{mensagemReserva}</p>
-                        )}
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
 
             {totalPaginas > 1 && (
-                <div className="paginacao">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 md:gap-6 mt-8 sm:mt-10 md:mt-12">
                     <button
-                        className="btn-paginacao"
                         onClick={() => mudarPagina(currentPage - 1)}
                         disabled={currentPage === 1 || isAnimating}
+                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
                     >
                         &lt;
                     </button>
 
-                    <span>Página {currentPage} de {totalPaginas}</span>
+                    <span className="text-[#2E284E] font-bold text-sm sm:text-base">Página {currentPage} de {totalPaginas}</span>
 
                     <button
-                        className="btn-paginacao"
                         onClick={() => mudarPagina(currentPage + 1)}
                         disabled={currentPage === totalPaginas || isAnimating}
+                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
                     >
                         &gt;
                     </button>
