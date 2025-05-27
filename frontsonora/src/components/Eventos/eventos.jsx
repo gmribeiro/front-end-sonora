@@ -2,8 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import './eventos.css';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
-const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPage, onEventoCadastrado }) => {
+const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadastrado }) => {
     const navigate = useNavigate();
     const [usuarioLogado, setUsuarioLogado] = useState(null);
     const [userId, setUserId] = useState(null);
@@ -254,138 +255,149 @@ const Eventos = ({ eventosFiltrados, eventosCompletos, currentPage, setCurrentPa
 
     return (
         <div className='espaco-eventos'>
-    {usuarioLogado?.role === 'HOST' && (
-    <div className="host-actions">
-    <button onClick={() => setShowCadastro(!showCadastro)} className="btn-cadastrar-evento">
-        {showCadastro ? 'Cancelar Cadastro' : 'Cadastrar Novo Evento'}
-    </button>
+            {usuarioLogado?.role === 'HOST' && (
+                <div className="host-actions">
+                    <button onClick={() => setShowCadastro(!showCadastro)} className="btn-cadastrar-evento">
+                        {showCadastro ? 'Cancelar Cadastro' : 'Cadastrar Novo Evento'}
+                    </button>
 
-    {showCadastro && (
-        <div className="cadastro-evento-form">
-            <h3>Cadastrar Novo Evento</h3>
-            <form onSubmit={handleCadastrarEvento}>
-                <div className="form-group">
-                    <label htmlFor="nomeEvento">Nome do Evento:</label>
-                    <input type="text" id="nomeEvento" name="nomeEvento" value={nomeEvento} onChange={handleInputChange} required />
+                    {showCadastro && (
+                        <div className="cadastro-evento-form">
+                            <h3>Cadastrar Novo Evento</h3>
+                            <form onSubmit={handleCadastrarEvento}>
+                                <div className="form-group">
+                                    <label htmlFor="nomeEvento">Nome do Evento:</label>
+                                    <input type="text" id="nomeEvento" name="nomeEvento" value={nomeEvento} onChange={handleInputChange} required />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="dataHora">Data e Hora:</label>
+                                    <input type="datetime-local" id="dataHora" name="dataHora" value={dataHora} onChange={handleInputChange} required />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="descricao">Descrição:</label>
+                                    <textarea id="descricao" name="descricao" value={descricao} onChange={handleInputChange} required />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="generoMusical">Gênero Musical:</label>
+                                    <select
+                                        id="generoMusical"
+                                        name="generoMusical"
+                                        value={selectedGeneroId}
+                                        onChange={handleInputChange}
+                                        required
+                                    >
+                                        <option value="">Selecione um gênero</option>
+                                        {generos.map(genero => (
+                                            <option key={genero.idGeneroMusical} value={genero.idGeneroMusical}>
+                                                {genero.nomeGenero}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="local">Local:</label>
+                                    <input type="text" id="local" name="local" value={localEventoNome} onChange={handleInputChange} required />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="cep">CEP do Local:</label>
+                                    <input type="text" id="cep" name="cep" value={cep} onChange={handleInputChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="numero">Número do Local:</label>
+                                    <input type="text" id="numero" name="numero" value={numero} onChange={handleInputChange} />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="eventImage">Foto do Evento:</label>
+                                    <input
+                                        type="file"
+                                        id="eventImage"
+                                        name="eventImage"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        required
+                                    />
+                                </div>
+
+                                <button type="submit" className="btn-cadastrar">Cadastrar</button>
+                                <button type="button" onClick={() => setShowCadastro(false)} className="btn-cancelar">Cancelar</button>
+                                {formMessage && <p className={`form-message ${formMessage.startsWith('Erro') ? 'error' : 'success'}`}>{formMessage}</p>}
+                            </form>
+                        </div>
+                    )}
                 </div>
-                <div className="form-group">
-                    <label htmlFor="dataHora">Data e Hora:</label>
-                    <input type="datetime-local" id="dataHora" name="dataHora" value={dataHora} onChange={handleInputChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="descricao">Descrição:</label>
-                    <textarea id="descricao" name="descricao" value={descricao} onChange={handleInputChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="generoMusical">Gênero Musical:</label>
-                    <select
-                        id="generoMusical"
-                        name="generoMusical"
-                        value={selectedGeneroId}
-                        onChange={handleInputChange}
-                        required
+            )}
+
+            <div className={`container-eventos ${isAnimating ? 'animating' : ''}`} style={{ minHeight: '600px' }}>
+                {eventosPaginaAtual.map(evento => (
+                    <div
+                        key={evento.id}
+                        className="evento"
+                        onClick={() => handleEventoClick(evento.id)}
+                        style={{ cursor: 'pointer' }}
                     >
-                        <option value="">Selecione um gênero</option>
-                        {generos.map(genero => (
-                            <option key={genero.idGeneroMusical} value={genero.idGeneroMusical}>
-                                {genero.nomeGenero}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="local">Local:</label>
-                    <input type="text" id="local" name="local" value={localEventoNome} onChange={handleInputChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="cep">CEP do Local:</label>
-                    <input type="text" id="cep" name="cep" value={cep} onChange={handleInputChange} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="numero">Número do Local:</label>
-                    <input type="text" id="numero" name="numero" value={numero} onChange={handleInputChange} />
-                </div>
+                        <div className="evento-imagem-container">
+                            <img
+                                src={evento.imagem || '/images/evento_padrao.png'}
+                                alt={evento.titulo}
+                                className="evento-imagem"
+                            />
+                        </div>
+                        <h3>{evento.titulo}</h3>
+                        <p>{evento.local} - {evento.hora}</p>
+                        {usuarioLogado?.role === 'CLIENT' && (
+                            <button
+                                className="btn-reservar"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReservar(evento.id);
+                                }}
+                                disabled={reservandoId === evento.id}
+                            >
+                                {reservandoId === evento.id ? 'Reservando...' : 'Reservar'}
+                            </button>
+                        )}
+                        {mensagemReserva && reservandoId === evento.id && (
+                            <p className="mensagem-reserva">{mensagemReserva}</p>
+                        )}
+                    </div>
+                ))}
+            </div>
 
-                <div className="form-group">
-                    <label htmlFor="eventImage">Foto do Evento:</label>
-                    <input
-                        type="file"
-                        id="eventImage"
-                        name="eventImage"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        required
-                    />
-                </div>
+            {totalPaginas > 1 && (
+                <div className="paginacao">
+                    <button
+                        className="btn-paginacao"
+                        onClick={() => mudarPagina(currentPage - 1)}
+                        disabled={currentPage === 1 || isAnimating}
+                    >
+                        &lt;
+                    </button>
 
-                <button type="submit" className="btn-cadastrar">Cadastrar</button>
-                <button type="button" onClick={() => setShowCadastro(false)} className="btn-cancelar">Cancelar</button>
-                {formMessage && <p className={`form-message ${formMessage.startsWith('Erro') ? 'error' : 'success'}`}>{formMessage}</p>}
-            </form>
+                    <span>Página {currentPage} de {totalPaginas}</span>
+
+                    <button
+                        className="btn-paginacao"
+                        onClick={() => mudarPagina(currentPage + 1)}
+                        disabled={currentPage === totalPaginas || isAnimating}
+                    >
+                        &gt;
+                    </button>
+                </div>
+            )}
         </div>
-    )}
-</div>
-)}
-
-<div className={`container-eventos ${isAnimating ? 'animating' : ''}`} style={{ minHeight: '600px' }}>
-{eventosPaginaAtual.map(evento => (
-    <div
-        key={evento.id}
-        className="evento"
-        onClick={() => handleEventoClick(evento.id)}
-        style={{ cursor: 'pointer' }}
-    >
-        <div className="evento-imagem-container">
-            <img
-                src={evento.imagem || '/images/evento_padrao.png'}
-                alt={evento.titulo}
-                className="evento-imagem"
-            />
-        </div>
-        <h3>{evento.titulo}</h3>
-        <p>{evento.local} - {evento.hora}</p>
-        {usuarioLogado?.role === 'CLIENT' && (
-            <button
-                className="btn-reservar"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    handleReservar(evento.id);
-                }}
-                disabled={reservandoId === evento.id}
-            >
-                {reservandoId === evento.id ? 'Reservando...' : 'Reservar'}
-            </button>
-        )}
-        {mensagemReserva && reservandoId === evento.id && (
-            <p className="mensagem-reserva">{mensagemReserva}</p>
-        )}
-    </div>
-))}
-</div>
-
-{totalPaginas > 1 && (
-<div className="paginacao">
-    <button
-        className="btn-paginacao"
-        onClick={() => mudarPagina(currentPage - 1)}
-        disabled={currentPage === 1 || isAnimating}
-    >
-        &lt;
-    </button>
-
-    <span>Página {currentPage} de {totalPaginas}</span>
-
-    <button
-        className="btn-paginacao"
-        onClick={() => mudarPagina(currentPage + 1)}
-        disabled={currentPage === totalPaginas || isAnimating}
-    >
-        &gt;
-    </button>
-</div>
-)}
-</div>
     );
 }
+
+Eventos.propTypes = {
+    eventosFiltrados: PropTypes.array.isRequired,
+    currentPage: PropTypes.number.isRequired,
+    setCurrentPage: PropTypes.func.isRequired,
+    onEventoCadastrado: PropTypes.func
+};
+
+Eventos.defaultProps = {
+    onEventoCadastrado: () => {}
+};
 
 export default Eventos;

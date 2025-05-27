@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -146,7 +146,7 @@ const Header = () => {
             <div>
               <Link
                 to="/acesso"
-                className="bg-white text-[#564A72] font-bold text-lg px-6 py-3 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-95"
+                className="bg-white text-[#564A72] font-bold text-lg px-3 py-3 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-95"
               >
                 Entrar
               </Link>
