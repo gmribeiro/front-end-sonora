@@ -4,7 +4,7 @@
     max-width: 900px;
     margin: 40px auto;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #EDE6F2;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
@@ -12,7 +12,7 @@
     display: flex;
     align-items: center;
     margin-bottom: 30px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #EDE6F2;
     padding-bottom: 15px;
 }
 .cabecalho button {
@@ -22,18 +22,18 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
-    color: #555;
+    color: #564A72;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 .cabecalho button:hover {
-    background-color: #e0e0e0;
-    color: #333;
+    background-color: #564A72;
+    color: #c2a0bb;
 }
 .cabecalho h1 {
     flex-grow: 1;
     text-align: center;
     font-size: 2.2rem;
-    color: #2c3e50;
+    color: #564A72;
     margin: 0;
     margin-left: 20px;
 }
@@ -83,24 +83,24 @@
     background-color: #eaf6ff;
     padding: 15px;
     border-radius: 8px;
-    border-left: 5px solid #3498db;
+    border-left: 5px solid #564A72;
 }
 
 .info-item span {
     font-size: 2rem;
-    color: #3498db;
+    color: #564A72;
 }
 
 .info-item h3 {
     margin: 0;
     font-size: 1.1rem;
-    color: #2c3e50;
+    color: #564A72;
 }
 
 .info-item p {
     margin: 0;
     font-size: 0.95rem;
-    color: #555;
+    color: #564A72;
 }
 
 .descricao-section {
@@ -109,15 +109,15 @@
 
 .descricao-section h3 {
     font-size: 1.5rem;
-    color: #2c3e50;
+    color: #564A72;
     margin-bottom: 15px;
-    border-bottom: 1px dashed #eee;
+    border-bottom: 1px dashed #c2a0bb;
     padding-bottom: 10px;
 }
 
 .descricao-section p {
     line-height: 1.6;
-    color: #555;
+    color: #564A72;
 }
 
 .acoes-section {
@@ -126,7 +126,7 @@
 }
 
 .acoes-section button {
-    background-color: #28a745;
+    background-color: #564A72;
     color: white;
     padding: 15px 30px;
     border: none;
@@ -137,7 +137,8 @@
 }
 
 .acoes-section button:hover:not(:disabled) {
-    background-color: #218838;
+    background-color: #c2a0bb;
+    color: white;
 }
 
 .acoes-section button:disabled {

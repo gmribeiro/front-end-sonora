@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import './EventoDetalhes.css';
+import { FaCalendarAlt } from "react-icons/fa";
+import { MdPlace } from "react-icons/md";
+import { IoMdMusicalNotes } from "react-icons/io";
 
 const EventoDetalhes = () => {
     const { id } = useParams();
@@ -272,7 +275,7 @@ const EventoDetalhes = () => {
                 <div className="detalhes-content">
                     <div className="info-section">
                         <div className="info-item">
-                            <span>📅</span>
+                            <span><FaCalendarAlt/></span>
                             <div>
                                 <h3>Data e Horário</h3>
                                 <p>{formatarDataHora(evento.dataHora)}</p>
@@ -280,7 +283,7 @@ const EventoDetalhes = () => {
                         </div>
 
                         <div className="info-item">
-                            <span>📍</span>
+                            <span><MdPlace/></span>
                             <div>
                                 <h3>Local</h3>
                                 <p>{evento.localEvento?.local || evento.local || 'Local não informado'}</p>
@@ -288,7 +291,7 @@ const EventoDetalhes = () => {
                         </div>
 
                         <div className="info-item">
-                            <span>🎵</span>
+                            <span><IoMdMusicalNotes/></span>
                             <div>
                                 <h3>Gênero Musical</h3>
                                 <p>{evento.generoMusical?.nomeGenero || evento.genero || 'Não especificado'}</p>
