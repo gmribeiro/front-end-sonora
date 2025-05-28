@@ -4,7 +4,7 @@ import Eventos from '../components/Eventos/eventos';
 import Carrossel from '../components/Carrossel/carrossel.jsx';
 import InfoEvento from '../components/InfoEvento/InfoEvento';
 import './css/global.css';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useTitle from '../hooks/useTitle';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import axios from 'axios';

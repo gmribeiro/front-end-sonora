@@ -5,8 +5,11 @@ import './EventoDetalhes.css';
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdPlace } from "react-icons/md";
 import { IoMdMusicalNotes } from "react-icons/io";
+import useTitle from '../../hooks/useTitle';
 
 const EventoDetalhes = () => {
+    useTitle('Dados Evento - Sonora');
+
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -259,6 +262,9 @@ const EventoDetalhes = () => {
 
 
     return (
+        
+        <>
+        <div className="fundo-fixo"></div>
         <div className="evento-detalhes-container">
             <div className="cabecalho">
                 <button onClick={() => navigate(-1)}>&larr; Voltar</button>
@@ -361,6 +367,8 @@ const EventoDetalhes = () => {
                 </div>
             </div>
         </div>
+
+        </>
     );
 };
 

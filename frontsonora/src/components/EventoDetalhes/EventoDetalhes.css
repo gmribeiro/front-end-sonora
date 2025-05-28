@@ -1,12 +1,32 @@
+.fundo-fixo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('../../../public/images/detalheevento.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+}
+
 .evento-detalhes-container {
     font-family: 'Arial', sans-serif;
-    color: #333;
+    color: #564A72;
     max-width: 900px;
     margin: 40px auto;
     padding: 20px;
     background-color: #EDE6F2;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 5rem;
 }
 .cabecalho {
     display: flex;
@@ -17,7 +37,7 @@
 }
 .cabecalho button {
     background: none;
-    border: 1px solid #ccc;
+    border: 1px solid #564A72;
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
