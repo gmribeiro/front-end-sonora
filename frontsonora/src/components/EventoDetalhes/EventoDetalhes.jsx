@@ -6,21 +6,28 @@ import './EventoDetalhes.css';
 const EventoDetalhes = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+
+    // Estados para os dados do evento
     const [evento, setEvento] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
+
+    // Estado para o usuário logado
     const [usuarioLogado, setUsuarioLogado] = useState(null);
+
+    // Estados para a funcionalidade de reserva
     const [reservando, setReservando] = useState(false);
     const [mensagemReserva, setMensagemReserva] = useState('');
     const [carregandoUsuarioReserva, setCarregandoUsuarioReserva] = useState(false);
+
+    // Estado para a imagem do evento
     const [eventImageUrl, setEventImageUrl] = useState(null);
 
-    const [showAvaliacaoForm, setShowAvaliacaoForm] = useState(false);
-    const [avaliacaoForm, setAvaliacaoForm] = useState({
-        nota: '3',
-        mensagem: ''
-    });
-    const [avaliacaoMessage, setAvaliacaoMessage] = useState('');
+    // Estados para as escalas (artistas) do evento
+    const [escalasDoEvento, setEscalasDoEvento] = useState([]);
+    const [carregandoEscalas, setCarregandoEscalas] = useState(false);
+    const [erroEscalas, setErroEscalas] = useState(null);
+
 
     useEffect(() => {
         const carregarDados = async () => {
@@ -28,9 +35,11 @@ const EventoDetalhes = () => {
                 setCarregando(true);
                 setErro(null);
 
+                const token = localStorage.getItem('token');
+
                 const [eventoResponse, usuarioResponseData] = await Promise.all([
                     axios.get(`/eventos/${id}`),
-                    verificarUsuarioLogado()
+                    verificarUsuarioLogado(token)
                 ]);
 
                 const eventoData = eventoResponse.data;
@@ -39,7 +48,6 @@ const EventoDetalhes = () => {
 
                 if (eventoData && eventoData.idEvento) {
                     try {
-                        const token = localStorage.getItem('token');
                         const imageResponse = await axios.get(`/eventos/${eventoData.idEvento}/image`, {
                             responseType: 'blob',
                             headers: {
@@ -63,8 +71,7 @@ const EventoDetalhes = () => {
             }
         };
 
-        const verificarUsuarioLogado = async () => {
-            const token = localStorage.getItem('token');
+        const verificarUsuarioLogado = async (token) => {
             if (!token) return null;
 
             try {
@@ -81,8 +88,51 @@ const EventoDetalhes = () => {
         carregarDados();
     }, [id]);
 
+    useEffect(() => {
+        const fetchEscalasDoEvento = async () => {
+            if (!id) return;
+
+            setCarregandoEscalas(true);
+            setErroEscalas(null);
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setErroEscalas('Token de autenticação não encontrado para carregar escalas.');
+                    setCarregandoEscalas(false);
+                    return;
+                }
+
+                const response = await axios.get(`/escalas/event/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log('Resposta da API para escalas (response.data):', response.data);
+                if (Array.isArray(response.data)) {
+                    setEscalasDoEvento(response.data);
+                } else {
+                    console.error('Dados de escalas recebidos da API não são um array:', response.data);
+                    setErroEscalas('Formato de dados inesperado para artistas escalados.');
+                    setEscalasDoEvento([]);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar escalas do evento:', error);
+                if (axios.isAxiosError(error) && error.response && error.response.status === 204) {
+                    console.log('API retornou 204 No Content, definindo escalas como array vazio.');
+                    setEscalasDoEvento([]);
+                } else {
+                    setErroEscalas('Erro ao carregar os artistas escalados.');
+                    setEscalasDoEvento([]);
+                }
+            } finally {
+                setCarregandoEscalas(false);
+            }
+        };
+
+        fetchEscalasDoEvento();
+    }, [id]);
+
     const handleReservar = async () => {
-        // Nova verificação de role no início do método
         if (usuarioLogado?.role !== 'CLIENT') {
             setMensagemReserva('Apenas clientes podem fazer reservas.');
             return;
@@ -93,10 +143,6 @@ const EventoDetalhes = () => {
             return;
         }
 
-        // Esta parte do código verifica se o usuário está logado e, se não, tenta carregá-lo.
-        // Se o usuário não estiver logado, ele será redirecionado para a tela de acesso.
-        // A verificação de role já deve ter capturado não-clientes, então esta parte é mais para
-        // garantir que o usuário está autenticado.
         if (!usuarioLogado?.id) {
             setCarregandoUsuarioReserva(true);
             const token = localStorage.getItem('token');
@@ -106,13 +152,7 @@ const EventoDetalhes = () => {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     setUsuarioLogado(userResponse.data);
-                    // Após carregar o usuário, re-chamar a função para continuar o processo.
-                    // Isso pode ser uma forma de garantir que o estado `usuarioLogado` seja atualizado
-                    // antes de prosseguir com a reserva, evitando que o botão fique disabled
-                    // por mais tempo do que o necessário após o login.
-                    // Contudo, se o usuário chegou aqui sem usuarioLogado.id, ele será redirecionado
-                    // para login, então este bloco pode ser simplificado.
-                    // Para evitar um loop, o melhor é redirecionar imediatamente se não estiver logado.
+
                 } catch (error) {
                     console.error('Erro ao carregar usuário para reserva:', error);
                     setMensagemReserva('Erro ao carregar informações do usuário.');
@@ -125,18 +165,12 @@ const EventoDetalhes = () => {
                 navigate('/acesso', { state: { from: `/detalhes/${id}` } });
                 return;
             }
-            // Retorna após a tentativa de carregar o usuário ou redirecionar.
-            // O ideal é que se o usuárioLogado.id não estiver presente, ele já seja redirecionado.
-            // A lógica de tentar carregar o usuário dentro do handleReservar pode ser um pouco redundante
-            // se o useEffect já faz isso ao carregar o componente.
-            // Para simplificar, vou assumir que usuarioLogado já está carregado pelo useEffect.
-            if (!usuarioLogado?.id) { // Re-check after potential load
+
+            if (!usuarioLogado?.id) {
                 setMensagemReserva('É necessário estar logado para fazer reservas.');
                 return;
             }
         }
-
-
         setReservando(true);
         setMensagemReserva('');
 
@@ -157,7 +191,7 @@ const EventoDetalhes = () => {
 
             console.log('Enviando reserva:', reservaData);
 
-            const response = await axios.post('http://localhost:8080/reservas', reservaData, {
+            const response = await axios.post('/reservas', reservaData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -193,63 +227,6 @@ const EventoDetalhes = () => {
         }
     };
 
-    const handleAvaliarClick = () => {
-        setShowAvaliacaoForm(true);
-        setAvaliacaoForm({ nota: '3', mensagem: '' });
-        setAvaliacaoMessage('');
-    };
-
-    const handleNotaChange = (event) => {
-        const value = parseInt(event.target.value, 10);
-        if (!isNaN(value) && value >= 1 && value <= 5) {
-            setAvaliacaoForm(prev => ({ ...prev, nota: value }));
-        }
-    };
-
-    const handleMensagemChange = (event) => {
-        setAvaliacaoForm(prev => ({ ...prev, mensagem: event.target.value }));
-    };
-
-    const handleSubmitAvaliacao = async () => {
-        if (!evento?.idEvento) {
-            alert('Dados do evento incompletos para avaliação');
-            return;
-        }
-
-        const token = localStorage.getItem('token');
-        if (token && usuarioLogado?.role === "CLIENT" && usuarioLogado?.id) {
-            try {
-                await axios.post(
-                    "/avaliacoes",
-                    {
-                        nota: parseInt(avaliacaoForm.nota),
-                        mensagem: avaliacaoForm.mensagem,
-                        usuarioId: usuarioLogado.id,
-                        eventoId: evento.idEvento,
-                    },
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-                setAvaliacaoMessage("Avaliação enviada com sucesso!");
-                setShowAvaliacaoForm(false);
-                setTimeout(() => setAvaliacaoMessage(''), 3000);
-            } catch (error) {
-                console.error("Erro ao enviar avaliação:", error);
-                setAvaliacaoMessage("Erro ao enviar avaliação.");
-            }
-        } else if (usuarioLogado?.role !== "CLIENT") {
-            setAvaliacaoMessage("Apenas clientes podem fazer avaliações.");
-        } else if (!usuarioLogado?.id) {
-            setAvaliacaoMessage("Informações do usuário ausentes.");
-        } else {
-            setAvaliacaoMessage("Token de autenticação não encontrado.");
-        }
-    };
-
     if (carregando) {
         return <div className="carregando-container">Carregando...</div>;
     }
@@ -272,7 +249,6 @@ const EventoDetalhes = () => {
         );
     }
 
-    // Variável para determinar se o botão de reserva deve ser exibido/habilitado
     const podeReservar = usuarioLogado && usuarioLogado.role === 'CLIENT';
     const textoBotaoReserva = usuarioLogado && usuarioLogado.role !== 'CLIENT'
         ? 'Apenas clientes podem reservar'
@@ -320,13 +296,53 @@ const EventoDetalhes = () => {
                         </div>
                     </div>
 
+                    <div className="escalas-section">
+                        <h3>Artistas Escalados</h3>
+                        {carregandoEscalas ? (
+                            <p>Carregando artistas...</p>
+                        ) : erroEscalas ? (
+                            <p className="erro-mensagem-escalas">{erroEscalas}</p>
+                        ) : (
+                            <React.Fragment>
+                                {Array.isArray(escalasDoEvento) && escalasDoEvento.length === 0 ? (
+                                    <p>Nenhum artista escalado para este evento ainda.</p>
+                                ) : (
+                                    Array.isArray(escalasDoEvento) ? (
+                                        <div className="artistas-escalados-list">
+                                            {escalasDoEvento.map((escala, index) => (
+                                                <div key={index} className="escala-item">
+                                                    <h4>Gênero: {escala.idEscala?.genero?.nomeGenero || 'Não especificado'}</h4>
+                                                    {escala.musicos && escala.musicos.length > 0 ? (
+                                                        <ul>
+                                                            {escala.musicos.map((musico, musicoIndex) => (
+                                                                <li key={`${index}-${musicoIndex}`}>
+                                                                    {musico.nomeArtistico || 'Nome indisponível'}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <p>Nenhum músico para este gênero neste slot.</p>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        // Fallback caso escalasDoEvento não seja um array (deveria ser pego pelo erroEscalas)
+                                        <p className="erro-mensagem-escalas">Erro: Dados dos artistas escalados não são válidos.</p>
+                                    )
+                                )}
+                            </React.Fragment>
+                        )}
+                    </div>
+
+                    {/* Seção de Descrição */}
                     <div className="descricao-section">
                         <h3>Descrição</h3>
                         <p>{evento.descricao || 'Descrição não disponível.'}</p>
                     </div>
 
+                    {/* Seção de Ações (Botão Reservar) */}
                     <div className="acoes-section">
-                        {/* Condição para exibir/desabilitar e mudar o texto do botão */}
                         <button
                             onClick={handleReservar}
                             disabled={!podeReservar || reservando || carregandoUsuarioReserva}
@@ -339,45 +355,6 @@ const EventoDetalhes = () => {
                             </p>
                         )}
                     </div>
-
-                    {usuarioLogado?.role === 'CLIENT' && (
-                        <div className="avaliacao-container">
-                            {!showAvaliacaoForm ? (
-                                <button onClick={handleAvaliarClick}>Avaliar Evento</button>
-                            ) : (
-                                <div className="avaliacao-form">
-                                    <h4>Avaliar {evento.nomeEvento || evento.titulo}</h4>
-                                    <div className="form-group">
-                                        <label htmlFor="nota">Nota (1-5):</label>
-                                        <select
-                                            id="nota"
-                                            name="nota"
-                                            value={avaliacaoForm.nota}
-                                            onChange={handleNotaChange}
-                                        >
-                                            <option value="1">★</option>
-                                            <option value="2">★★</option>
-                                            <option value="3">★★★</option>
-                                            <option value="4">★★★★</option>
-                                            <option value="5">★★★★★</option>
-                                        </select>
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="mensagem">Mensagem (opcional):</label>
-                                        <textarea
-                                            id="mensagem"
-                                            name="mensagem"
-                                            value={avaliacaoForm.mensagem}
-                                            onChange={handleMensagemChange}
-                                        />
-                                    </div>
-                                    <button onClick={handleSubmitAvaliacao}>Enviar Avaliação</button>
-                                    <button onClick={() => setShowAvaliacaoForm(false)}>Cancelar</button>
-                                    {avaliacaoMessage && <p className="avaliacao-message">{avaliacaoMessage}</p>}
-                                </div>
-                            )}
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

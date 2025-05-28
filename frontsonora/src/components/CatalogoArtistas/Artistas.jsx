@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Artistas.css';
-// REMOVIDO: import placeholderImage from './placeholder-profile.png';
 
 const Artistas = () => {
     const [artistaIds, setArtistaIds] = useState([]);

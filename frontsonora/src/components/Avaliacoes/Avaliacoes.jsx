@@ -29,17 +29,29 @@ const Avaliacoes = () => {
         };
 
         const fetchEventos = async () => {
-            try {
-                const responseEventos = await axios.get('/eventos');
-                setEventos(responseEventos.data);
-            } catch (error) {
-                console.error("Erro ao carregar eventos:", error);
+            const token = localStorage.getItem('token');
+            if (usuarioId && token) {
+                try {
+                    const responseReservas = await axios.get(`/reservas/user/${usuarioId}/confirmed/past`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+
+                    const eventosDasReservas = responseReservas.data.map(reserva => reserva.evento);
+                    const eventosUnicos = Array.from(new Set(eventosDasReservas.map(e => e.idEvento)))
+                        .map(id => {
+                            return eventosDasReservas.find(e => e.idEvento === id);
+                        });
+                    setEventos(eventosUnicos);
+                } catch (error) {
+                    console.error("Erro ao carregar eventos de reservas passadas:", error);
+                }
             }
         };
 
         fetchUserDetails();
+
         fetchEventos();
-    }, []);
+    }, [usuarioId]);
 
     const handleNotaChange = (event) => {
         const value = parseInt(event.target.value, 10);
@@ -93,7 +105,7 @@ const Avaliacoes = () => {
     };
 
     const handleVoltar = () => {
-        navigate(-1); // Volta para a página anterior
+        navigate(-1);
     };
 
     if (userRole === "CLIENT") {
