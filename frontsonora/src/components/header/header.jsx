@@ -106,17 +106,16 @@ const Header = () => {
               </Link>
             </div>
 
-          <div className="relative border-2 border-[#c2a0bb] rounded-[22px] py-2 w-[600px]">
-          <input
-            type="text"
-            placeholder="Pesquisar eventos, shows, teatros, cursos"
-            className="bg-transparent border-none outline-none text-[#c2a0bb] text-[16px] placeholder:text-[#c2a0bb] w-full pr-[45px] pl-[15px] text-left"
-          />
-          <FaSearch className="absolute right-[15px] top-1/2 transform -translate-y-1/2 text-[#c2a0bb] text-[15px]" />
-          </div>
+          <div className="relative border-2 border-[#c2a0bb] rounded-[22px] py-2 w-full max-w-[600px] lg:max-w-[1000px] lg:min-w-[600px] mx-auto px-4">
+  <input
+    type="text"
+    placeholder="Encontre seu estilo favorito"
+    className="bg-transparent border-none outline-none text-[#c2a0bb] text-[16px] placeholder:text-[#c2a0bb] w-full pr-[45px] pl-[15px] text-left"
+  />
+  <FaSearch className="absolute right-[25px] top-1/2 transform -translate-y-1/2 text-[#c2a0bb] text-[15px]" />
+</div>
 
-          </div>
-          
+        </div>
           <div className="flex flex-col md:flex-row items-center gap-6 w-full md:w-auto">
             <div className="hidden md:block h-[45px] w-[2px] bg-[#c2a0bb] mx-4" />
 
