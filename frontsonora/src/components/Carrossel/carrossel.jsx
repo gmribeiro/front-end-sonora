@@ -6,7 +6,7 @@ import { TbHorseToy } from "react-icons/tb";
 import { CgMusicSpeaker } from "react-icons/cg";
 import { PiMicrophoneStageDuotone } from "react-icons/pi";
 import { LuGuitar } from "react-icons/lu";
-import axios from 'axios'; // Importe axios
+import axios from 'axios';
 
 
 const Carrossel = ({ onGeneroSelecionado }) => {
@@ -28,6 +28,8 @@ const Carrossel = ({ onGeneroSelecionado }) => {
         "Funk": <GiCigar />,
         "Reggae": <GiTumbleweed />,
         "Clássica": <GiGrandPiano />,
+        "Hip-Hop": <GiGrandPiano />,
+
     };
 
     useEffect(() => {

@@ -190,6 +190,7 @@ const Artistas = () => {
                 },
                 valor: parseFloat(contratacaoDetalhes.valor),
                 detalhes: contratacaoDetalhes.detalhes,
+                status: false, // Passando o status como false
             }, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });

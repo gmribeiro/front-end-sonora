@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import './meusEventosHost.css';
 import './dashboardCard.css';
 import './minhasReservas.css';
-import './meusContratos.css';
+import './meusContratos.css'; // Import the CSS for contratos
 
 function MeusEventosHost() {
     const [isHost, setIsHost] = useState(false);
@@ -16,7 +16,7 @@ function MeusEventosHost() {
     const [reservasPorEvento, setReservasPorEvento] = useState({});
     const [minhasReservas, setMinhasReservas] = useState([]);
     const [minhasReservasConfirmadas, setMinhasReservasConfirmadas] = useState([]);
-    const [meusContratosArtista, setMeusContratosArtista] = useState([]);
+    const [meusContratosArtista, setMeusContratosArtista] = useState([]); // State for artista contracts
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [dashboardData, setDashboardData] = useState({
@@ -30,6 +30,8 @@ function MeusEventosHost() {
     const [mensagemCancelamento, setMensagemCancelamento] = useState('');
     const [usuarioLogadoId, setUsuarioLogadoId] = useState(null);
     const [loadingReservasDashboard, setLoadingReservasDashboard] = useState(true);
+    const [contratoConfirmandoId, setContratoConfirmandoId] = useState(null);
+    const [mensagemConfirmacaoContrato, setMensagemConfirmacaoContrato] = useState('');
 
     // Novo estado para controlar a mensagem de exclusão de evento
     const [mensagemExclusaoEvento, setMensagemExclusaoEvento] = useState({ id: null, message: '', type: '' });
@@ -164,12 +166,20 @@ function MeusEventosHost() {
                     fetchMinhasReservasConfirmadas(userResponse.data.id, token);
                 } else if (userRole === 'ARTISTA') {
                     try {
+                        const token = localStorage.getItem('token');
+                        const userResponse = await axios.get('/auth/user/me', {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                            },
+                        });
+                        const userId = userResponse.data.id;
+
                         const musicosResponse = await axios.get('/musicos', {
                             headers: {
                                 'Authorization': `Bearer ${token}`,
                             },
                         });
-                        const musicoLogado = musicosResponse.data.find(musico => musico.usuario?.id === userResponse.data.id);
+                        const musicoLogado = musicosResponse.data.find(musico => musico.usuario?.id === userId);
 
                         if (musicoLogado && musicoLogado.idMusico) {
                             setArtistaIdLogado(musicoLogado.idMusico);
@@ -179,7 +189,7 @@ function MeusEventosHost() {
                             setIsArtista(false);
                         }
                     } catch (error) {
-                        console.error('Erro ao buscar músicos:', error);
+                        console.error('Erro ao buscar informações do artista:', error);
                         setIsArtista(false);
                     }
                 }
@@ -360,6 +370,84 @@ function MeusEventosHost() {
         }
     };
 
+    const handleConfirmarContrato = async (contratoEventoId, contratoMusicoId) => {
+        setContratoConfirmandoId(`${contratoEventoId}-${contratoMusicoId}`);
+        setMensagemConfirmacaoContrato('');
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await axios.patch(
+                `/contratos/${contratoEventoId}/${contratoMusicoId}/aprovar`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                setMeusContratosArtista(prevContratos =>
+                    prevContratos.map(contrato => {
+                        if (
+                            contrato?.idContrato?.evento?.idEvento === contratoEventoId &&
+                            contrato?.idContrato?.musico?.idMusico === contratoMusicoId
+                        ) {
+                            return { ...contrato, status: true };
+                        }
+                        return contrato;
+                    })
+                );
+                setMensagemConfirmacaoContrato('Contrato confirmado!');
+            } else {
+                setMensagemConfirmacaoContrato('Erro ao confirmar contrato.');
+            }
+        } catch (error) {
+            console.error('Erro ao confirmar contrato:', error);
+            setMensagemConfirmacaoContrato = `Erro ao confirmar contrato: ${error?.response?.data?.message || error.message}`;
+        } finally {
+            setTimeout(() => {
+                setContratoConfirmandoId(null);
+                setMensagemConfirmacaoContrato('');
+            }, 3000);
+        }
+    };
+
+    useEffect(() => {
+        const fetchArtistId = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const userResponse = await axios.get('/auth/user/me', {
+                        headers: { 'Authorization': `Bearer ${token}` },
+                    });
+                    const userId = userResponse.data.id;
+
+                    const musicosResponse = await axios.get('/musicos', {
+                        headers: { 'Authorization': `Bearer ${token}` },
+                    });
+                    const musicoLogado = musicosResponse.data.find(musico => musico.usuario?.id === userId);
+
+                    if (musicoLogado?.idMusico) {
+                        setArtistaIdLogado(musicoLogado.idMusico);
+                        fetchMeusContratosArtista(musicoLogado.idMusico, token);
+                    } else {
+                        console.warn('Nenhum músico encontrado para este usuário.');
+                        setLoading(false);
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar informações do artista:', error);
+                    setError('Erro ao buscar informações do artista.');
+                    setLoading(false);
+                }
+            } else {
+                setLoading(false);
+            }
+        };
+
+        fetchArtistId();
+    }, [fetchMeusContratosArtista]);
 
     if (loading) {
         return <div>Carregando informações...</div>;
@@ -368,6 +456,7 @@ function MeusEventosHost() {
     if (error) {
         return <div className="error-message">{error}</div>;
     }
+
     if (isHost) {
         return (
             <div className="meus-eventos-host-container">
@@ -540,11 +629,22 @@ function MeusEventosHost() {
                 ) : (
                     <ul className="contratos-lista">
                         {meusContratosArtista.map(contrato => (
-                            <li key={contrato.idContrato.contratoId} className="contrato-item">
-                                <p><strong>Evento:</strong> <Link to={`/detalhes/${contrato.idContrato.evento.idEvento}`}>{contrato.idContrato.evento.nomeEvento || 'Nome não disponível'}</Link></p>
-                                <p><strong>Valor:</strong> {contrato.valor}</p>
-                                <p><strong>Detalhes:</strong> {contrato.detalhes || 'Nenhum detalhe fornecido'}</p>
-                                <p><strong>Status:</strong> {contrato.status || 'Pendente'}</p>
+                            <li key={`${contrato?.idContrato?.evento?.idEvento}-${contrato?.idContrato?.musico?.idMusico}`} className="contrato-item">
+                                <p><strong>Evento:</strong> <Link to={`/detalhes/${contrato?.idContrato?.evento?.idEvento}`}>{contrato?.idContrato?.evento?.nomeEvento || 'Nome não disponível'}</Link></p>
+                                <p><strong>Valor:</strong> {contrato?.valor}</p>
+                                <p><strong>Detalhes:</strong> {contrato?.detalhes || 'Nenhum detalhe fornecido'}</p>
+                                <p><strong>Status:</strong> {contrato?.status ? <span className="status-confirmada">Confirmado</span> : <span className="status-pendente">Pendente</span>}</p>
+                                {!contrato?.status && (
+                                    <button
+                                        onClick={() => handleConfirmarContrato(contrato?.idContrato?.evento?.idEvento, contrato?.idContrato?.musico?.idMusico)}
+                                        disabled={contratoConfirmandoId === `${contrato?.idContrato?.evento?.idEvento}-${contrato?.idContrato?.musico?.idMusico}`}
+                                    >
+                                        {contratoConfirmandoId === `${contrato?.idContrato?.evento?.idEvento}-${contrato?.idContrato?.musico?.idMusico}` ? 'Confirmando...' : 'Confirmar Contrato'}
+                                    </button>
+                                )}
+                                {mensagemConfirmacaoContrato && contratoConfirmandoId === `${contrato?.idContrato?.evento?.idEvento}-${contrato?.idContrato?.musico?.idMusico}` && (
+                                    <p className="mensagem-confirmacao">{mensagemConfirmacaoContrato}</p>
+                                )}
                                 {/* Adicione mais detalhes do contrato conforme necessário */}
                             </li>
                         ))}
