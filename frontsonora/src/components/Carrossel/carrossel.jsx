@@ -7,6 +7,7 @@ import { CgMusicSpeaker } from "react-icons/cg";
 import { PiMicrophoneStageDuotone } from "react-icons/pi";
 import { LuGuitar } from "react-icons/lu";
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
 
 const Carrossel = ({ onGeneroSelecionado }) => {
@@ -127,6 +128,8 @@ const Carrossel = ({ onGeneroSelecionado }) => {
             </div>
         </div>
     );
+};
+
 };
 
 export default Carrossel;
