@@ -57,7 +57,7 @@ function Home() {
     setGeneroSelecionado(genero);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
     if (generoSelecionado) {
       setEventosFiltrados(eventosCompletos.filter(evento => evento.genero === generoSelecionado));

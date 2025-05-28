@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Adicione useCallback
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch, FaBell } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom'; // Importe useNavigate
-import axios from 'axios'; // Importe axios
-// Remova FaUserCircle se você for usar a imagem de perfil no lugar
-// import { FaUserCircle } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './headercadastrado.css';
 
 function HeaderCadastrado() {
     const [nomeUsuario, setNomeUsuario] = useState('');
-    const [profileImageUrl, setProfileImageUrl] = useState(null); // Novo estado para a URL da imagem
-    const navigate = useNavigate(); // Inicialize useNavigate
+    const [profileImageUrl, setProfileImageUrl] = useState(null);
+    const navigate = useNavigate();
 
-    // Função para buscar a foto de perfil (memorizada com useCallback)
     const fetchProfileImage = useCallback(async (token) => {
         if (!token) {
             setProfileImageUrl(null);
@@ -22,7 +19,7 @@ function HeaderCadastrado() {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
-                responseType: 'blob' // Espera uma resposta binária (imagem)
+                responseType: 'blob'
             });
 
             const imageUrl = URL.createObjectURL(response.data);
@@ -30,9 +27,9 @@ function HeaderCadastrado() {
             console.log("Foto de perfil do HeaderCadastrado carregada.");
         } catch (error) {
             console.error('Erro ao buscar foto de perfil no HeaderCadastrado:', error);
-            setProfileImageUrl(null); // Reseta a imagem se houver erro
+            setProfileImageUrl(null);
         }
-    }, []); // Dependências vazias, pois só depende do token passado como argumento
+    }, []);
 
     useEffect(() => {
         const buscarInformacoesUsuario = async () => {
@@ -59,7 +56,6 @@ function HeaderCadastrado() {
                         setNomeUsuario('Usuário'); // Pode definir para um valor padrão ou vazio
                     }
 
-                    // Fetch para a foto de perfil
                     fetchProfileImage(token);
 
                 } else {
@@ -75,21 +71,13 @@ function HeaderCadastrado() {
 
         buscarInformacoesUsuario();
 
-        // Função de limpeza para revogar a URL do objeto Blob.
-        // Ela captura o valor de `profileImageUrl` do momento em que o efeito foi executado.
         return () => {
             if (profileImageUrl) {
                 URL.revokeObjectURL(profileImageUrl);
                 console.log("URL de objeto da foto de perfil do HeaderCadastrado revogada.");
             }
         };
-        // **AQUI ESTÁ A CORREÇÃO PRINCIPAL:**
-        // Removemos `profileImageUrl` do array de dependências.
-        // O `useEffect` só será executado quando `Maps` ou `WorkspaceProfileImage` (a instância da função useCallback) mudarem.
-        // Como `WorkspaceProfileImage` é memorizada e tem dependências vazias, ela não muda.
-        // `Maps` também é estável.
-        // Assim, o efeito será executado apenas uma vez na montagem do componente.
-    }, [navigate, fetchProfileImage]); // <-- ARRAY DE DEPENDÊNCIAS CORRETO PARA EVITAR O LOOP!
+    }, [navigate, fetchProfileImage]);
 
     return (
         <header className="header">
@@ -123,10 +111,10 @@ function HeaderCadastrado() {
                         <img
                             src={profileImageUrl}
                             alt="Foto de Perfil"
-                            className="perfil-foto" // Nova classe para estilização
+                            className="perfil-foto"
                         />
                     ) : (
-                        // Placeholder para quando não há foto
+
                         <div className="perfil-foto-placeholder">
                             {nomeUsuario.charAt(0).toUpperCase()}
                         </div>
