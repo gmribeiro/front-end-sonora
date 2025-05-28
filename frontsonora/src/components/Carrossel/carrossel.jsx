@@ -130,6 +130,8 @@ const Carrossel = ({ onGeneroSelecionado }) => {
     );
 };
 
+Carrossel.propTypes = {
+  onGeneroSelecionado: PropTypes.func.isRequired,
 };
 
 export default Carrossel;
