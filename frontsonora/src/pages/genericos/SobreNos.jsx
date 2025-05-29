@@ -21,7 +21,6 @@ const SobreNos = () => {
         </div>
       </section>
 
-      {/* Seção de texto */}
       <section className="px-6 sm:px-10 md:px-[8%] py-10 sm:py-16 !text-[#564A72]">
 
         <p className="text-[1.05rem] sm:text-[1.1rem] mb-6 first-letter:text-2xl first-letter:font-bold first-letter:!text-[#564A72] first-letter:mr-1 first-letter:float-left first-letter:leading-none !text-[#564A72]">
@@ -43,7 +42,6 @@ const SobreNos = () => {
           </p>
         ))}
 
-        {/* Botão voltar */}
         <div className="flex justify-end">
           <button
             className="mt-8 px-6 py-3 bg-[#564A72] text-white hover:bg-[#ab8feb] transition"
