@@ -7,7 +7,6 @@ const Header = () => {
   const [nomeUsuario, setNomeUsuario] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState(null);
   const navigate = useNavigate();
-
   const currentProfileImageUrl = useRef(null);
 
   const fetchProfileImage = useCallback(async (token) => {
@@ -22,15 +21,14 @@ const Header = () => {
 
     try {
       const response = await axios.get('/auth/user/me/profile-image', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob',
       });
 
       if (currentProfileImageUrl.current) {
         URL.revokeObjectURL(currentProfileImageUrl.current);
       }
+
       const imageUrl = URL.createObjectURL(response.data);
       setProfileImageUrl(imageUrl);
       currentProfileImageUrl.current = imageUrl;
@@ -57,15 +55,12 @@ const Header = () => {
 
       try {
         const userResponse = await axios.get('/auth/user/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setNomeUsuario(userResponse.data.nome || '');
       } catch (error) {
         console.error('Erro ao buscar nome do usuário:', error);
-        if (error.response && error.response.status === 401) {
-          console.log('Token expirado ou inválido. Redirecionando para login.');
+        if (error.response?.status === 401) {
           localStorage.removeItem('token');
           navigate('/acesso');
         }
@@ -86,23 +81,16 @@ const Header = () => {
   }, [navigate, fetchProfileImage]);
 
   const handleNomeClick = () => {
-    if (nomeUsuario) {
-      navigate('/perfil');
-    }
+    if (nomeUsuario) navigate('/perfil');
   };
 
   return (
     <header className="bg-[#564A72] w-full py-2">
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-
         <div className="flex flex-col sm:flex-row items-center gap-6 w-full md:w-auto">
           <div className="w-[140px] h-[30px] flex items-center justify-center sm:justify-start">
             <Link to="/">
-              <img
-                src="../images/logosemfundo.png"
-                alt="Logo"
-                className="h-[60px] w-auto object-contain"
-              />
+              <img src="../images/logosemfundo.png" alt="Logo" className="h-[60px] w-auto object-contain" />
             </Link>
           </div>
 
@@ -116,11 +104,10 @@ const Header = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center gap-6 w-full md:w-auto">
-          <div className="hidden md:block h-[45px] w-[2px] bg-[#c2a0bb] mx-4" />
+        <div className="flex flex-col md:flex-row items-center gap-10 w-full md:w-auto">
+          <div className="hidden md:block h-[45px] w-[2px] bg-[#c2a0bb] mx-5" />
 
-          {/* LINKS COM HOVER ANIMADO */}
-          <nav className="flex flex-wrap justify-center gap-6 whitespace-nowrap text-center">
+          <nav className="flex flex-wrap justify-center gap-10 whitespace-nowrap text-center">
             {[
               { to: "/", label: "Home" },
               { to: "/meusconvites", label: "Meus Convites" },
@@ -129,7 +116,7 @@ const Header = () => {
               <Link
                 key={to}
                 to={to}
-                className="relative group text-[#c2a0bb] font-semibold no-underline transition-colors duration-200 hover:text-[#c2a0bb]"
+                className="relative group text-[#c2a0bb] font-semibold no-underline transition-transform duration-200 hover:scale-105"
               >
                 <span className="transition-opacity duration-300 group-hover:opacity-80">
                   {label}
@@ -156,19 +143,15 @@ const Header = () => {
                   {nomeUsuario.charAt(0).toUpperCase()}
                 </div>
               )}
-              <span className="text-[#c2a0bb] font-semibold text-base truncate">
-                {nomeUsuario}
-              </span>
+              <span className="text-[#c2a0bb] font-semibold text-base truncate">{nomeUsuario}</span>
             </div>
           ) : (
-            <div>
-              <Link
-                to="/acesso"
-                className="bg-white text-[#564A72] font-bold text-lg px-2 py-2 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-95"
-              >
-                Entrar
-              </Link>
-            </div>
+            <Link
+              to="/acesso"
+              className="bg-white text-[#564A72] font-bold text-lg px-2 py-1 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-80"
+            >
+              Entrar
+            </Link>
           )}
         </div>
       </div>
