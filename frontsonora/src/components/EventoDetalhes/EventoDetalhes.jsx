@@ -29,30 +29,35 @@ const EventoDetalhes = () => {
             try {
                 setCarregando(true);
                 setErro(null);
+
                 const token = localStorage.getItem('token');
-                const [eventoResponse, usuarioResponseData] = await Promise.all([
-                    axios.get(`/eventos/${id}`),
-                    verificarUsuarioLogado(token)
-                ]);
+
+                const eventoResponse = await axios.get(`/eventos/${id}`);
                 const eventoData = eventoResponse.data;
                 setEvento(eventoData);
-                setUsuarioLogado(usuarioResponseData || null);
+
+                let loggedInUser = null;
+                if (token) {
+                    loggedInUser = await verificarUsuarioLogado(token);
+                }
+                setUsuarioLogado(loggedInUser);
+
                 if (eventoData && eventoData.idEvento) {
                     try {
                         const imageResponse = await axios.get(`/eventos/${eventoData.idEvento}/image`, {
-                            responseType: 'blob',
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
+                            responseType: 'blob'
                         });
                         setEventImageUrl(URL.createObjectURL(imageResponse.data));
-                    } catch {
+                    } catch (imageError) {
+                        console.error('Erro ao carregar imagem do evento:', imageError);
                         setEventImageUrl('/images/evento_padrao.png');
                     }
                 } else {
                     setEventImageUrl('/images/evento_padrao.png');
                 }
+
             } catch (error) {
+                console.error('Erro ao carregar dados:', error);
                 setErro(error.response?.data?.message || 'Erro ao carregar evento');
             } finally {
                 setCarregando(false);
@@ -66,7 +71,8 @@ const EventoDetalhes = () => {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 return response.data;
-            } catch {
+            } catch (error) {
+                console.error('Erro ao verificar usuário:', error);
                 return null;
             }
         };
@@ -80,25 +86,20 @@ const EventoDetalhes = () => {
             setCarregandoEscalas(true);
             setErroEscalas(null);
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    setErroEscalas('Token de autenticação não encontrado para carregar escalas.');
-                    setCarregandoEscalas(false);
-                    return;
-                }
-                const response = await axios.get(`/escalas/event/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await axios.get(`/escalas/event/${id}`);
+
+                console.log('Resposta da API para escalas (response.data):', response.data);
                 if (Array.isArray(response.data)) {
                     setEscalasDoEvento(response.data);
                 } else {
+                    console.error('Dados de escalas recebidos da API não são um array:', response.data);
                     setErroEscalas('Formato de dados inesperado para artistas escalados.');
                     setEscalasDoEvento([]);
                 }
             } catch (error) {
+                console.error('Erro ao carregar escalas do evento:', error);
                 if (axios.isAxiosError(error) && error.response && error.response.status === 204) {
+                    console.log('API retornou 204 No Content, definindo escalas como array vazio.');
                     setEscalasDoEvento([]);
                 } else {
                     setErroEscalas('Erro ao carregar os artistas escalados.');
