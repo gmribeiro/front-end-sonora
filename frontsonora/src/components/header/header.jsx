@@ -104,10 +104,10 @@ const Header = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center gap-10 w-full md:w-auto">
+        <div className="flex flex-col md:flex-row items-center gap-6 w-full md:w-auto">
           <div className="hidden md:block h-[45px] w-[2px] bg-[#c2a0bb] mx-5" />
 
-          <nav className="flex flex-wrap justify-center gap-10 whitespace-nowrap text-center">
+          <nav className="flex flex-wrap justify-center gap-6 whitespace-nowrap text-center">
             {[
               { to: "/", label: "Home" },
               { to: "/meusconvites", label: "Meus Convites" },
