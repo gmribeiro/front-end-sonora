@@ -130,7 +130,7 @@ function EsqueciSenha() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         disabled={isLoading}
-                        className="p-3 mb-6 border border-[#1F1536] rounded text-base z-[5]"
+                        className="p-3 mb-6 border border-[#1F1536] text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300 z-[5]"
                     />
                     <button
                         type="submit"
@@ -158,7 +158,7 @@ function EsqueciSenha() {
                         onChange={(e) => setNovaSenha(e.target.value)}
                         required
                         disabled={isLoading}
-                        className="p-3 mb-6 border border-[#1F1536] rounded text-base z-[5]"
+                        className="p-3 mb-6 border border-[#1F1536] text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300 z-[5]"
                     />
                     <label htmlFor="confirmarNovaSenha" className="mb-2 text-[#1F1536]">
                         Confirmar Nova Senha:
@@ -170,7 +170,7 @@ function EsqueciSenha() {
                         onChange={(e) => setConfirmarNovaSenha(e.target.value)}
                         required
                         disabled={isLoading}
-                        className="p-3 mb-6 border border-[#1F1536] rounded text-base z-[5]"
+                        className="p-3 mb-6 border border-[#1F1536] text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300 z-[5]"
                     />
                     <button
                         type="submit"
@@ -183,7 +183,7 @@ function EsqueciSenha() {
                         type="button"
                         onClick={() => setEmailVerificado(false)}
                         disabled={isLoading}
-                        className="mt-4 bg-gray-200 text-[#1F1536] px-4 py-5 rounded text-lg transition-colors duration-300 hover:bg-gray-300 z-[5]"
+                        className="mt-6 bg-gray-500 text-[#1F1536] px-1 py-2 rounded text-base transition-colors duration-300 hover:bg-gray-400 z-[5]"
                     >
                         Cancelar
                     </button>
