@@ -137,7 +137,7 @@ const Acessar = () => {
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            className="w-full p-1.5 sm:p-2 md:p-3 border border-[#1F1536] text-base mb-4 bg-white text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
+                            className="w-full p-1.5 sm:p-2 rounded md:p-3 border border-[#1F1536] text-base mb-4 text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
                         />
 
                         <label htmlFor="senha" className="font-bold mb-1 text-[#1F1536] text-base sm:text-lg">Senha</label>
@@ -149,13 +149,13 @@ const Acessar = () => {
                             value={formData.senha}
                             onChange={handleChange}
                             required
-                            className="w-full p-1.5 sm:p-2 md:p-3 border border-[#1F1536] text-base mb-4 bg-white text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
+                            className="w-full p-1.5 sm:p-2 rounded md:p-3 border border-[#1F1536] text-base mb-4 text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
                         />
 
                         <button
                             type="submit"
                             disabled={status.loading}
-                            className="bg-[#1F1536] text-white py-2 w-[85%] sm:w-4/5 mt-3 text-sm sm:text-base transition transform duration-200 ease-in-out hover:bg-[#A48BB3] hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-[#1F1536] text-white py-2 w-[85%] sm:w-4/5 mt-3 text-sm sm:text-base transition transform duration-300 rounded ease-in-out hover:bg-[#A48BB3] hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {status.loading ? 'Carregando...' : 'Entrar'}
                         </button>

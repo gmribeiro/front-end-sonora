@@ -417,8 +417,8 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         />
       </div>
       <div className="p-5 sm:p-6 flex-grow flex flex-col">
-        <h3 className="text-white text-sm sm:text-base font-semibold truncate mb-1 sm:mb-2">{evento.titulo}</h3>
-        <p className="text-[#E8DFEC] text-xs sm:text-sm mb-2 sm:mb-3">{evento.local} - {evento.hora}</p>
+        <h3 className="text-[#564A72] text-sm sm:text-base font-semibold truncate mb-1 sm:mb-2">{evento.titulo}</h3>
+        <p className="!text-[#564A72] text-xs sm:text-sm mb-2 sm:mb-3">{evento.local} - {evento.hora}</p>
                                 {usuarioLogado?.role === 'CLIENT' && (
                                     <div className="mt-auto">
                                         <button
