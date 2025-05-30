@@ -1,4 +1,4 @@
-import HeaderCadastrado from '../../components/HeaderCadastrado/headercadastrado';
+import Header from '../../components/Header/header';
 import Footer from '../../components/Footer/footer';
 import '../css/global.css';
 import React from 'react';
@@ -9,7 +9,7 @@ function Meusconvites() {
     useTitle('Meus Convites - Sonora');
     return (
         <>
-            <HeaderCadastrado />
+            <Header />
             <Dashboard />
             <Footer />
         </>
