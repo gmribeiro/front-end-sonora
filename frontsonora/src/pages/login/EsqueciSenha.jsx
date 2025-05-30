@@ -87,15 +87,17 @@ function EsqueciSenha() {
     };
 
     return (
-        <div className="relative flex flex-col items-center justify-center h-screen p-8 z-[5] bg-white overflow-hidden">
+        <div className="relative flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 bg-white overflow-hidden z-[5]">
             <button
-                className="absolute top-4 left-4 text-white bg-[#1F1536] px-6 py-3 rounded hover:bg-[#564a72] transition-colors duration-300 z-[10]"
+                className="absolute top-2 left-2 sm:top-4 sm:left-4 text-white bg-[#1F1536] px-6 py-2 sm:px-6 sm:py-3 rounded hover:bg-[#564a72] transition-colors duration-300 z-[10] text-sm sm:text-base"
                 onClick={() => window.location.href = '/Acesso'}
             >
                 Voltar
             </button>
 
-            <h1 className="mb-4 !text-[#1F1536] text-2xl font-bold z-[5]">Vamos recuperar sua senha:</h1>
+            <h1 className="mb-4 !text-[#1F1536] text-xl sm:text-2xl font-bold z-[5] text-center sm:text-left">
+                Vamos recuperar sua senha:
+            </h1>
 
             <img
                 src="images/fundoesquecisenha.png"
@@ -115,80 +117,82 @@ function EsqueciSenha() {
                 </p>
             )}
 
-            {!emailVerificado ? (
-                <form
-                    onSubmit={handleEmailSubmit}
-                    className="flex flex-col w-full max-w-md z-[5]"
-                >
-                    <label htmlFor="email" className="mb-2 text-[#1F1536]">
-                        Digite seu email:
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="p-3 mb-6 border border-[#1F1536] text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300 z-[5]"
-                    />
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="bg-[#1F1536] text-white px-4 py-3 rounded text-lg transition-colors duration-300 hover:bg-[#564a72] z-[5]"
+            <div className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg 2xl:max-w-xl z-[5]">
+                {!emailVerificado ? (
+                    <form
+                        onSubmit={handleEmailSubmit}
+                        className="flex flex-col w-full"
                     >
-                        {isLoading ? 'Verificando...' : 'Enviar email de recuperação'}
-                    </button>
-                </form>
-            ) : (
-                <form
-                    onSubmit={handleResetPasswordSubmit}
-                    className="flex flex-col w-full max-w-md z-[5]"
-                >
-                    <p className="mb-4 !text-[#1F1536]">
-                        Defina sua nova senha para o email: <strong>{email}</strong>
-                    </p>
-                    <label htmlFor="novaSenha" className="mb-2 text-[#1F1536]">
-                        Nova Senha:
-                    </label>
-                    <input
-                        type="password"
-                        id="novaSenha"
-                        value={novaSenha}
-                        onChange={(e) => setNovaSenha(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="p-3 mb-6 border border-[#1F1536] text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300 z-[5]"
-                    />
-                    <label htmlFor="confirmarNovaSenha" className="mb-2 text-[#1F1536]">
-                        Confirmar Nova Senha:
-                    </label>
-                    <input
-                        type="password"
-                        id="confirmarNovaSenha"
-                        value={confirmarNovaSenha}
-                        onChange={(e) => setConfirmarNovaSenha(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="p-3 mb-6 border border-[#1F1536] text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300 z-[5]"
-                    />
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="bg-[#1F1536] text-white px-4 py-3 rounded text-lg transition-colors duration-300 hover:bg-[#564a72] z-[5]"
+                        <label htmlFor="email" className="mb-2 text-[#1F1536] text-sm sm:text-base">
+                            Digite seu email:
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            disabled={isLoading}
+                            className="p-3 mb-6 border border-[#1F1536] text-sm sm:text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
+                        />
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="bg-[#1F1536] text-white px-4 py-3 rounded text-sm sm:text-lg transition-colors duration-300 hover:bg-[#564a72]"
+                        >
+                            {isLoading ? 'Verificando...' : 'Enviar email de recuperação'}
+                        </button>
+                    </form>
+                ) : (
+                    <form
+                        onSubmit={handleResetPasswordSubmit}
+                        className="flex flex-col w-full"
                     >
-                        {isLoading ? 'Redefinindo...' : 'Redefinir Senha'}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setEmailVerificado(false)}
-                        disabled={isLoading}
-                        className="mt-6 bg-gray-500 text-[#1F1536] px-1 py-2 rounded text-base transition-colors duration-300 hover:bg-gray-400 z-[5]"
-                    >
-                        Cancelar
-                    </button>
-                </form>
-            )}
+                        <p className="mb-4 !text-[#1F1536] text-sm sm:text-base">
+                            Defina sua nova senha para o email: <strong>{email}</strong>
+                        </p>
+                        <label htmlFor="novaSenha" className="mb-2 text-[#1F1536] text-sm sm:text-base">
+                            Nova Senha:
+                        </label>
+                        <input
+                            type="password"
+                            id="novaSenha"
+                            value={novaSenha}
+                            onChange={(e) => setNovaSenha(e.target.value)}
+                            required
+                            disabled={isLoading}
+                            className="p-3 mb-6 border border-[#1F1536] text-sm sm:text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
+                        />
+                        <label htmlFor="confirmarNovaSenha" className="mb-2 text-[#1F1536] text-sm sm:text-base">
+                            Confirmar Nova Senha:
+                        </label>
+                        <input
+                            type="password"
+                            id="confirmarNovaSenha"
+                            value={confirmarNovaSenha}
+                            onChange={(e) => setConfirmarNovaSenha(e.target.value)}
+                            required
+                            disabled={isLoading}
+                            className="p-3 mb-6 border border-[#1F1536] text-sm sm:text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
+                        />
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="bg-[#1F1536] text-white px-4 py-3 rounded text-sm sm:text-lg transition-colors duration-300 hover:bg-[#564a72]"
+                        >
+                            {isLoading ? 'Redefinindo...' : 'Redefinir Senha'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setEmailVerificado(false)}
+                            disabled={isLoading}
+                            className="mt-6 bg-gray-500 text-[#1F1536] px-3 py-2 rounded text-sm sm:text-base transition-colors duration-300 hover:bg-gray-400"
+                        >
+                            Cancelar
+                        </button>
+                    </form>
+                )}
+            </div>
         </div>
     );
 }
