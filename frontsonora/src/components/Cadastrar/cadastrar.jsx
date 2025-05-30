@@ -56,7 +56,7 @@ const Cadastrar = () => {
   return (
     <div className="relative w-screen h-screen overflow-hidden font-sans bg-[#EDE6F2]">
       <button
-        className="absolute bottom-4 right-4 bg-[#A48BB3] text-white py-2 px-6 text-base rounded transition duration-300 hover:bg-[#1F1536] hover:scale-105 z-10"
+        className="absolute bottom-2 right-2 bg-[#A48BB3] text-white py-2 px-6 text-sm sm:text-base rounded transition duration-300 hover:bg-[#1F1536] hover:scale-105 z-10"
         onClick={() => navigate('/')}
       >
         Voltar
@@ -68,27 +68,26 @@ const Cadastrar = () => {
         className="absolute top-0 left-0 w-full h-full object-cover z-0"
       />
 
-      <div className="absolute top-0 left-0 w-1/2 h-full bg-[#EDE6F2] shadow-[5px_0_10px_rgba(0,0,0,0.2)] flex flex-col justify-center items-center p-12
-                      max-w-[60vw] lg:max-w-[80vw] sm:max-w-full sm:p-8">
+      <div className="absolute top-0 left-0 w-full md:w-1/2 min-w-[350px] h-full bg-[#EDE6F2] shadow-[5px_0_10px_rgba(0,0,0,0.2)] flex flex-col justify-center items-center p-6 sm:p-10 md:p-12">
 
         {cadastroConcluido ? (
-          <div className="flex flex-col items-center justify-center text-center h-full w-full">
-            <h1 className={`flex items-center gap-2 text-[#1F1536] text-4xl font-bold transition-all duration-1000 
+          <div className="flex flex-col items-center justify-center text-center h-full w-full px-4 sm:px-8">
+            <h1 className={`flex items-center gap-2 text-[#1F1536] text-3xl sm:text-4xl font-bold transition-all duration-1000 
               ${fadeInTitulo ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               Cadastro Concluído <IoMdCheckmarkCircle />
             </h1>
-            <p className={`text-[#A48BB3] text-lg max-w-[80%] mt-4 transition-all duration-1000 delay-500 
+            <p className={`text-[#A48BB3] text-base sm:text-lg max-w-[80%] mt-4 transition-all duration-1000 delay-500 
               ${fadeInTexto ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               Indo para a página de acesso...
             </p>
           </div>
         ) : (
           <>
-            <h1 className="!text-[#1F1536] text-2xl font-semibold mb-4">Conectamos você à música</h1>
-            <h2 className="!text-[#1F1536] text-xl mb-6">Escolha seu tipo de cadastro</h2>
+            <h1 className="!text-[#1F1536] text-xl sm:text-2xl md:text-3xl font-semibold mb-3 sm:mb-4">Conectamos você à música</h1>
+            <h2 className="!text-[#1F1536] text-lg sm:text-xl mb-4 sm:mb-6">Escolha seu tipo de cadastro</h2>
 
             {mensagem && (
-              <div className={`w-4/5 p-4 mb-6 rounded font-bold text-center text-base
+              <div className={`w-full sm:w-4/5 p-3 sm:p-4 mb-6 rounded font-bold text-center text-sm sm:text-base
                 ${mensagem.toLowerCase().includes('sucesso') ? 
                   'bg-[#EDE6F2] border-2 border-[#A48BB3] text-[#1F1536]' : 
                   'bg-[#FFEBEE] border-2 border-[#B00020] text-[#B00020]'}`}>
@@ -96,8 +95,8 @@ const Cadastrar = () => {
               </div>
             )}
 
-            <form className="flex flex-col w-4/5" onSubmit={handleSubmit}>
-              <label htmlFor="name" className="font-bold mb-1 text-[#1F1536] text-base">Nome</label>
+            <form className="flex flex-col w-full sm:w-4/5" onSubmit={handleSubmit}>
+              <label htmlFor="name" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Nome</label>
               <input
                 type="text"
                 id="name"
@@ -106,10 +105,10 @@ const Cadastrar = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
               />
 
-              <label htmlFor="email" className="font-bold mb-1 text-[#1F1536] text-base">E-mail</label>
+              <label htmlFor="email" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">E-mail</label>
               <input
                 type="email"
                 id="email"
@@ -118,10 +117,10 @@ const Cadastrar = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
               />
 
-              <label htmlFor="senha" className="font-bold mb-1 text-[#1F1536] text-base">Senha</label>
+              <label htmlFor="senha" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Senha</label>
               <input
                 type="password"
                 id="senha"
@@ -130,17 +129,17 @@ const Cadastrar = () => {
                 value={formData.senha}
                 onChange={handleChange}
                 required
-                className="mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
               />
 
-              <label htmlFor="role" className="font-bold mb-1 text-[#1F1536] text-base">Tipo de Usuário</label>
+              <label htmlFor="role" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Tipo de Usuário</label>
               <select
                 id="role"
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
                 required
-                className="mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
               >
                 <option value="CLIENT">Cliente (Padrão)</option>
                 <option value="HOST">Anfitrião</option>
@@ -149,7 +148,7 @@ const Cadastrar = () => {
 
               {formData.role === 'ARTISTA' && (
                 <>
-                  <label htmlFor="nomeArtistico" className="font-bold mb-1 text-[#1F1536] text-base">Nome Artístico</label>
+                  <label htmlFor="nomeArtistico" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Nome Artístico</label>
                   <input
                     type="text"
                     id="nomeArtistico"
@@ -158,10 +157,10 @@ const Cadastrar = () => {
                     value={formData.nomeArtistico}
                     onChange={handleChange}
                     required
-                    className="mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                    className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
                   />
 
-                  <label htmlFor="redesSociais" className="font-bold mb-1 text-[#1F1536] text-base">Redes Sociais</label>
+                  <label htmlFor="redesSociais" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Redes Sociais</label>
                   <input
                     type="text"
                     id="redesSociais"
@@ -169,14 +168,14 @@ const Cadastrar = () => {
                     placeholder="Links para suas redes sociais"
                     value={formData.redesSociais}
                     onChange={handleChange}
-                    className="mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                    className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
                   />
                 </>
               )}
 
               {formData.role === 'HOST' && (
                 <>
-                  <label htmlFor="telefone" className="font-bold mb-1 text-[#1F1536] text-base">Telefone</label>
+                  <label htmlFor="telefone" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Telefone</label>
                   <input
                     type="tel"
                     id="telefone"
@@ -185,20 +184,20 @@ const Cadastrar = () => {
                     value={formData.telefone}
                     onChange={handleChange}
                     required
-                    className="mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                    className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
                   />
                 </>
               )}
 
               <button
                 type="submit"
-                className="bg-[#1F1536] text-white py-3 rounded text-base font-semibold cursor-pointer transition duration-300 hover:bg-[#A48BB3] hover:scale-105"
+                className="bg-[#1F1536] text-white py-3 rounded text-base sm:text-lg font-semibold cursor-pointer transition duration-300 hover:bg-[#A48BB3] hover:scale-105"
               >
                 Cadastrar-se
               </button>
             </form>
 
-            <div className="mt-6 text-[#1F1536] text-base text-size">
+            <div className="mt-6 text-[#1F1536] text-sm sm:text-base text-center sm:text-left">
               Já tem uma conta?
               <Link to="/acesso" className="text-[#A48BB3] font-bold ml-1 hover:text-[#1F1536] hover:underline">
                 Acesse aqui
