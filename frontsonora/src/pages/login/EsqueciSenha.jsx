@@ -1,11 +1,10 @@
-import '../css/global.css';
-import '../css/esquecisenha.css';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import useTitle from '../../hooks/useTitle.js';
-import axios from 'axios'; // Importar axios
+import axios from 'axios';
 
 function EsqueciSenha() {
     useTitle('Recuperar Senha - Sonora');
+
     const [email, setEmail] = useState('');
     const [emailVerificado, setEmailVerificado] = useState(false);
     const [novaSenha, setNovaSenha] = useState('');
@@ -25,7 +24,6 @@ function EsqueciSenha() {
 
         try {
             const response = await axios.get(`/auth/check-email?email=${email}`);
-
             if (response.status === 200) {
                 setEmailVerificado(true);
                 showFeedback('Email verificado com sucesso! Agora, por favor, insira sua nova senha.', 'sucesso');
@@ -77,7 +75,6 @@ function EsqueciSenha() {
                 setEmail('');
                 setNovaSenha('');
                 setConfirmarNovaSenha('');
-
             } else {
                 showFeedback(response.data.message || 'Erro ao redefinir a senha. Tente novamente.', 'erro');
             }
@@ -90,20 +87,42 @@ function EsqueciSenha() {
     };
 
     return (
-        <div className="esqueci-senha-container">
-            <button className='botao-voltar' onClick={() => window.location.href = '/Acesso'}>Voltar</button>
-            <h1>Vamos recuperar sua senha:</h1>
-            <img src="images/fundoesquecisenha.png" alt="" style={{ width: '100%', height: 'auto' }} />
+        <div className="relative flex flex-col items-center justify-center h-screen p-8 z-[5] bg-white overflow-hidden">
+            <button
+                className="absolute top-4 left-4 text-white bg-[#1F1536] px-6 py-3 rounded hover:bg-[#564a72] transition-colors duration-300 z-[10]"
+                onClick={() => window.location.href = '/Acesso'}
+            >
+                Voltar
+            </button>
+
+            <h1 className="mb-4 !text-[#1F1536] text-2xl font-bold z-[5]">Vamos recuperar sua senha:</h1>
+
+            <img
+                src="images/fundoesquecisenha.png"
+                alt=""
+                className="absolute top-0 left-0 w-full h-full object-cover z-0"
+            />
 
             {mensagemFeedback.text && (
-                <p className={`mensagem ${mensagemFeedback.type === 'sucesso' ? 'sucesso' : 'erro'}`}>
+                <p
+                    className={`z-[5] text-center mb-4 font-medium ${
+                        mensagemFeedback.type === 'sucesso'
+                            ? '!text-green-600'
+                            : '!text-red-600'
+                    }`}
+                >
                     {mensagemFeedback.text}
                 </p>
             )}
 
             {!emailVerificado ? (
-                <form onSubmit={handleEmailSubmit}>
-                    <label htmlFor="email">Digite seu email:</label>
+                <form
+                    onSubmit={handleEmailSubmit}
+                    className="flex flex-col w-full max-w-md z-[5]"
+                >
+                    <label htmlFor="email" className="mb-2 text-[#1F1536]">
+                        Digite seu email:
+                    </label>
                     <input
                         type="email"
                         id="email"
@@ -111,15 +130,27 @@ function EsqueciSenha() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         disabled={isLoading}
+                        className="p-3 mb-6 border border-[#1F1536] rounded text-base z-[5]"
                     />
-                    <button type="submit" disabled={isLoading}>
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="bg-[#1F1536] text-white px-4 py-3 rounded text-lg transition-colors duration-300 hover:bg-[#564a72] z-[5]"
+                    >
                         {isLoading ? 'Verificando...' : 'Enviar email de recuperação'}
                     </button>
                 </form>
             ) : (
-                <form onSubmit={handleResetPasswordSubmit}>
-                    <p className="texto-nova-senha">Defina sua nova senha para o email: <strong>{email}</strong></p>
-                    <label htmlFor="novaSenha">Nova Senha:</label>
+                <form
+                    onSubmit={handleResetPasswordSubmit}
+                    className="flex flex-col w-full max-w-md z-[5]"
+                >
+                    <p className="mb-4 !text-[#1F1536]">
+                        Defina sua nova senha para o email: <strong>{email}</strong>
+                    </p>
+                    <label htmlFor="novaSenha" className="mb-2 text-[#1F1536]">
+                        Nova Senha:
+                    </label>
                     <input
                         type="password"
                         id="novaSenha"
@@ -127,8 +158,11 @@ function EsqueciSenha() {
                         onChange={(e) => setNovaSenha(e.target.value)}
                         required
                         disabled={isLoading}
+                        className="p-3 mb-6 border border-[#1F1536] rounded text-base z-[5]"
                     />
-                    <label htmlFor="confirmarNovaSenha">Confirmar Nova Senha:</label>
+                    <label htmlFor="confirmarNovaSenha" className="mb-2 text-[#1F1536]">
+                        Confirmar Nova Senha:
+                    </label>
                     <input
                         type="password"
                         id="confirmarNovaSenha"
@@ -136,11 +170,21 @@ function EsqueciSenha() {
                         onChange={(e) => setConfirmarNovaSenha(e.target.value)}
                         required
                         disabled={isLoading}
+                        className="p-3 mb-6 border border-[#1F1536] rounded text-base z-[5]"
                     />
-                    <button type="submit" disabled={isLoading}>
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="bg-[#1F1536] text-white px-4 py-3 rounded text-lg transition-colors duration-300 hover:bg-[#564a72] z-[5]"
+                    >
                         {isLoading ? 'Redefinindo...' : 'Redefinir Senha'}
                     </button>
-                    <button type="button" onClick={() => setEmailVerificado(false)} disabled={isLoading} className="cancelar-redefinicao">
+                    <button
+                        type="button"
+                        onClick={() => setEmailVerificado(false)}
+                        disabled={isLoading}
+                        className="mt-4 bg-gray-200 text-[#1F1536] px-4 py-5 rounded text-lg transition-colors duration-300 hover:bg-gray-300 z-[5]"
+                    >
                         Cancelar
                     </button>
                 </form>
