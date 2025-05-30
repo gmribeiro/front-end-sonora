@@ -16,6 +16,7 @@ import ConfUsuario from './pages/perfil/ConfUsuario';
 import Avaliacoes from "./components/Avaliacoes/Avaliacoes.jsx";
 import Artista from "./pages/artistas/Artista.jsx";
 import DetalhesEvento from "./pages/detalhes-evento/DetalhesEvento.jsx";
+import EventosBuscaResultados from './components/EventosBuscaResultado/EventosBuscaResultado.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/termos" element={<Termos />} />
         <Route path="/configuracoes-usuario" element={<ConfUsuario />} />
         <Route path="/configuracoes-musico" element={<ConfMusico />} />
+        <Route path="/eventos/resultado-busca" element={<EventosBuscaResultados />} />
       </Routes>
     </Router>
   </StrictMode>,
