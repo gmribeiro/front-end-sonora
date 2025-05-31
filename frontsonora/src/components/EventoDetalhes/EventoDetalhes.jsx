@@ -87,8 +87,6 @@ const EventoDetalhes = () => {
             setErroEscalas(null);
             try {
                 const response = await axios.get(`/escalas/event/${id}`);
-
-                console.log('Resposta da API para escalas (response.data):', response.data);
                 if (Array.isArray(response.data)) {
                     setEscalasDoEvento(response.data);
                 } else {
@@ -99,7 +97,6 @@ const EventoDetalhes = () => {
             } catch (error) {
                 console.error('Erro ao carregar escalas do evento:', error);
                 if (axios.isAxiosError(error) && error.response && error.response.status === 204) {
-                    console.log('API retornou 204 No Content, definindo escalas como array vazio.');
                     setEscalasDoEvento([]);
                 } else {
                     setErroEscalas('Erro ao carregar os artistas escalados.');
@@ -156,9 +153,7 @@ const EventoDetalhes = () => {
             }
             const reservaData = {
                 usuario: { id: usuarioLogado.id },
-                evento: {
-                    idEvento: evento.idEvento,
-                },
+                evento: { idEvento: evento.idEvento },
                 confirmado: false
             };
             await axios.post('/reservas', reservaData, {
@@ -223,101 +218,93 @@ const EventoDetalhes = () => {
         : (carregandoUsuarioReserva ? 'Carregando informações...' : (reservando ? 'Processando...' : 'Reservar Ingresso'));
 
     return (
-        <div className="bg-cover bg-center min-h-screen px-4 py-8 text-[#564A72]" style={{ backgroundImage: "url('/images/detalheevento.png')" }}>
-            <div className="max-w-4xl mx-auto bg-[#EDE6F2] bg-opacity-80 p-6 rounded shadow-md">
-                <div className="mb-6 flex items-start justify-between">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="transition-transform duration-300 transform hover:scale-105 px-3 py-3 border border-[#564A72] bg-white text-[#564A72] hover:bg-[#564A72] hover:text-white rounded"
-                    >
-                        Voltar
-                    </button>
-                    <h1 className="text-4xl font-bold text-center w-full -ml-12">{evento.nomeEvento || evento.titulo}</h1>
+        <div className="w-screen min-h-screen bg-[#EDE6F2] text-[#564A72] flex flex-col">
+            <div className="w-full h-12 overflow-hidden">
+                <img 
+                    src="/images/elementodegrade.png" 
+                    alt="Imagem degradê sonora" 
+                    className="w-full h-full object-cover"
+                />
+            </div>
+
+            <div className="relative w-full max-h-[380px] overflow-hidden">
+                <img
+                    src={eventImageUrl || '/images/evento_padrao.png'}
+                    alt={evento.nomeEvento || evento.titulo || 'Imagem do evento'}
+                    className="w-full h-[400px] object-cover"
+                />
+                <button
+                    onClick={() => navigate('/eventos')}
+                    className="absolute bottom-4 left-4 border border-[#564A72] bg-white text-[#564A72] px-3 py-1 rounded hover:bg-[#564A72] hover:text-white transition"
+                >
+                    Voltar
+                </button>
+            </div>
+
+            <h1 className="text-3xl font-semibold mt-4 mb-6 text-center !text-[#564A72]">
+                {evento.nomeEvento || evento.titulo}
+            </h1>
+
+            <div className="max-w-7xl w-full mx-auto px-12 pb-12 flex-grow text-lg">
+                <div className="flex items-center mb-4">
+                    <FaCalendarAlt className="text-xl mr-2" />
+                    <span className="text-xl">{formatarDataHora(evento.dataHora)}</span>
                 </div>
 
-                {eventImageUrl && (
-                    <div className="mb-6">
-                        <img src={eventImageUrl} alt={evento.nomeEvento || evento.titulo} className="w-3/4 mx-auto h-auto rounded" />
+                <div className="flex items-center mb-6">
+                    <MdPlace className="text-xl mr-2" />
+                    <span className="text-xl">{evento.local || 'Local não informado'}</span>
+                </div>
+
+                {/* Descrição do evento */}
+                <div className="mb-8 ">
+                    <h2 className="!text-left !text-[#564A72] text-xl font-semibold mb-2">Descrição</h2>
+                    <p className='!text-[#564A72]'>{evento.descricao || 'Descrição não disponível.'}</p>
+                </div>
+
+                <div className="mb-8">
+                    <h2 className="!text-[#564A72] flex items-center text-xl font-semibold mb-3">
+                        <IoMdMusicalNotes className="mr-2" /> Artistas Escalados
+                    </h2>
+                    {carregandoEscalas ? (
+                        <p className='!text-[#564A72]'>Carregando artistas...</p>
+                    ) : erroEscalas ? (
+                        <p className="!text-red-600">{erroEscalas}</p>
+                    ) : escalasDoEvento.length === 0 ? (
+                        <p className='!text-[#564A72]'>Nenhum artista escalado para este evento.</p>
+                    ) : (
+                        <ul className="list-disc list-inside !text-[#564A72]">
+                            {escalasDoEvento.map((escala) => (
+                                <li key={escala.id}>{escala.nomeArtista}</li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
+                {mensagemReserva && (
+                    <div
+                        className={`mb-4 px-4 py-3 rounded ${
+                            mensagemReserva.toLowerCase().includes('sucesso')
+                                ? 'bg-green-200 text-green-800'
+                                : 'bg-red-200 text-red-800'
+                        }`}
+                    >
+                        {mensagemReserva}
                     </div>
                 )}
 
-                <div className="space-y-6">
-                    <div className="space-y-4">
-                        <div className="flex items-center space-x-3">
-                            <FaCalendarAlt className="text-2xl text-[#564A72]" />
-                            <div>
-                                <h3 className="text-xl font-semibold">Data e Horário</h3>
-                                <p>{formatarDataHora(evento.dataHora)}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <MdPlace className="text-2xl text-[#564A72]" />
-                            <div>
-                                <h3 className="text-xl font-semibold">Local</h3>
-                                <p>{evento.localEvento?.local || evento.local || 'Local não informado'}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <IoMdMusicalNotes className="text-2xl text-[#564A72]" />
-                            <div>
-                                <h3 className="text-xl font-semibold">Gênero Musical</h3>
-                                <p>{evento.generoMusical?.nomeGenero || evento.genero || 'Não especificado'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 className="text-2xl font-semibold mb-2">Artistas Escalados</h3>
-                        {carregandoEscalas ? (
-                            <p>Carregando artistas...</p>
-                        ) : erroEscalas ? (
-                            <p className="text-red-600 mt-2 font-medium">{erroEscalas}</p>
-                        ) : (
-                            <>
-                                {Array.isArray(escalasDoEvento) && escalasDoEvento.length === 0 ? (
-                                    <p>Nenhum artista escalado para este evento ainda.</p>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {escalasDoEvento.map((escala, index) => (
-                                            <div key={index} className="bg-gray-800 p-4 rounded text-white">
-                                                <h4 className="font-semibold">Gênero: {escala.idEscala?.genero?.nomeGenero || 'Não especificado'}</h4>
-                                                {escala.musicos && escala.musicos.length > 0 ? (
-                                                    <ul className="list-disc list-inside">
-                                                        {escala.musicos.map((musico, i) => (
-                                                            <li key={`${index}-${i}`}>{musico.nomeArtistico || 'Nome indisponível'}</li>
-                                                        ))}
-                                                    </ul>
-                                                ) : (
-                                                    <p>Nenhum músico para este gênero neste slot.</p>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </div>
-
-                    <div>
-                        <h3 className="text-2xl font-semibold mb-2">Descrição</h3>
-                        <p>{evento.descricao || 'Descrição não disponível.'}</p>
-                    </div>
-
-                    <div className="text-center">
-                        <button
-                            onClick={handleReservar}
-                            disabled={!podeReservar || reservando || carregandoUsuarioReserva}
-                            className="transition-transform duration-300 transform hover:scale-110 bg-[#564A72] hover:bg-[#c2a0bb] disabled:bg-gray-600 text-white text-lg px-8 py-3 rounded"
-                        >
-                            {textoBotaoReserva}
-                        </button>
-                        {mensagemReserva && (
-                            <p className={`mt-4 ${mensagemReserva.includes('sucesso') ? 'text-green-400' : 'text-red-400'}`}>
-                                {mensagemReserva}
-                            </p>
-                        )}
-                    </div>
-                </div>
+                <button
+                    onClick={handleReservar}
+                    disabled={!podeReservar || reservando}
+                    className={`w-full py-3 rounded font-semibold transition
+                        ${
+                            podeReservar
+                                ? 'bg-[#564A72] text-white hover:bg-[#453a58]'
+                                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                        }`}
+                >
+                    {textoBotaoReserva}
+                </button>
             </div>
         </div>
     );
