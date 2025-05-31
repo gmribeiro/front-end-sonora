@@ -91,7 +91,7 @@ const EventoDetalhes = () => {
                     setEscalasDoEvento(response.data);
                 } else {
                     console.error('Dados de escalas recebidos da API não são um array:', response.data);
-                    setErroEscalas('Formato de dados inesperado para artistas escalados.');
+                    setErroEscalas('Os artistas escalados serão anunciados em breve!');
                     setEscalasDoEvento([]);
                 }
             } catch (error) {
@@ -268,6 +268,11 @@ const EventoDetalhes = () => {
                 <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto">
                     <MdPlace className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
                     <span className="text-lg sm:text-2xl whitespace-nowrap">{evento.localEvento?.local || evento.local || 'Local não informado'}</span>
+                </div>
+
+                <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto">
+                    <MdPlace className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
+                    <span className="text-lg sm:text-2xl whitespace-nowrap">{evento.localEvento?.classificacao || evento.classificacao || 'Classificacão não informada'}</span>
                 </div>
 
                 <div className="mb-10 sm:mb-15">
