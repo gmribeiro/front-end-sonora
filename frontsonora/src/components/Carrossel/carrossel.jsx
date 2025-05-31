@@ -134,7 +134,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
                         ? "bg-[#C5B6D2] scale-105 shadow-[0_0_15px_rgba(197,182,210,0.8)]"
                         : "bg-[#564a72]"
                     }
-                    w-[90px] h-[90px] sm:w-[170px] sm:h-[170px]
+                    w-[90px] h-[90px] sm:w-[160px] sm:h-[160px]
                     px-2
                     hover:scale-105 transition-all duration-500 ease-in-out
                     ${isLast ? "fadeInScale" : ""}
