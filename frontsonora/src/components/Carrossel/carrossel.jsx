@@ -134,7 +134,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
           onClick={scrollLeft}
           disabled={startIndex === 0}
           style={{
-            left: isMobile ? "-10px" : isTablet ? "0px" : "-60px",
+            left: isMobile ? "-2px" : isTablet ? "0px" : "-60px",
           }}
         >
           <FaChevronLeft className="w-5 h-5" />
@@ -156,7 +156,6 @@ const Carrossel = ({ onGeneroSelecionado }) => {
                 (lastMoved === "right" && index === itensVisiveis.length - 1) ||
                 (lastMoved === "left" && index === 0);
 
-              // Tamanhos condicionais por tipo de dispositivo
               const tamanhoBolinha = isTablet
                 ? "w-[190px] h-[190px]"
                 : isMobile
@@ -190,14 +189,14 @@ const Carrossel = ({ onGeneroSelecionado }) => {
                 >
                   <span
                     className={`${textoIcone} mb-2 transition-colors duration-300 ${
-                      generoAtivo === categoria.nome ? "text-[#564a72]" : "text-white"
+                      generoAtivo === categoria.nome ? "!text-[#564a72]" : "text-white"
                     }`}
                   >
                     {categoria.icone}
                   </span>
                   <p
                     className={`mt-2 transition-colors duration-300 ${textoGenero} ${
-                      generoAtivo === categoria.nome ? "text-[#564a72]" : "text-white"
+                      generoAtivo === categoria.nome ? "!text-[#564a72]" : "text-white"
                     }`}
                   >
                     {categoria.nome}
@@ -223,7 +222,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
             generosBackend.length <= visibleItems
           }
           style={{
-            right: isMobile ? "-10px" : isTablet ? "0px" : "-60px",
+            right: isMobile ? "-2px" : isTablet ? "0px" : "-60px",
           }}
         >
           <FaChevronRight className="w-5 h-5" />
