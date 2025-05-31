@@ -218,7 +218,8 @@ const EventoDetalhes = () => {
         : (carregandoUsuarioReserva ? 'Carregando informações...' : (reservando ? 'Processando...' : 'Reservar Ingresso'));
 
     return (
-        <div className="w-screen min-h-screen bg-[#EDE6F2] text-[#564A72] flex flex-col">
+        <div className="min-h-screen bg-[#EDE6F2] text-[#564A72] flex flex-col"
+             style={{ overflowX: 'hidden' }}>
             <div className="w-full h-12 overflow-hidden">
                 <img 
                     src="/images/elementodegrade.png" 
@@ -227,55 +228,67 @@ const EventoDetalhes = () => {
                 />
             </div>
 
-            <div className="relative w-full max-h-[380px] overflow-hidden">
+            <div className="relative w-full h-[240px] md:h-[320px] lg:h-[420px] overflow-hidden">
+                
                 <img
                     src={eventImageUrl || '/images/evento_padrao.png'}
-                    alt={evento.nomeEvento || evento.titulo || 'Imagem do evento'}
-                    className="w-full h-[400px] object-cover"
+                    alt="Imagem de fundo do evento"
+                    className="absolute top-0 left-0 w-full h-full object-cover filter blur-md scale-110 z-0 pointer-events-none"
                 />
+
+                <div className="relative z-10 flex justify-center items-center h-full px-2">
+                    <div className="shadow-xl rounded-lg overflow-hidden w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl">
+                        <img
+                            src={eventImageUrl || '/images/evento_padrao.png'}
+                            alt={evento.nomeEvento || evento.titulo || 'Imagem do evento'}
+                            className="w-full h-[180px] sm:h-[280px] md:h-[380px] object-cover"
+                        />
+                    </div>
+                </div>
+
                 <button
                     onClick={() => navigate('/')}
-                    className="absolute bottom-4 left-4 border border-[#564A72] bg-white text-[#564A72] px-3 py-1 rounded hover:bg-[#564A72] hover:text-white transition"
+                    className="absolute bottom-4 left-4 z-20 border border-[#564A72] bg-white text-[#564A72] px-3 py-1 rounded hover:bg-[#564A72] hover:text-white transition text-sm sm:text-base"
                 >
                     Voltar
                 </button>
+
             </div>
 
-            <h1 className="text-3xl font-semibold mt-4 mb-6 text-center !text-[#564A72]">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mt-8 sm:mt-16 mb-6 sm:mb-12 text-center !text-[#564A72] px-4 max-w-[600px] mx-auto truncate">
                 {evento.nomeEvento || evento.titulo}
             </h1>
 
-            <div className="max-w-7xl w-full mx-auto px-12 pb-12 flex-grow text-lg">
-                <div className="flex items-center mb-4">
-                    <FaCalendarAlt className="text-xl mr-2" />
-                    <span className="text-xl">{formatarDataHora(evento.dataHora)}</span>
+            <div className="max-w-[1200px] w-full mx-auto px-4 sm:px-6 pb-12 flex-grow text-base sm:text-lg">
+                <div className="flex items-center mt-6 sm:mt-10 mb-3 sm:mb-5 overflow-x-auto">
+                    <FaCalendarAlt className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
+                    <span className="text-lg sm:text-2xl whitespace-nowrap">{formatarDataHora(evento.dataHora)}</span>
                 </div>
 
-                <div className="flex items-center mb-6">
-                    <MdPlace className="text-xl mr-2" />
-                    <span className="text-xl">{evento.localEvento?.local || evento.local || 'Local não informado'}</span>
+                <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto">
+                    <MdPlace className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
+                    <span className="text-lg sm:text-2xl whitespace-nowrap">{evento.localEvento?.local || evento.local || 'Local não informado'}</span>
                 </div>
 
-                {/* Descrição do evento */}
-                <div className="mb-8 ">
-                    <h2 className="!text-left !text-[#564A72] text-xl font-semibold mb-2">Descrição</h2>
-                    <p className='!text-[#564A72]'>{evento.descricao || 'Descrição não disponível.'}</p>
+                <div className="mb-10 sm:mb-15">
+                    <h2 className="!text-left !text-[#564A72] text-xl sm:text-2xl font-semibold mb-2">Descrição</h2>
+                    <p className='!text-[#564A72] text-base sm:text-[18px]'>{evento.descricao || 'Descrição não disponível.'}</p>
                 </div>
 
-                <div className="mb-8">
-                    <h2 className="!text-[#564A72] flex items-center text-xl font-semibold mb-3">
-                        <IoMdMusicalNotes className="mr-2" /> Artistas Escalados
+                <div className="mb-16 sm:mb-20">
+                    <h2 className="!text-[#564A72] flex items-center text-xl sm:text-2xl font-semibold mb-3 overflow-x-auto">
+                        <IoMdMusicalNotes className="mr-2 flex-shrink-0" /> Artistas Escalados
                     </h2>
                     {carregandoEscalas ? (
-                        <p className='!text-[#564A72]'>Carregando artistas...</p>
+                        <p className='!text-[#564A72] mt-10'>Carregando artistas...</p>
                     ) : erroEscalas ? (
-                        <p className="!text-red-600">{erroEscalas}</p>
+                        <p className="!text-red-600 mt-10">{erroEscalas}</p>
                     ) : escalasDoEvento.length === 0 ? (
-                        <p className='!text-[#564A72]'>Nenhum artista escalado para este evento.</p>
+                        <p className='!text-[#564A72] mt-10'>Nenhum artista escalado para este evento.</p>
                     ) : (
-                        <ul className="list-disc list-inside !text-[#564A72]">
+                        <ul className="list-disc list-inside !text-[#564A72] max-w-full overflow-x-auto">
                             {escalasDoEvento.map((escala) => (
-                                <li key={escala.id}>{escala.nomeArtista}</li>
+                                <li key={escala.id} className="truncate">{escala.nomeArtista}</li>
                             ))}
                         </ul>
                     )}
