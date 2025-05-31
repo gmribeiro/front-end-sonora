@@ -234,7 +234,7 @@ const EventoDetalhes = () => {
                     className="w-full h-[400px] object-cover"
                 />
                 <button
-                    onClick={() => navigate('/eventos')}
+                    onClick={() => navigate('/')}
                     className="absolute bottom-4 left-4 border border-[#564A72] bg-white text-[#564A72] px-3 py-1 rounded hover:bg-[#564A72] hover:text-white transition"
                 >
                     Voltar
@@ -253,7 +253,7 @@ const EventoDetalhes = () => {
 
                 <div className="flex items-center mb-6">
                     <MdPlace className="text-xl mr-2" />
-                    <span className="text-xl">{evento.local || 'Local não informado'}</span>
+                    <span className="text-xl">{evento.localEvento?.local || evento.local || 'Local não informado'}</span>
                 </div>
 
                 {/* Descrição do evento */}
