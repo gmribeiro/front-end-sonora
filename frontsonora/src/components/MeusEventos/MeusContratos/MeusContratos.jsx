@@ -97,14 +97,12 @@ function MeusContratos() {
                 alert('Sua sessão expirou. Faça login novamente.');
                 return;
             }
-
             const escalaData = {
-                idEscala: {
-                    evento: { idEvento: idEvento },
-                    genero: { idGeneroMusical: idGeneroMusical }
-                },
-                musicos: [{ idMusico: idMusico }]
+                idEvento: idEvento,
+                idGeneroMusical: idGeneroMusical,
+                idsMusicos: [idMusico]
             };
+            console.log("JSON final a ser enviado:", JSON.stringify(escalaData, null, 2));
 
             await axios.post(`/escalas`, escalaData, {
                 headers: {

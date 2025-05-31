@@ -82,26 +82,34 @@ const EventoDetalhes = () => {
 
     useEffect(() => {
         const fetchEscalasDoEvento = async () => {
-            if (!id) return;
+            if (!id) {
+                return;
+            }
             setCarregandoEscalas(true);
             setErroEscalas(null);
             try {
                 const response = await axios.get(`/escalas/event/${id}`);
+
+                if (response.status === 204) {
+                    setEscalasDoEvento([]);
+                    setErroEscalas('Os artistas escalados serão anunciados em breve!');
+                    return;
+                }
+
                 if (Array.isArray(response.data)) {
-                    setEscalasDoEvento(response.data);
+                    const artistasNomes = response.data.flatMap(escala =>
+                        escala.musicos.map(musico => musico.nomeMusico)
+                    );
+                    setEscalasDoEvento(artistasNomes);
                 } else {
                     console.error('Dados de escalas recebidos da API não são um array:', response.data);
-                    setErroEscalas('Os artistas escalados serão anunciados em breve!');
+                    setErroEscalas('Formato de dados inesperado da API.');
                     setEscalasDoEvento([]);
                 }
             } catch (error) {
                 console.error('Erro ao carregar escalas do evento:', error);
-                if (axios.isAxiosError(error) && error.response && error.response.status === 204) {
-                    setEscalasDoEvento([]);
-                } else {
-                    setErroEscalas('Erro ao carregar os artistas escalados.');
-                    setEscalasDoEvento([]);
-                }
+                setErroEscalas('Erro ao carregar os artistas escalados.');
+                setEscalasDoEvento([]);
             } finally {
                 setCarregandoEscalas(false);
             }
@@ -219,17 +227,17 @@ const EventoDetalhes = () => {
 
     return (
         <div className="min-h-screen bg-[#EDE6F2] text-[#564A72] flex flex-col"
-             style={{ overflowX: 'hidden' }}>
+             style={{ overflowX: 'hidden'}}>
             <div className="w-full h-12 overflow-hidden">
-                <img 
-                    src="/images/elementodegrade.png" 
-                    alt="Imagem degradê sonora" 
+                <img
+                    src="/images/elementodegrade.png"
+                    alt="Imagem degradê sonora"
                     className="w-full h-full object-cover"
                 />
             </div>
 
             <div className="relative w-full h-[240px] md:h-[320px] lg:h-[420px] overflow-hidden">
-                
+
                 <img
                     src={eventImageUrl || '/images/evento_padrao.png'}
                     alt="Imagem de fundo do evento"
@@ -292,8 +300,8 @@ const EventoDetalhes = () => {
                         <p className='!text-[#564A72] mt-10'>Nenhum artista escalado para este evento.</p>
                     ) : (
                         <ul className="list-disc list-inside !text-[#564A72] max-w-full overflow-x-auto">
-                            {escalasDoEvento.map((escala) => (
-                                <li key={escala.id} className="truncate">{escala.nomeArtista}</li>
+                            {escalasDoEvento.map((artistaNome, index) => (
+                                <li key={index} className="truncate">{artistaNome}</li>
                             ))}
                         </ul>
                     )}
@@ -310,16 +318,15 @@ const EventoDetalhes = () => {
                         {mensagemReserva}
                     </div>
                 )}
-
                 <button
                     onClick={handleReservar}
                     disabled={!podeReservar || reservando}
                     className={`w-full py-3 rounded font-semibold transition
                         ${
-                            podeReservar
-                                ? 'bg-[#564A72] text-white hover:bg-[#453a58]'
-                                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                        }`}
+                        podeReservar
+                            ? 'bg-[#564A72] text-white hover:bg-[#453a58]'
+                            : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                    }`}
                 >
                     {textoBotaoReserva}
                 </button>
