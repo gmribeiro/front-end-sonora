@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./Avaliacoes.css";
 import { useNavigate } from 'react-router-dom';
 
 const Avaliacoes = () => {
@@ -38,9 +37,7 @@ const Avaliacoes = () => {
 
                     const eventosDasReservas = responseReservas.data.map(reserva => reserva.evento);
                     const eventosUnicos = Array.from(new Set(eventosDasReservas.map(e => e.idEvento)))
-                        .map(id => {
-                            return eventosDasReservas.find(e => e.idEvento === id);
-                        });
+                        .map(id => eventosDasReservas.find(e => e.idEvento === id));
                     setEventos(eventosUnicos);
                 } catch (error) {
                     console.error("Erro ao carregar eventos de reservas passadas:", error);
@@ -49,24 +46,19 @@ const Avaliacoes = () => {
         };
 
         fetchUserDetails();
-
         fetchEventos();
     }, [usuarioId]);
 
-    const handleNotaChange = (event) => {
-        const value = parseInt(event.target.value, 10);
+    const handleNotaChange = (e) => {
+        const value = parseInt(e.target.value, 10);
         if (!isNaN(value) && value >= 1 && value <= 5) {
             setNota(value);
         }
     };
 
-    const handleMensagemChange = (event) => {
-        setMensagem(event.target.value);
-    };
-
-    const handleEventoChange = (event) => {
-        setEventoSelecionadoId(event.target.value);
-    };
+    const handleMensagemChange = (e) => setMensagem(e.target.value);
+    const handleEventoChange = (e) => setEventoSelecionadoId(e.target.value);
+    const handleVoltar = () => navigate(-1);
 
     const handleSubmitAvaliacao = async () => {
         const token = localStorage.getItem('token');
@@ -75,9 +67,9 @@ const Avaliacoes = () => {
                 await axios.post(
                     "/avaliacoes",
                     {
-                        nota: nota,
-                        mensagem: mensagem,
-                        usuarioId: usuarioId,
+                        nota,
+                        mensagem,
+                        usuarioId,
                         eventoId: eventoSelecionadoId,
                     },
                     {
@@ -88,7 +80,7 @@ const Avaliacoes = () => {
                     }
                 );
                 alert("Avaliação enviada com sucesso!");
-                setNota(1); // Reset form
+                setNota(1);
                 setMensagem("");
                 setEventoSelecionadoId("");
             } catch (error) {
@@ -97,64 +89,96 @@ const Avaliacoes = () => {
             }
         } else if (userRole !== "CLIENT") {
             alert("Apenas clientes podem fazer avaliações.");
-        } else if (!usuarioId || !eventoSelecionadoId) {
-            alert("Informações do usuário ou do evento ausentes.");
         } else {
-            alert("Token de autenticação não encontrado.");
+            alert("Informações do usuário ou do evento ausentes.");
         }
     };
 
-    const handleVoltar = () => {
-        navigate(-1);
-    };
+    return (
+        <div
+            className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden"
+            style={{ backgroundImage: "url('/images/fundoavaliacao.png')" }}
+        >
+            <div className="w-full max-w-xl bg-[#f8f6ff] shadow-xl rounded-2xl p-8 sm:p-10 text-[#3f3864]">
+                {userRole === "CLIENT" ? (
+                    <>
+                        <h3 className="text-2xl sm:text-3xl font-bold text-center mb-6">Avaliar Evento</h3>
 
-    if (userRole === "CLIENT") {
-        return (
-            <div className="avaliacoes-container">
-                <h3>Avaliar Evento</h3>
-                <div>
-                    <label htmlFor="evento">Evento:</label>
-                    <select id="evento" value={eventoSelecionadoId} onChange={handleEventoChange} required>
-                        <option value="">Selecione um evento</option>
-                        {eventos.map((evento) => (
-                            <option key={evento.idEvento} value={evento.idEvento}>
-                                {evento.nomeEvento}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="nota">Nota (1-5):</label>
-                    <select id="nota" value={nota} onChange={handleNotaChange}>
-                        <option value={1}>★</option>
-                        <option value={2}>★★</option>
-                        <option value={3}>★★★</option>
-                        <option value={4}>★★★★</option>
-                        <option value={5}>★★★★★</option>
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="mensagem">Mensagem (opcional):</label>
-                    <textarea
-                        id="mensagem"
-                        value={mensagem}
-                        onChange={handleMensagemChange}
-                    />
-                </div>
-                <button onClick={handleSubmitAvaliacao}>Enviar Avaliação</button>
-                <button onClick={handleVoltar}>Voltar</button>
+                        <div className="mb-4">
+                            <label htmlFor="evento" className="block font-semibold mb-1">Evento:</label>
+                            <select
+                                id="evento"
+                                value={eventoSelecionadoId}
+                                onChange={handleEventoChange}
+                                className="w-full px-4 py-2 rounded-xl border-2 border-[#6d6384] bg-white text-sm sm:text-base focus:outline-none"
+                                required
+                            >
+                                <option value="">Selecione um evento</option>
+                                {eventos.map((evento) => (
+                                    <option key={evento.idEvento} value={evento.idEvento}>
+                                        {evento.nomeEvento}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="nota" className="block font-semibold mb-1">Nota (1-5):</label>
+                            <select
+                                id="nota"
+                                value={nota}
+                                onChange={handleNotaChange}
+                                className="w-full px-4 py-2 rounded-xl border-2 border-[#6d6384] bg-white text-sm sm:text-base focus:outline-none"
+                            >
+                                {[1, 2, 3, 4, 5].map(n => (
+                                    <option key={n} value={n}>{'★'.repeat(n)}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="mb-6">
+                            <label htmlFor="mensagem" className="block font-semibold mb-1">Mensagem (opcional):</label>
+                            <textarea
+                                id="mensagem"
+                                value={mensagem}
+                                onChange={handleMensagemChange}
+                                className="w-full h-28 px-4 py-3 rounded-xl border-2 border-[#6d6384] bg-white text-sm sm:text-base focus:outline-none resize-none"
+                            />
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button
+                                onClick={handleSubmitAvaliacao}
+                                className="bg-[#3f3864] hover:bg-[#2d274d] text-white font-semibold py-2 px-6 rounded-xl transition-colors"
+                            >
+                                Enviar Avaliação
+                            </button>
+                            <button
+                                onClick={handleVoltar}
+                                className="bg-[#6d6384] hover:bg-[#847aa3] text-white font-semibold py-2 px-6 rounded-xl transition-colors"
+                            >
+                                Voltar
+                            </button>
+                        </div>
+                    </>
+                ) : userRole ? (
+                    <>
+                        <p className="text-center mb-6">Você precisa ser um cliente para avaliar um evento.</p>
+                        <div className="flex justify-center">
+                            <button
+                                onClick={handleVoltar}
+                                className="bg-[#6d6384] hover:bg-[#847aa3] text-white font-semibold py-2 px-6 rounded-xl transition-colors"
+                            >
+                                Voltar
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <p className="text-center">Carregando informações...</p>
+                )}
             </div>
-        );
-    } else if (userRole) {
-        return (
-            <div>
-                <p>Você precisa ser um cliente para avaliar um evento.</p>
-                <button onClick={handleVoltar}>Voltar</button>
-            </div>
-        );
-    } else {
-        return <p>Carregando informações...</p>;
-    }
+        </div>
+    );
 };
 
 export default Avaliacoes;

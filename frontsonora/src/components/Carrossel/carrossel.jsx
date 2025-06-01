@@ -126,7 +126,6 @@ const Carrossel = ({ onGeneroSelecionado }) => {
     <div className="w-full py-8 bg-[#EDE6F2] my-20 relative overflow-visible">
       <div className="flex items-center max-w-[1050px] mx-auto px-5 sm:px-10 relative overflow-visible">
 
-        {/* Botão Esquerdo */}
         <button
           className={`bg-[#564a72] text-white rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:bg-[#C5B6D2]
             ${startIndex === 0 ? "opacity-50 cursor-not-allowed" : ""}
@@ -140,7 +139,6 @@ const Carrossel = ({ onGeneroSelecionado }) => {
           <FaChevronLeft className="w-5 h-5" />
         </button>
 
-        {/* Carrossel */}
         <div className="w-full overflow-hidden px-2 sm:px-[30px]">
           <div
             className="flex gap-3 sm:gap-5 py-4 scroll-smooth w-full justify-center"
@@ -207,7 +205,6 @@ const Carrossel = ({ onGeneroSelecionado }) => {
           </div>
         </div>
 
-        {/* Botão Direito */}
         <button
           className={`bg-[#564a72] text-white rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:bg-[#C5B6D2]
             ${
