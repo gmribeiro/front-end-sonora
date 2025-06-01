@@ -187,43 +187,59 @@ const EventoDetalhes = () => {
     };
 
     const formatarDataHora = (dataHoraStr, horaEncerramentoStr) => {
-        if (!dataHoraStr) return 'Data não disponível';
+        // Retorna uma mensagem padrão se a data principal não estiver disponível
+        if (!dataHoraStr) return 'Data e hora não informadas';
 
         let data = 'Data não informada';
         let horaInicio = 'Hora não informada';
         let horaFim = 'Hora de encerramento não informada';
 
         try {
-            const parseDateTimeString = (dtStr) => {
+            const parseDateTimeString = (dtStr, isTimeOnly = false) => {
                 if (!dtStr) return null;
+                if (isTimeOnly) {
+                    const datePart = '2000-01-01';
+                    return new Date(`${datePart}T${dtStr}`);
+                }
                 const [datePart, timePart] = dtStr.split(' ');
+                if (!datePart || !timePart) return null;
+
                 const [day, month, year] = datePart.split('/');
                 const [hour, minute, second] = timePart.split(':');
+
+                if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hour) || isNaN(minute) || isNaN(second)) {
+                    return null;
+                }
                 return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
             };
 
             const dataInicio = parseDateTimeString(dataHoraStr);
-            const dataFim = parseDateTimeString(horaEncerramentoStr);
 
             if (dataInicio && !isNaN(dataInicio.getTime())) {
                 data = dataInicio.toLocaleDateString('pt-BR');
                 horaInicio = dataInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             } else {
-                console.warn(`Não foi possível parsear dataHora: ${dataHoraStr}`);
-                return dataHoraStr;
+                console.warn(`Não foi possível parsear dataHora (formato esperado DD/MM/YYYY HH:MM:SS): ${dataHoraStr}`);
+                return 'Formato de data e hora de início inválido.';
             }
+            const dataFim = parseDateTimeString(horaEncerramentoStr, true);
+
             if (dataFim && !isNaN(dataFim.getTime())) {
                 horaFim = dataFim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             } else {
                 horaFim = 'Hora de encerramento não informada';
+                if (horaEncerramentoStr) {
+                    console.warn(`Não foi possível parsear horaEncerramento (formato esperado HH:MM:SS): ${horaEncerramentoStr}`);
+                }
             }
+
             return `${data} às ${horaInicio} até ${horaFim}`;
+
         } catch (e) {
             console.error("Erro geral ao formatar data/hora:", e);
-            return dataHoraStr;
+            return 'Erro ao processar data/hora.';
         }
     };
-
     if (carregando) {
         return <div className="text-center py-10 text-white">Carregando...</div>;
     }
