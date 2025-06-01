@@ -19,7 +19,6 @@ const Artistas = () => {
 
     const [profileImages, setProfileImages] = useState({});
 
-    // Função para buscar a foto de perfil de um usuário específico
     const fetchProfileImage = async (userId) => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -177,12 +176,10 @@ const Artistas = () => {
             return;
         }
 
-        // --- Adicione estes logs ---
         console.log("Valor de eventoSelecionado (string):", eventoSelecionado);
         console.log("Valor de artistaId (number):", artistaId);
 
         const parsedEventoId = parseInt(eventoSelecionado);
-        // artistaId já deve ser um number, mas o parseInt não faz mal
         const parsedArtistaId = parseInt(artistaId);
 
         console.log("ID do Evento parseado:", parsedEventoId);
@@ -193,7 +190,6 @@ const Artistas = () => {
             setTimeout(() => setContratacaoStatus(null), 3000);
             return;
         }
-        // --- Fim dos logs ---
 
         setContratandoId(artistaId);
         setContratacaoStatus({ type: 'loading', message: `Contratando o artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico}...` });
@@ -202,8 +198,8 @@ const Artistas = () => {
             const token = localStorage.getItem('token');
             const contratoResponse = await axios.post('/contratos', {
                 idContrato: {
-                    evento: { idEvento: parsedEventoId }, // Use o ID parseado
-                    musico: { idMusico: parsedArtistaId }, // Use o ID parseado
+                    evento: { idEvento: parsedEventoId },
+                    musico: { idMusico: parsedArtistaId },
                 },
                 valor: parseFloat(contratacaoDetalhes.valor),
                 detalhes: contratacaoDetalhes.detalhes,

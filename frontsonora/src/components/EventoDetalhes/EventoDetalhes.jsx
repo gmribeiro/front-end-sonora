@@ -186,7 +186,6 @@ const EventoDetalhes = () => {
         }
     };
 
-    // FUNÇÃO formatarDataHora MODIFICADA
     const formatarDataHora = (dataHoraStr, horaEncerramentoStr) => {
         if (!dataHoraStr) return 'Data não disponível';
 
@@ -195,28 +194,33 @@ const EventoDetalhes = () => {
         let horaFim = 'Hora de encerramento não informada';
 
         try {
-            const dataInicio = new Date(dataHoraStr);
-            const dataFim = horaEncerramentoStr ? new Date(horaEncerramentoStr) : null;
+            const parseDateTimeString = (dtStr) => {
+                if (!dtStr) return null;
+                const [datePart, timePart] = dtStr.split(' ');
+                const [day, month, year] = datePart.split('/');
+                const [hour, minute, second] = timePart.split(':');
+                return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+            };
 
-            data = dataInicio.toLocaleDateString('pt-BR');
-            horaInicio = dataInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); // Formato HH:MM
+            const dataInicio = parseDateTimeString(dataHoraStr);
+            const dataFim = parseDateTimeString(horaEncerramentoStr);
 
-            if (dataFim) {
-                horaFim = dataFim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); // Formato HH:MM
-            }
-
-            return `${data} às ${horaInicio} até ${horaFim}`;
-
-        } catch (e) {
-            console.error("Erro ao formatar data/hora:", e);
-            try {
-                const [d, t] = dataHoraStr.split(' ');
-                const [dia, mes, ano] = d.split('/');
-                const [hora, minuto] = t.split(':');
-                return `${dia}/${mes}/${ano} às ${hora}h${minuto}`;
-            } catch {
+            if (dataInicio && !isNaN(dataInicio.getTime())) {
+                data = dataInicio.toLocaleDateString('pt-BR');
+                horaInicio = dataInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                console.warn(`Não foi possível parsear dataHora: ${dataHoraStr}`);
                 return dataHoraStr;
             }
+            if (dataFim && !isNaN(dataFim.getTime())) {
+                horaFim = dataFim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                horaFim = 'Hora de encerramento não informada';
+            }
+            return `${data} às ${horaInicio} até ${horaFim}`;
+        } catch (e) {
+            console.error("Erro geral ao formatar data/hora:", e);
+            return dataHoraStr;
         }
     };
 
@@ -293,7 +297,7 @@ const EventoDetalhes = () => {
                 <div className="flex items-center mt-6 sm:mt-10 mb-3 sm:mb-5 overflow-x-auto">
                     <FaCalendarAlt className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
                     <span className="text-lg sm:text-2xl whitespace-nowrap">
-                        {formatarDataHora(evento.dataHora, evento.horaEncerramento)}
+                        {formatarDataHora(evento.dataHora, evento.horaEncerramento) || 'Data e hora não informadas'}
                     </span>
                 </div>
 
