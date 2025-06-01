@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import './Artistas.css';
 
 const Artistas = () => {
     const [artistaIds, setArtistaIds] = useState([]);
@@ -16,82 +15,53 @@ const Artistas = () => {
     const [contratacaoStatus, setContratacaoStatus] = useState(null);
     const [contratacaoDetalhes, setContratacaoDetalhes] = useState({});
     const [showContratarForm, setShowContratarForm] = useState(null);
-
     const [profileImages, setProfileImages] = useState({});
 
     const fetchProfileImage = async (userId) => {
         const token = localStorage.getItem('token');
-        if (!token) {
-            return;
-        }
+        if (!token) return;
 
         try {
-            const response = await axios.get(`auth/users/${userId}/profile-image`, { // Endpoint para pegar a imagem
+            const response = await axios.get(`auth/users/${userId}/profile-image`, {
                 headers: { 'Authorization': `Bearer ${token}` },
                 responseType: 'arraybuffer'
             });
 
             if (response.data && response.data.byteLength > 0) {
-
                 const blob = new Blob([response.data], { type: response.headers['content-type'] });
                 const imageUrl = URL.createObjectURL(blob);
-                setProfileImages(prevImages => ({
-                    ...prevImages,
-                    [userId]: imageUrl
-                }));
+                setProfileImages(prev => ({ ...prev, [userId]: imageUrl }));
             } else {
-                setProfileImages(prevImages => ({
-                    ...prevImages,
-                    [userId]: null
-                }));
+                setProfileImages(prev => ({ ...prev, [userId]: null }));
             }
         } catch (error) {
-            console.error(`Erro ao buscar imagem de perfil para o usuário ${userId}:`, error);
-            setProfileImages(prevImages => ({
-                ...prevImages,
-                [userId]: null
-            }));
+            console.error(`Erro ao buscar imagem:`, error);
+            setProfileImages(prev => ({ ...prev, [userId]: null }));
         }
     };
 
     useEffect(() => {
         const buscarArtistas = async () => {
             setIsLoadingArtistas(true);
-            setErrorArtistas(null);
             try {
-                const response = await axios.get('/musicos');
-                if (response && response.data && Array.isArray(response.data)) {
-                    setArtistas(response.data);
-                    const ids = response.data.map(artista => artista.idMusico);
+                const res = await axios.get('/musicos');
+                if (Array.isArray(res.data)) {
+                    setArtistas(res.data);
+                    const ids = res.data.map(a => a.idMusico);
                     setArtistaIds(ids);
 
-                    response.data.forEach(artista => {
-                        if (artista.usuario?.id) {
-                            setProfileImages(prevImages => ({
-                                ...prevImages,
-                                [artista.usuario.id]: null
-                            }));
-                            fetchProfileImage(artista.usuario.id);
-                        } else {
-                            setProfileImages(prevImages => ({
-                                ...prevImages,
-                                [artista.idMusico]: null
-                            }));
-                        }
+                    res.data.forEach(a => {
+                        const userId = a.usuario?.id ?? a.idMusico;
+                        setProfileImages(prev => ({ ...prev, [userId]: null }));
+                        fetchProfileImage(userId);
                     });
-
                 } else {
-                    setErrorArtistas('Formato de dados inválido recebido do servidor (artistas).');
-                    setArtistas([]);
-                    setArtistaIds([]);
+                    setErrorArtistas('Dados inválidos do servidor.');
                 }
-                setIsLoadingArtistas(false);
-            } catch (error) {
-                console.error('Erro ao buscar artistas:', error);
+            } catch (err) {
                 setErrorArtistas('Erro ao carregar os artistas.');
+            } finally {
                 setIsLoadingArtistas(false);
-                setArtistas([]);
-                setArtistaIds([]);
             }
         };
 
@@ -99,12 +69,12 @@ const Artistas = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const response = await axios.get('/auth/user/me', {
-                        headers: { 'Authorization': `Bearer ${token}` }
+                    const res = await axios.get('/auth/user/me', {
+                        headers: { Authorization: `Bearer ${token}` }
                     });
-                    setUsuarioLogado(response.data);
-                } catch (error) {
-                    console.error('Erro ao buscar informações do usuário:', error);
+                    setUsuarioLogado(res.data);
+                } catch (err) {
+                    console.error('Erro ao buscar usuário:', err);
                 }
             }
         };
@@ -116,87 +86,71 @@ const Artistas = () => {
     useEffect(() => {
         const buscarEventosHost = async () => {
             setIsLoadingEventos(true);
-            setErrorEventos(null);
             const token = localStorage.getItem('token');
             if (token && usuarioLogado?.role === 'HOST' && usuarioLogado?.id) {
                 try {
-                    const response = await axios.get(`/eventos/host/${usuarioLogado.id}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
+                    const res = await axios.get(`/eventos/host/${usuarioLogado.id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
                     });
-                    if (response && response.data && Array.isArray(response.data)) {
-                        setEventosHost(response.data);
-                    } else {
-                        setErrorEventos('Formato de dados inválido recebido do servidor (eventos).');
-                        setEventosHost([]);
-                    }
+                    setEventosHost(Array.isArray(res.data) ? res.data : []);
+                } catch (err) {
+                    setErrorEventos('Erro ao carregar eventos.');
+                } finally {
                     setIsLoadingEventos(false);
-                } catch (error) {
-                    console.error('Erro ao buscar eventos do host:', error);
-                    setErrorEventos('Erro ao carregar os seus eventos.');
-                    setIsLoadingEventos(false);
-                    setEventosHost([]);
                 }
             } else {
                 setIsLoadingEventos(false);
             }
         };
+
         buscarEventosHost();
     }, [usuarioLogado]);
 
     useEffect(() => {
         return () => {
             Object.values(profileImages).forEach(url => {
-                if (url && typeof url === 'string' && url.startsWith('blob:')) {
+                if (url?.startsWith('blob:')) {
                     URL.revokeObjectURL(url);
                 }
             });
         };
     }, [profileImages]);
 
-
-    const handleContratarClick = (artistaId) => {
+    const handleContratarClick = (id) => {
         if (!eventoSelecionado) {
-            setContratacaoStatus({ type: 'error', message: 'Por favor, selecione um evento primeiro.' });
+            setContratacaoStatus({ type: 'error', message: 'Selecione um evento primeiro.' });
             setTimeout(() => setContratacaoStatus(null), 3000);
             return;
         }
-        setShowContratarForm(artistaId);
+        setShowContratarForm(id);
         setContratacaoDetalhes({ valor: '', detalhes: '' });
     };
 
-    const handleContratacaoDetalhesChange = (event) => {
-        const { name, value } = event.target;
+    const handleContratacaoDetalhesChange = (e) => {
+        const { name, value } = e.target;
         setContratacaoDetalhes(prev => ({ ...prev, [name]: value }));
     };
 
-    const confirmarContratacao = async (artistaId) => {
+    const confirmarContratacao = async (id) => {
         if (!contratacaoDetalhes.valor) {
-            setContratacaoStatus({ type: 'error', message: 'Por favor, informe o valor da contratação.' });
+            setContratacaoStatus({ type: 'error', message: 'Informe o valor da contratação.' });
             setTimeout(() => setContratacaoStatus(null), 3000);
             return;
         }
-
-        console.log("Valor de eventoSelecionado (string):", eventoSelecionado);
-        console.log("Valor de artistaId (number):", artistaId);
 
         const parsedEventoId = parseInt(eventoSelecionado);
-        const parsedArtistaId = parseInt(artistaId);
-
-        console.log("ID do Evento parseado:", parsedEventoId);
-        console.log("ID do Artista parseado:", parsedArtistaId);
-
+        const parsedArtistaId = parseInt(id);
         if (isNaN(parsedEventoId) || isNaN(parsedArtistaId)) {
-            setContratacaoStatus({ type: 'error', message: 'Erro: ID do evento ou artista inválido antes do envio.' });
-            setTimeout(() => setContratacaoStatus(null), 3000);
+            setContratacaoStatus({ type: 'error', message: 'IDs inválidos.' });
             return;
         }
 
-        setContratandoId(artistaId);
-        setContratacaoStatus({ type: 'loading', message: `Contratando o artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico}...` });
+        setContratandoId(id);
+        setContratacaoStatus({ type: 'loading', message: 'Contratando...' });
 
         try {
             const token = localStorage.getItem('token');
-            const contratoResponse = await axios.post('/contratos', {
+            await axios.post('/contratos', {
                 idContrato: {
                     evento: { idEvento: parsedEventoId },
                     musico: { idMusico: parsedArtistaId },
@@ -205,119 +159,127 @@ const Artistas = () => {
                 detalhes: contratacaoDetalhes.detalhes,
                 status: false,
             }, {
-                headers: { 'Authorization': `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${token}` }
             });
-            setContratacaoStatus({ type: 'success', message: `Artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico} contratado com sucesso para o evento!` });
+
+            setContratacaoStatus({ type: 'success', message: 'Contratação realizada com sucesso!' });
             setShowContratarForm(null);
             setTimeout(() => setContratacaoStatus(null), 5000);
-
-            // ... (restante do seu código)
-
         } catch (error) {
-            console.error('Erro ao contratar artista:', error);
-            setContratacaoStatus({ type: 'error', message: `Erro ao contratar o artista: ${error.response?.data?.error || error.message}.` });
+            setContratacaoStatus({
+                type: 'error',
+                message: `Erro: ${error.response?.data?.error || error.message}`
+            });
         } finally {
             setContratandoId(null);
         }
     };
 
-    const cancelarContratacao = () => {
-        setShowContratarForm(null);
-    };
+    const cancelarContratacao = () => setShowContratarForm(null);
 
-    const handleEventoChange = (event) => {
-        setEventoSelecionado(event.target.value);
-    };
+    const handleEventoChange = (e) => setEventoSelecionado(e.target.value);
 
     return (
-        <div className="artistas-container">
-            <h2>Artistas Disponíveis</h2>
+        <div
+            className="min-h-screen w-full bg-cover bg-center bg-no-repeat overflow-y-auto"
+            style={{ backgroundImage: "url('/images/fundocatalogo.png')" }}
+        >
+            <div className="p-6 max-w-6xl mx-auto">
+                <h2 className="text-3xl font-bold mb-6 text-white drop-shadow">Artistas Disponíveis</h2>
 
-            {usuarioLogado?.role === 'HOST' && (
-                <div className="selecao-evento">
-                    <label htmlFor="evento">Selecionar Evento:</label>
-                    {isLoadingEventos && <p>Carregando seus eventos...</p>}
-                    {errorEventos && <p className="error-message">{errorEventos}</p>}
-                    {!isLoadingEventos && !errorEventos && eventosHost.length > 0 ? (
-                        <select id="evento" value={eventoSelecionado} onChange={handleEventoChange} required>
-                            <option value="">Selecione um evento</option>
-                            {eventosHost.map(evento => (
-                                <option key={evento.idEvento} value={evento.idEvento}>
-                                    {evento.nome}
-                                    {evento.nomeEvento && ` - ${evento.nomeEvento}`}
-                                    {evento.data && ` - ${new Date(evento.data).toLocaleDateString()}`}
-                                </option>
-                            ))}
-                        </select>
-                    ) : (!isLoadingEventos && !errorEventos && (
-                        <p>Você ainda não criou nenhum evento.</p>
-                    ))}
-                </div>
-            )}
+                {usuarioLogado?.role === 'HOST' && (
+                    <div className="mb-6 bg-white p-4 rounded-lg shadow">
+                        <label htmlFor="evento" className="block font-medium mb-1">Selecionar Evento:</label>
+                        {isLoadingEventos && <p className="text-gray-500">Carregando eventos...</p>}
+                        {errorEventos && <p className="text-red-500">{errorEventos}</p>}
+                        {!isLoadingEventos && eventosHost.length > 0 && (
+                            <select
+                                id="evento"
+                                value={eventoSelecionado}
+                                onChange={handleEventoChange}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                            >
+                                <option value="">Selecione um evento</option>
+                                {eventosHost.map(e => (
+                                    <option key={e.idEvento} value={e.idEvento}>
+                                        {e.nome} {e.nomeEvento && `- ${e.nomeEvento}`} {e.data && `- ${new Date(e.data).toLocaleDateString()}`}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                        {!isLoadingEventos && eventosHost.length === 0 && <p>Nenhum evento encontrado.</p>}
+                    </div>
+                )}
 
-            {isLoadingArtistas && <p>Carregando artistas...</p>}
-            {errorArtistas && <p className="error-message">{errorArtistas}</p>}
-            {contratacaoStatus && (
-                <div className={`contratacao-status ${contratacaoStatus.type}`}>
-                    {contratacaoStatus.message}
-                </div>
-            )}
-            {!isLoadingArtistas && !errorArtistas && (
-                <div className="artistas-lista">
+                {isLoadingArtistas && <p className="text-gray-100">Carregando artistas...</p>}
+                {errorArtistas && <p className="text-red-500">{errorArtistas}</p>}
+
+                {contratacaoStatus && (
+                    <div className={`p-3 rounded-md mb-4 ${contratacaoStatus.type === 'error' ? 'bg-red-100 text-red-700' : contratacaoStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                        {contratacaoStatus.message}
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {artistas.map(artista => (
-                        <div key={artista.idMusico} className="artista-card">
-                            <div className="profile-image-container">
-                                {/* Renderiza a imagem SOMENTE se profileImages[artista.usuario?.id] tiver um valor válido */}
-                                {profileImages[artista.usuario?.id] && (
-                                    <img
-                                        src={profileImages[artista.usuario.id]}
-                                        alt={`Foto de perfil de ${artista.nomeArtistico}`}
-                                        className="profile-image"
-                                    />
-                                )}
-                                {/* OPCIONAL: Pode adicionar um ícone de fallback SVG ou uma div colorida se a imagem não carregar */}
-                                {!profileImages[artista.usuario?.id] && (
-                                    <div className="profile-placeholder">
-                                        {/* Você pode colocar um ícone de usuário aqui, por exemplo */}
-                                        <span>{artista.nomeArtistico.charAt(0).toUpperCase()}</span>
-                                    </div>
-                                )}
-                            </div>
-                            <h3>{artista.nomeArtistico}</h3>
+                        <div key={artista.idMusico} className="border rounded-lg p-6 shadow-md bg-white flex flex-col items-center text-center min-h-[270px] min-w-[250px]">
+                            {profileImages[artista.usuario?.id] ? (
+                                <img
+                                    src={profileImages[artista.usuario.id]}
+                                    alt={`Foto de ${artista.nomeArtistico}`}
+                                    className="w-32 h-32 rounded-full object-cover mb-3"
+                                />
+                            ) : (
+                                <div className="w-32 h-32 flex items-center justify-center bg-gray-200 rounded-full mb-3 text-3xl font-bold text-gray-600">
+                                    {artista.nomeArtistico.charAt(0).toUpperCase()}
+                                </div>
+                            )}
+                            <h3 className="text-xl font-semibold">{artista.nomeArtistico}</h3>
                             {artista.redesSociais && (
-                                <p>Rede Social: <a href={artista.redesSociais} target="_blank" rel="noopener noreferrer">{artista.redesSociais}</a></p>
+                                <p className="text-blue-600 underline break-words">
+                                    <a href={artista.redesSociais} target="_blank" rel="noreferrer">
+                                        {artista.redesSociais}
+                                    </a>
+                                </p>
                             )}
                             {usuarioLogado?.role === 'HOST' && (
                                 <>
                                     {showContratarForm === artista.idMusico ? (
-                                        <div className="contratar-form">
-                                            <h4>Detalhes da Contratação</h4>
-                                            <label htmlFor={`valor-${artista.idMusico}`}>Valor:</label>
+                                        <div className="w-full mt-4 space-y-2">
+                                            <label className="block text-left text-sm">Valor:</label>
                                             <input
                                                 type="number"
-                                                id={`valor-${artista.idMusico}`}
                                                 name="valor"
                                                 value={contratacaoDetalhes.valor}
                                                 onChange={handleContratacaoDetalhesChange}
+                                                className="w-full border px-3 py-1 rounded-md"
                                                 required
                                             />
-                                            <label htmlFor={`detalhes-${artista.idMusico}`}>Detalhes:</label>
+                                            <label className="block text-left text-sm">Detalhes:</label>
                                             <textarea
-                                                id={`detalhes-${artista.idMusico}`}
                                                 name="detalhes"
                                                 value={contratacaoDetalhes.detalhes}
                                                 onChange={handleContratacaoDetalhesChange}
+                                                className="w-full border px-3 py-1 rounded-md"
                                             />
-                                            <button onClick={() => confirmarContratacao(artista.idMusico)} disabled={contratandoId === artista.idMusico}>
+                                            <button
+                                                onClick={() => confirmarContratacao(artista.idMusico)}
+                                                className="bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700 disabled:opacity-50"
+                                                disabled={contratandoId === artista.idMusico}
+                                            >
                                                 {contratandoId === artista.idMusico ? 'Contratando...' : 'Confirmar'}
                                             </button>
-                                            <button className="btn-cancelar" onClick={cancelarContratacao}>Cancelar</button>
+                                            <button
+                                                onClick={cancelarContratacao}
+                                                className="text-red-600 text-sm hover:underline"
+                                            >
+                                                Cancelar
+                                            </button>
                                         </div>
                                     ) : (
                                         <button
                                             onClick={() => handleContratarClick(artista.idMusico)}
-                                            className="btn-contratar"
-                                            disabled={contratandoId === artista.idMusico}
+                                            className="mt-3 bg-indigo-600 text-white px-4 py-1 rounded-md hover:bg-indigo-700"
                                         >
                                             Contratar
                                         </button>
@@ -327,7 +289,15 @@ const Artistas = () => {
                         </div>
                     ))}
                 </div>
-            )}
+                <div className="flex justify-end">
+          <button
+            className="mt-8 px-6 py-3 bg-white text-[#564A72] hover:bg-[#564A72] hover:text-white transition"
+            onClick={() => window.location.href = '/'}
+          >
+            <strong>Voltar</strong>
+          </button>
+        </div>
+            </div>
         </div>
     );
 };
