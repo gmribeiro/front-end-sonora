@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './RoleSelector.css';
+import { FaGuitar } from "react-icons/fa6";
+import { TbBuildingCircus } from "react-icons/tb";
 
 const RoleSelector = () => {
     const navigate = useNavigate();
@@ -21,33 +22,30 @@ const RoleSelector = () => {
             const token = localStorage.getItem('token');
 
             if (!token || !storedUser) {
-                console.warn('Token ou dados do usuário ausentes no localStorage. Redirecionando ou aguardando autenticação.');
                 setLoading(false);
                 return;
             }
 
             try {
                 const user = JSON.parse(storedUser);
-                setCurrentUser(user);
-                if (user.profileCompleted === true) {
-                    console.log(`Usuário ${user.id} já completou o perfil. Redirecionando para /perfil.`);
+
+                if (user && user.profileCompleted === true) {
                     navigate('/perfil');
                 } else {
-                    console.log(`Usuário ${user.id} ainda não completou o perfil. Exibindo seletor de papel.`);
+                    setCurrentUser(user);
                     setLoading(false);
                 }
             } catch (err) {
-                console.error('Erro ao parsear dados do usuário do localStorage:', err);
-                setError('Erro ao carregar dados do usuário. Tente fazer login novamente.');
+                console.error('Erro ao fazer parse do usuário:', err);
                 localStorage.removeItem('user');
                 localStorage.removeItem('token');
+                setError('Erro ao carregar dados do usuário. Faça login novamente.');
                 setLoading(false);
             }
         };
 
         checkUserAndRedirect();
     }, [navigate]);
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -104,13 +102,10 @@ const RoleSelector = () => {
                 }
             );
 
-            const updatedUserFromBackend = response.data;
-            localStorage.setItem('user', JSON.stringify(updatedUserFromBackend));
-
+            const updatedUser = response.data;
+            localStorage.setItem('user', JSON.stringify(updatedUser));
             navigate('/perfil');
-
         } catch (err) {
-            console.error('Erro ao atualizar perfil:', err.response?.data || err.message || err);
             setError(err.response?.data || err.message || 'Erro ao atualizar perfil.');
         } finally {
             setLoading(false);
@@ -121,6 +116,7 @@ const RoleSelector = () => {
         setSelectedRole(role);
         setError('');
     };
+
     const handleContinueAsClient = async () => {
         if (!currentUser || !currentUser.id) {
             setError('Dados do usuário não disponíveis. Tente fazer login novamente.');
@@ -154,56 +150,67 @@ const RoleSelector = () => {
                     }
                 }
             );
-            const updatedUserFromBackend = response.data;
-            localStorage.setItem('user', JSON.stringify(updatedUserFromBackend));
-            navigate('/perfil');
 
+            const updatedUser = response.data;
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            navigate('/perfil');
         } catch (err) {
-            console.error('Erro ao continuar como cliente:', err.response?.data || err.message || err);
             setError(err.response?.data?.message || err.message || 'Erro ao continuar como cliente.');
         } finally {
             setLoading(false);
         }
     };
+
     if (loading) {
-        return <div className="loading-message">Carregando perfil...</div>;
+        return <div className="text-center text-gray-700 font-semibold">Carregando perfil...</div>;
     }
+
     if (!currentUser) {
-        return <div className="error-message">Erro: Dados do usuário não carregados. Por favor, tente fazer login novamente.</div>;
+        return <div className="text-red-600 text-center font-medium">Erro: Dados do usuário não carregados. Faça login novamente.</div>;
     }
+
     return (
-        <div className="role-selector-container">
-            <h2>Complete seu cadastro</h2>
-            <p>Selecione como deseja usar a plataforma:</p>
+        <div
+            className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden"
+            style={{ backgroundImage: "url('/images/fundoroleselector.jpg')" }}
+        >
+        <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md !text-[#564A72]">
+            <h2 className="text-2xl font-bold mb-2 !text-[#564A72]">Complete seu cadastro</h2>
+            <p className="!text-[#564A72] mb-4 text-xl">Selecione como deseja usar a plataforma:</p>
 
             <form onSubmit={handleSubmit}>
-                <div className="role-options">
+                <div className="flex gap-4 mb-6">
                     <div
-                        className={`role-option ${selectedRole === 'HOST' ? 'selected' : ''}`}
+                        className={`flex-1 p-4 border-3 rounded-lg cursor-pointer transition-all ${
+                            selectedRole === 'HOST' ? 'border-[#564A72] bg-green-50' : 'border-gray-300'
+                        }`}
                         onClick={() => handleRoleSelect('HOST')}
                     >
-                        <div className="role-icon">🎪</div>
-                        <div className="role-details">
-                            <h4>Sou Organizador</h4>
-                            <p>Quero criar e gerenciar eventos</p>
+                        <div className="text-2xl mb-2"><TbBuildingCircus /></div>
+                        <div>
+                            <h4 className="!text-[#564A72] font-bold">Sou Organizador</h4>
+                            <p className='!text-[#564A72]'>Quero criar e gerenciar eventos</p>
                         </div>
                     </div>
+
                     <div
-                        className={`role-option ${selectedRole === 'ARTISTA' ? 'selected' : ''}`}
+                        className={`flex-1 p-4 border-3 rounded-lg cursor-pointer transition-all ${
+                            selectedRole === 'ARTISTA' ? 'border-[#564A72] bg-green-50' : 'border-gray-300'
+                        }`}
                         onClick={() => handleRoleSelect('ARTISTA')}
                     >
-                        <div className="role-icon">🎵</div>
-                        <div className="role-details">
-                            <h4>Sou Artista</h4>
-                            <p>Quero me apresentar em eventos</p>
+                        <div className="text-2xl mb-2"><FaGuitar /></div>
+                        <div>
+                            <h4 className="!text-[#564A72] font-bold">Sou Artista</h4>
+                            <p className='!text-[#564A72]'>Quero me apresentar em eventos</p>
                         </div>
                     </div>
                 </div>
 
                 {selectedRole === 'ARTISTA' && (
-                    <div className="artist-fields">
-                        <div className="form-group">
-                            <label htmlFor="nome_artistico">Nome Artístico *</label>
+                    <div>
+                        <div className="mb-4">
+                            <label htmlFor="nome_artistico" className="block font-semibold mb-1">Nome Artístico *</label>
                             <input
                                 type="text"
                                 id="nome_artistico"
@@ -212,10 +219,11 @@ const RoleSelector = () => {
                                 onChange={handleChange}
                                 placeholder="Seu nome artístico"
                                 required
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#564A72]"
                             />
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="redes_sociais">Redes Sociais</label>
+                        <div className="mb-4">
+                            <label htmlFor="redes_sociais" className="block font-semibold mb-1">Redes Sociais</label>
                             <input
                                 type="text"
                                 id="redes_sociais"
@@ -223,19 +231,20 @@ const RoleSelector = () => {
                                 value={formData.redes_sociais}
                                 onChange={handleChange}
                                 placeholder="@seuinstagram"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#564A72]"
                             />
                         </div>
                     </div>
                 )}
 
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className="text-red-600 mb-4">{error}</div>}
 
-                <div className="action-buttons">
+                <div className="flex gap-4 mt-6">
                     <button
                         type="button"
-                        className="client-button"
                         onClick={handleContinueAsClient}
                         disabled={loading}
+                        className="flex-1 px-3 py-3 bg-gray-200 text-[#564A72] border border-gray-300 rounded-md hover:bg-gray-300 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     >
                         Continuar como Cliente
                     </button>
@@ -243,14 +252,15 @@ const RoleSelector = () => {
                     {selectedRole && (
                         <button
                             type="submit"
-                            className="confirm-button"
                             disabled={loading}
+                            className="flex-1 px-3 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Salvando...' : 'Confirmar Perfil'}
                         </button>
                     )}
                 </div>
             </form>
+        </div>
         </div>
     );
 };
