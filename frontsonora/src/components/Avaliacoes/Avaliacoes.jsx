@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { IoIosStar } from "react-icons/io";
 
 const Avaliacoes = () => {
     const [nota, setNota] = useState(1);
@@ -26,7 +27,10 @@ const Avaliacoes = () => {
                 }
             }
         };
+        fetchUserDetails();
+    }, []);
 
+    useEffect(() => {
         const fetchEventos = async () => {
             const token = localStorage.getItem('token');
             if (usuarioId && token) {
@@ -44,17 +48,8 @@ const Avaliacoes = () => {
                 }
             }
         };
-
-        fetchUserDetails();
-        fetchEventos();
+        if (usuarioId) fetchEventos();
     }, [usuarioId]);
-
-    const handleNotaChange = (e) => {
-        const value = parseInt(e.target.value, 10);
-        if (!isNaN(value) && value >= 1 && value <= 5) {
-            setNota(value);
-        }
-    };
 
     const handleMensagemChange = (e) => setMensagem(e.target.value);
     const handleEventoChange = (e) => setEventoSelecionadoId(e.target.value);
@@ -99,18 +94,33 @@ const Avaliacoes = () => {
             className="h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden"
             style={{ backgroundImage: "url('/images/fundoavaliacao.png')" }}
         >
-            <div className="w-full max-w-xl bg-[#f8f6ff] shadow-xl rounded-2xl p-8 sm:p-10 text-[#3f3864]">
+            <div 
+                className="
+                    w-full 
+                    h-full
+                    sm:max-w-2xl 
+                    sm:h-auto 
+                    bg-[#f8f6ff] 
+                    shadow-2xl 
+                    p-6 
+                    sm:p-12 
+                    text-[#3f3864] 
+                    overflow-auto
+                    rounded-none
+                    sm:rounded-xl
+                "
+            >
                 {userRole === "CLIENT" ? (
                     <>
-                        <h3 className="text-2xl sm:text-3xl font-bold text-center mb-6">Avaliar Evento</h3>
+                        <h3 className="text-2xl sm:text-3xl font-bold text-center mb-10">Dê uma nota para seus eventos:</h3>
 
-                        <div className="mb-4">
-                            <label htmlFor="evento" className="block font-semibold mb-1">Evento:</label>
+                        <div className="mb-8">
+                            <label htmlFor="evento" className="block font-semibold mb-3 text-xl">Evento:</label>
                             <select
                                 id="evento"
                                 value={eventoSelecionadoId}
                                 onChange={handleEventoChange}
-                                className="w-full px-4 py-2 rounded-xl border-2 border-[#6d6384] bg-white text-sm sm:text-base focus:outline-none"
+                                className="w-full px-4 py-2 border-2 border-[#6d6384] bg-white text-sm sm:text-base focus:outline-none rounded-xl"
                                 required
                             >
                                 <option value="">Selecione um evento</option>
@@ -122,40 +132,41 @@ const Avaliacoes = () => {
                             </select>
                         </div>
 
-                        <div className="mb-4">
-                            <label htmlFor="nota" className="block font-semibold mb-1">Nota (1-5):</label>
-                            <select
-                                id="nota"
-                                value={nota}
-                                onChange={handleNotaChange}
-                                className="w-full px-4 py-2 rounded-xl border-2 border-[#6d6384] bg-white text-sm sm:text-base focus:outline-none"
-                            >
-                                {[1, 2, 3, 4, 5].map(n => (
-                                    <option key={n} value={n}>{'★'.repeat(n)}</option>
+                        <div className="mb-8">
+                            <label className="block font-semibold mb-3 text-xl">Nota:</label>
+                            <div className="flex space-x-2">
+                                {[1, 2, 3, 4, 5].map((n) => (
+                                    <IoIosStar
+                                        key={n}
+                                        className={`cursor-pointer transition-colors text-2xl ${
+                                            n <= nota ? "text-[#2d274d]" : "text-gray-400"
+                                        }`}
+                                        onClick={() => setNota(n)}
+                                    />
                                 ))}
-                            </select>
+                            </div>
                         </div>
 
-                        <div className="mb-6">
-                            <label htmlFor="mensagem" className="block font-semibold mb-1">Mensagem (opcional):</label>
+                        <div className="mb-10">
+                            <label htmlFor="mensagem" className="block font-semibold mb-3 text-xl">Mensagem (opcional):</label>
                             <textarea
                                 id="mensagem"
                                 value={mensagem}
                                 onChange={handleMensagemChange}
-                                className="w-full h-28 px-4 py-3 rounded-xl border-2 border-[#6d6384] bg-white text-sm sm:text-base focus:outline-none resize-none"
+                                className="w-full h-28 px-4 py-3 border-2 border-[#6d6384] bg-white text-sm sm:text-base focus:outline-none resize-none scrollbar-thin scrollbar-thumb-[#6d6384] scrollbar-track-[#e8e6f0] rounded-md"
                             />
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <div className="flex flex-col sm:flex-row gap-6 justify-center">
                             <button
                                 onClick={handleSubmitAvaliacao}
-                                className="bg-[#3f3864] hover:bg-[#2d274d] text-white font-semibold py-2 px-6 rounded-xl transition-colors"
+                                className="bg-[#3f3864] hover:bg-[#6d6384] text-white font-semibold py-2 px-6 transition-colors"
                             >
                                 Enviar Avaliação
                             </button>
                             <button
                                 onClick={handleVoltar}
-                                className="bg-[#6d6384] hover:bg-[#847aa3] text-white font-semibold py-2 px-6 rounded-xl transition-colors"
+                                className="bg-[#6d6384] hover:bg-[#2d274d] text-white font-semibold py-2 px-6 transition-colors rounded-full"
                             >
                                 Voltar
                             </button>
@@ -167,7 +178,7 @@ const Avaliacoes = () => {
                         <div className="flex justify-center">
                             <button
                                 onClick={handleVoltar}
-                                className="bg-[#6d6384] hover:bg-[#847aa3] text-white font-semibold py-2 px-6 rounded-xl transition-colors"
+                                className="bg-[#6d6384] hover:bg-[#847aa3] text-white font-semibold py-2 px-6 rounded-full transition-colors"
                             >
                                 Voltar
                             </button>

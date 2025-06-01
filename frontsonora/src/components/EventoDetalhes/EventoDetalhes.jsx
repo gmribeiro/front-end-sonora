@@ -294,14 +294,14 @@ const EventoDetalhes = () => {
             </h1>
 
             <div className="max-w-[1200px] w-full mx-auto px-4 sm:px-6 pb-12 flex-grow text-base sm:text-lg">
-                <div className="flex items-center mt-6 sm:mt-10 mb-3 sm:mb-5 overflow-x-auto">
+                <div className="flex items-center mt-6 sm:mt-10 mb-4 sm:mb-5 overflow-x-auto">
                     <FaCalendarAlt className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
                     <span className="text-lg sm:text-2xl whitespace-nowrap">
                         {formatarDataHora(evento.dataHora, evento.horaEncerramento) || 'Data e hora não informadas'}
                     </span>
                 </div>
 
-                <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto">
+                <div className="flex items-center mb-3 sm:mb-4 overflow-x-auto">
                     <MdPlace className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
                     <span className="text-lg sm:text-2xl whitespace-nowrap">{evento.localEvento?.local || evento.local || 'Local não informado'}</span>
                 </div>
