@@ -279,7 +279,7 @@ const Artistas = () => {
                                     ) : (
                                         <button
                                             onClick={() => handleContratarClick(artista.idMusico)}
-                                            className="mt-3 bg-indigo-600 text-white px-4 py-1 rounded-md hover:bg-indigo-700"
+                                            className="mt-3 bg-[#564A72] text-white px-4 py-1 rounded-md hover:bg-[#c2a0bb] sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             Contratar
                                         </button>
@@ -289,14 +289,14 @@ const Artistas = () => {
                         </div>
                     ))}
                 </div>
+
                 <div className="flex justify-end">
-          <button
-            className="mt-8 px-6 py-3 bg-white text-[#564A72] hover:bg-[#564A72] hover:text-white transition"
-            onClick={() => window.location.href = '/'}
-          >
-            <strong>Voltar</strong>
-          </button>
-        </div>
+                    <button
+                        className="mt-8 px-6 py-3 bg-white text-[#564A72] hover:bg-[#564A72] hover:text-white sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Voltar
+                    </button>
+                </div>
             </div>
         </div>
     );
