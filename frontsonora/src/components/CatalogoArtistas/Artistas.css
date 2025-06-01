@@ -237,6 +237,36 @@ p {
     background-color: #c82333;
 }
 
+.contratar-form input[type="datetime-local"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    color: #555;
+    background-color: #f9f9f9;
+}
+
+.contratar-form input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
+}
+
+.contratar-form input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.contratar-form input[type="datetime-local"]::-webkit-inner-spin-button,
+.contratar-form input[type="datetime-local"]::-webkit-clear-button {
+    color: #6c63ff;
+    opacity: 1;
+    cursor: pointer;
+}
+
+.contratar-form input[type="datetime-local"] {
+    -moz-appearance: textfield;
+}
+
 @media (max-width: 768px) {
     .artistas-container {
         margin: 10px;

@@ -177,6 +177,24 @@ const Artistas = () => {
             return;
         }
 
+        // --- Adicione estes logs ---
+        console.log("Valor de eventoSelecionado (string):", eventoSelecionado);
+        console.log("Valor de artistaId (number):", artistaId);
+
+        const parsedEventoId = parseInt(eventoSelecionado);
+        // artistaId já deve ser um number, mas o parseInt não faz mal
+        const parsedArtistaId = parseInt(artistaId);
+
+        console.log("ID do Evento parseado:", parsedEventoId);
+        console.log("ID do Artista parseado:", parsedArtistaId);
+
+        if (isNaN(parsedEventoId) || isNaN(parsedArtistaId)) {
+            setContratacaoStatus({ type: 'error', message: 'Erro: ID do evento ou artista inválido antes do envio.' });
+            setTimeout(() => setContratacaoStatus(null), 3000);
+            return;
+        }
+        // --- Fim dos logs ---
+
         setContratandoId(artistaId);
         setContratacaoStatus({ type: 'loading', message: `Contratando o artista ${artistas.find(a => a.idMusico === artistaId)?.nomeArtistico}...` });
 
@@ -184,12 +202,12 @@ const Artistas = () => {
             const token = localStorage.getItem('token');
             const contratoResponse = await axios.post('/contratos', {
                 idContrato: {
-                    evento: { idEvento: parseInt(eventoSelecionado) },
-                    musico: { idMusico: artistaId },
+                    evento: { idEvento: parsedEventoId }, // Use o ID parseado
+                    musico: { idMusico: parsedArtistaId }, // Use o ID parseado
                 },
                 valor: parseFloat(contratacaoDetalhes.valor),
                 detalhes: contratacaoDetalhes.detalhes,
-                status: false, // Passando o status como false
+                status: false,
             }, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -197,25 +215,11 @@ const Artistas = () => {
             setShowContratarForm(null);
             setTimeout(() => setContratacaoStatus(null), 5000);
 
-            const artistaContratado = artistas.find(a => a.idMusico === artistaId);
-            const evento = eventosHost.find(e => e.idEvento === parseInt(eventoSelecionado));
-            if (artistaContratado?.usuario?.id && evento) {
-                try {
-                    await axios.post(`/notifications/user/${artistaContratado.usuario.id}`, {
-                        mensagem: `Você foi convidado para o evento ${evento.nome || evento.nomeEvento} pelo anfitrião ${usuarioLogado?.nome || usuarioLogado?.username}!`,
-                        tipo: 'CONVITE_EVENTO',
-                    }, {
-                        headers: { 'Authorization': `Bearer ${token}` },
-                    });
-                    console.log(`Notificação de convite enviada para o artista com ID: ${artistaContratado.usuario.id}`);
-                } catch (error) {
-                    console.error('Erro ao enviar notificação de convite para o artista:', error);
-                }
-            }
+            // ... (restante do seu código)
 
         } catch (error) {
             console.error('Erro ao contratar artista:', error);
-            setContratacaoStatus({ type: 'error', message: `Erro ao contratar o artista ${error.response?.data?.message || error.message}.` });
+            setContratacaoStatus({ type: 'error', message: `Erro ao contratar o artista: ${error.response?.data?.error || error.message}.` });
         } finally {
             setContratandoId(null);
         }

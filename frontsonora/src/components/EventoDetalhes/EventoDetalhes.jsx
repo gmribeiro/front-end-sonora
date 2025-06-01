@@ -186,15 +186,38 @@ const EventoDetalhes = () => {
         }
     };
 
-    const formatarDataHora = (dataHora) => {
-        if (!dataHora) return 'Data não disponível';
+    // FUNÇÃO formatarDataHora MODIFICADA
+    const formatarDataHora = (dataHoraStr, horaEncerramentoStr) => {
+        if (!dataHoraStr) return 'Data não disponível';
+
+        let data = 'Data não informada';
+        let horaInicio = 'Hora não informada';
+        let horaFim = 'Hora de encerramento não informada';
+
         try {
-            const [data, tempo] = dataHora.split(' ');
-            const [dia, mes, ano] = data.split('/');
-            const [hora, minuto] = tempo.split(':');
-            return `${dia}/${mes}/${ano} às ${hora}h${minuto}`;
-        } catch {
-            return dataHora;
+            const dataInicio = new Date(dataHoraStr);
+            const dataFim = horaEncerramentoStr ? new Date(horaEncerramentoStr) : null;
+
+            data = dataInicio.toLocaleDateString('pt-BR'); // Formato DD/MM/AAAA
+            horaInicio = dataInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); // Formato HH:MM
+
+            if (dataFim) {
+                horaFim = dataFim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); // Formato HH:MM
+            }
+
+            return `${data} às ${horaInicio} até ${horaFim}`;
+
+        } catch (e) {
+            console.error("Erro ao formatar data/hora:", e);
+            // Fallback para o formato original se houver erro
+            try {
+                const [d, t] = dataHoraStr.split(' ');
+                const [dia, mes, ano] = d.split('/');
+                const [hora, minuto] = t.split(':');
+                return `${dia}/${mes}/${ano} às ${hora}h${minuto}`;
+            } catch {
+                return dataHoraStr;
+            }
         }
     };
 
@@ -270,7 +293,10 @@ const EventoDetalhes = () => {
             <div className="max-w-[1200px] w-full mx-auto px-4 sm:px-6 pb-12 flex-grow text-base sm:text-lg">
                 <div className="flex items-center mt-6 sm:mt-10 mb-3 sm:mb-5 overflow-x-auto">
                     <FaCalendarAlt className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
-                    <span className="text-lg sm:text-2xl whitespace-nowrap">{formatarDataHora(evento.dataHora)}</span>
+                    {/* MODIFICADO AQUI: Passando horaEncerramento para a função */}
+                    <span className="text-lg sm:text-2xl whitespace-nowrap">
+                        {formatarDataHora(evento.dataHora, evento.horaEncerramento)}
+                    </span>
                 </div>
 
                 <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto">

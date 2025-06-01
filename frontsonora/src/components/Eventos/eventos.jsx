@@ -12,7 +12,9 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
     const [showCadastro, setShowCadastro] = useState(false);
     const [nomeEvento, setNomeEvento] = useState('');
     const [dataHora, setDataHora] = useState('');
+    const [horaEncerramento, setHoraEncerramento] = useState('');
     const [descricao, setDescricao] = useState('');
+    const [classificacao, setClassificacao] = useState('');
     const [selectedGeneroId, setSelectedGeneroId] = useState('');
     const [localEventoNome, setLocalEventoNome] = useState('');
     const [cep, setCep] = useState('');
@@ -21,6 +23,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
     const [isAnimating, setIsAnimating] = useState(false);
     const [generos, setGeneros] = useState([]);
     const [eventImageFile, setEventImageFile] = useState(null);
+
 
     const eventosPorPagina = 6;
     const totalPaginas = Math.ceil(eventosFiltrados.length / eventosPorPagina);
@@ -109,10 +112,14 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
             setLocalEventoNome(value);
         } else if (name === 'dataHora') {
             setDataHora(value);
+        } else if ( name === 'horaEncerramento') {
+            setHoraEncerramento(value);
         } else if (name === 'nomeEvento') {
             setNomeEvento(value);
         } else if (name === 'descricao') {
             setDescricao(value);
+        } else if (name === 'classificacao') {
+            setClassificacao(value);
         } else if (name === 'generoMusical') {
             setSelectedGeneroId(value);
         } else if (name === 'cep') {
@@ -131,17 +138,16 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         setFormMessage('');
         const token = localStorage.getItem('token');
 
-        if (!token || usuarioLogado?.role !== 'HOST' || !userId || !selectedGeneroId || !localEventoNome || !cep || !numero) {
-            setFormMessage('Preencha todos os campos obrigatórios para cadastrar o evento.');
-            return;
-        }
-        if (!eventImageFile) {
-            setFormMessage('Por favor, selecione uma imagem para o evento.');
+        // VALIDAÇÃO ATUALIZADA:
+        if (!token || usuarioLogado?.role !== 'HOST' || !userId || !selectedGeneroId || !localEventoNome || !cep || !numero || !eventImageFile || !classificacao.trim()) {
+            setFormMessage('Por favor, preencha todos os campos obrigatórios para cadastrar o evento, incluindo a classificação e a imagem.');
             return;
         }
 
         try {
             const formattedDataHora = formatDateTime(dataHora);
+            // CORREÇÃO: Usar horaEncerramento do state para a formatação
+            const formattedHoraEncerramento = formatDateTime(horaEncerramento);
 
             const placeResponse = await axios.post('/places', {
                 local: localEventoNome,
@@ -158,7 +164,9 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
             const eventData = {
                 nomeEvento,
                 dataHora: formattedDataHora,
+                horaEncerramento: formattedHoraEncerramento, // CORRIGIDO AQUI
                 descricao,
+                classificacao, // Já está sendo enviado
                 generoMusical: { idGeneroMusical: selectedGeneroId },
                 localEvento: { idLocalEvento: placeData.idLocalEvento },
                 host: { id: userId }
@@ -192,12 +200,14 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                     setFormMessage('Evento cadastrado com sucesso e imagem enviada!');
                 }
             } else {
-                setFormMessage('Evento cadastrado, mas nenhima imagem foi selecionada ou o ID do evento não foi retornado.');
+                setFormMessage('Evento cadastrado, mas nenhuma imagem foi selecionada ou o ID do evento não foi retornado.');
             }
 
             setNomeEvento('');
             setDataHora('');
+            setHoraEncerramento('');
             setDescricao('');
+            setClassificacao('');
             setSelectedGeneroId('');
             setLocalEventoNome('');
             setCep('');
@@ -290,6 +300,19 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
                                     />
                                 </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="horaEncerramento" className="block text-gray-700 text-sm sm:text-base font-medium">Hora de Encerramento:</label>
+                                    <input
+                                        type="datetime-local"
+                                        id="horaEncerramento"
+                                        name="horaEncerramento"
+                                        value={horaEncerramento}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                    />
+                                </div>
                                 
                                 <div className="space-y-1 sm:space-y-2">
                                     <label htmlFor="descricao" className="block text-gray-700 text-sm sm:text-base font-medium">Descrição:</label>
@@ -299,6 +322,18 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         value={descricao} 
                                         onChange={handleInputChange} 
                                         required 
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD] min-h-[80px] sm:min-h-[100px]"
+                                    />
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="classificacao" className="block text-gray-700 text-sm sm:text-base font-medium">Classificação:</label>
+                                    <textarea
+                                        id="classificacao"
+                                        name="classificacao"
+                                        value={classificacao}
+                                        onChange={handleInputChange}
+                                        required
                                         className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD] min-h-[80px] sm:min-h-[100px]"
                                     />
                                 </div>
