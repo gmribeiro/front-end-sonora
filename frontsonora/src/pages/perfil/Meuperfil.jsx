@@ -1,377 +1,275 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './meuperfil.css';
 
 function MeuPerfil() {
-  // 1. Estados para Informações do Usuário e Autenticação
   const [nomeUsuario, setNomeUsuario] = useState('');
   const [userId, setUserId] = useState(null);
-  const [userRole, setuserRole] = useState('');
-  const [feedbackMessage, setFeedbackMessage] = useState({ text: '', type: '' });
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [novoNome, setNovoNome] = useState('');
+  const [exibirFormulario, setExibirFormulario] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
 
-  // 2. Estados para Alteração de Senha
-  const [senhaAtual, setSenhaAtual] = useState('');
-  const [novaSenha, setNovaSenha] = useState('');
-  const [confirmarNovaSenha, setConfirmarNovaSenha] = useState('');
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
-
-  // NOVO: Estado para edição de perfil
-  const [exibirFormularioEdicaoPerfil, setExibirFormularioEdicaoPerfil] = useState(false);
-  const [novoNome, setNovoNome] = useState('');
-  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-
-  // 3. Estados para Upload de Foto de Perfil
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [profileImageUrl, setProfileImageUrl] = useState(null);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
-
-
-  const showFeedback = (text, type) => {
-    setFeedbackMessage({ text, type });
-    setTimeout(() => setFeedbackMessage({ text: '', type: '' }), 5000);
-  };
-
+  const showError = (msg) => alert(msg);
+  const showSuccess = (msg) => alert(msg);
 
   const fetchProfileImage = useCallback(async (token) => {
-    if (!token) {
-      setProfileImageUrl(null);
-      return;
-    }
     try {
       const response = await axios.get('/auth/user/me/profile-image', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        responseType: 'blob'
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob',
       });
       const imageUrl = URL.createObjectURL(response.data);
       setProfileImageUrl(imageUrl);
-      console.log("Foto de perfil carregada com sucesso.");
     } catch (error) {
-      console.error('Erro ao buscar foto de perfil:', error);
+      console.error('Erro ao carregar imagem de perfil:', error);
       setProfileImageUrl(null);
     }
   }, []);
 
-  const handleUploadProfileImage = async () => {
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('/auth/user/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setNomeUsuario(res.data.nome);
+        setNovoNome(res.data.nome);
+        setUserId(res.data.id);
+        fetchProfileImage(token);
+      } catch (err) {
+        console.error('Erro ao buscar dados do usuário:', err);
+        showError('Erro ao buscar dados');
+        navigate('/acesso');
+      }
+    };
+    fetchUser();
+  }, [navigate, fetchProfileImage]);
+
+  const handleUpload = async () => {
     if (!selectedFile) {
-      showFeedback('Por favor, selecione uma imagem para fazer upload.', 'erro');
+      showError('Selecione um arquivo');
       return;
     }
 
-    setIsUploadingImage(true);
     const formData = new FormData();
     formData.append('foto', selectedFile);
 
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        showFeedback('Usuário não autenticado. Por favor, faça login novamente.', 'erro');
-        navigate('/acesso');
-        return;
-      }
-      const response = await axios.post('/auth/user/me/upload', formData, {
+      await axios.post('/auth/user/me/upload', formData, {
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}`,
         },
       });
 
-      showFeedback('Foto de perfil atualizada com sucesso!', 'sucesso');
+      showSuccess('Foto atualizada!');
       fetchProfileImage(token);
       setSelectedFile(null);
+      setPreviewImage(null);
     } catch (error) {
-      console.error('Erro ao fazer upload da foto de perfil:', error);
-      showFeedback(error.response?.data || 'Erro ao fazer upload da imagem.', 'erro');
-    } finally {
-      setIsUploadingImage(false);
+      console.error('Erro no upload:', error);
+      showError('Erro ao enviar foto');
     }
   };
 
-  const handleAlterarSenha = async (event) => {
-    event.preventDefault();
-    setFeedbackMessage({ text: '', type: '' });
-
-    if (!senhaAtual || !novaSenha || !confirmarNovaSenha) {
-      showFeedback('Todos os campos de senha são obrigatórios.', 'erro');
-      return false;
-    }
-    if (novaSenha !== confirmarNovaSenha) {
-      showFeedback('A nova senha e a confirmação não coincidem.', 'erro');
-      return false;
-    }
-
-    setIsChangingPassword(true);
+  const handleSalvar = async (e) => {
+    e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        showFeedback('Usuário não autenticado. Por favor, faça login novamente.', 'erro');
-        navigate('/acesso');
-        return false;
-      }
-
-      const response = await axios.post('/auth/change-password', {
-        currentPassword: senhaAtual,
-        newPassword: novaSenha,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+      await axios.put(`/users/${userId}`, { name: novoNome }, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      showFeedback(response.data || 'Senha alterada com sucesso!', 'sucesso');
-      setSenhaAtual('');
-      setNovaSenha('');
-      setConfirmarNovaSenha('');
-      return true;
+      showSuccess('Nome atualizado!');
+      setNomeUsuario(novoNome);
+      setExibirFormulario(false);
     } catch (error) {
-      console.error('Erro ao alterar a senha:', error);
-      showFeedback(error.response?.data?.message || 'Erro ao alterar a senha.', 'erro');
-      return false;
-    } finally {
-      setIsChangingPassword(false);
+      console.error('Erro ao atualizar nome:', error);
+      showError('Erro ao atualizar nome');
     }
-  };
-
-  const handleUpdateProfile = async (event) => {
-    event.preventDefault();
-    setFeedbackMessage({ text: '', type: '' });
-
-    if (!userId) {
-      showFeedback('ID do usuário não encontrado para atualizar o perfil.', 'erro');
-      return;
-    }
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      showFeedback('Usuário não autenticado. Por favor, faça login novamente.', 'erro');
-      navigate('/acesso');
-      return;
-    }
-    let passwordChangedSuccessfully = true;
-    if (senhaAtual || novaSenha || confirmarNovaSenha) {
-      passwordChangedSuccessfully = await handleAlterarSenha(event);
-      if (!passwordChangedSuccessfully) {
-        return;
-      }
-    }
-
-    if (novoNome !== nomeUsuario) {
-      setIsUpdatingProfile(true);
-      try {
-        const updatePayload = {
-          name: novoNome
-        };
-
-        const response = await axios.put(`/users/${userId}`, updatePayload, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        setNomeUsuario(response.data.nome || response.data.name);
-        showFeedback('Perfil atualizado com sucesso!', 'sucesso');
-        setExibirFormularioEdicaoPerfil(false);
-      } catch (error) {
-        console.error('Erro ao atualizar o perfil:', error);
-        showFeedback(error.response?.data?.message || 'Erro ao atualizar o perfil.', 'erro');
-      } finally {
-        setIsUpdatingProfile(false);
-      }
-    } else if (passwordChangedSuccessfully) {
-      showFeedback('Senha alterada com sucesso!', 'sucesso');
-      setExibirFormularioEdicaoPerfil(false);
-    } else {
-      showFeedback('Nenhuma alteração detectada para o nome ou senha.', 'erro');
-      setExibirFormularioEdicaoPerfil(false);
-    }
-  };
-
-  useEffect(() => {
-    const buscarInformacoesUsuario = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          showFeedback('Usuário não autenticado. Redirecionando para a página de acesso.', 'erro');
-          navigate('/acesso');
-          return;
-        }
-        const userResponse = await axios.get('/auth/user/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        const fetchedName = userResponse.data.nome || 'Usuário';
-        setNomeUsuario(fetchedName);
-        setNovoNome(fetchedName);
-        setuserRole(userResponse.data.role);
-        setUserId(userResponse.data.id);
-        fetchProfileImage(token);
-
-      } catch (error) {
-        console.error('Erro ao buscar informações do usuário:', error);
-        showFeedback('Erro ao buscar informações do usuário. Por favor, tente novamente.', 'erro');
-        navigate('/acesso');
-      }
-    };
-
-    buscarInformacoesUsuario();
-
-
-    return () => {
-      if (profileImageUrl) {
-        URL.revokeObjectURL(profileImageUrl);
-        console.log("URL de objeto de imagem revogada:", profileImageUrl);
-      }
-    };
-
-  }, [navigate, fetchProfileImage]);
-
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    showFeedback('Logout realizado com sucesso!', 'sucesso');
     navigate('/acesso');
   };
 
-
-  const handleEditarPerfilClick = () => {
-    setExibirFormularioEdicaoPerfil(true);
-    setNovoNome(nomeUsuario);
-    setSenhaAtual('');
-    setNovaSenha('');
-    setConfirmarNovaSenha('');
-    setFeedbackMessage({ text: '', type: '' });
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setPreviewImage(previewUrl);
+    } else {
+      setPreviewImage(null);
+    }
   };
-
-  const handleCancelarEdicaoPerfil = () => {
-    setExibirFormularioEdicaoPerfil(false);
-    setFeedbackMessage({ text: '', type: '' });
-  };
-
 
   return (
-      <div className="meu-perfil-container">
-        <Link to="/" className="voltar-home-btn">
-          Voltar para Home
+    <div className="bg-[#f3e1f0] min-h-screen p-6 md:p-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#5c2c90]">Meu Perfil</h1>
+        <Link
+          to="/"
+          className="bg-[#c79bdc] hover:bg-[#b88bc9] text-white px-4 py-2 rounded-full shadow-md transition"
+        >
+          ← Voltar para Home
         </Link>
-        <h1>Meu Perfil</h1>
+      </div>
 
-        {feedbackMessage.text && (
-            <p className={`mensagem ${feedbackMessage.type === 'sucesso' ? 'sucesso' : 'erro'}`}>
-              {feedbackMessage.text}
-            </p>
-        )}
-
-        <div className="bem-vindo">
-          <h2>Bem-vindo(a) ao Sonora, {nomeUsuario}!</h2>
-          {profileImageUrl ? (
-              <div className="foto-perfil-preview">
-                <img src={profileImageUrl} alt="Foto de Perfil" style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%' }} />
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Card de Perfil */}
+        <div className="flex-1 bg-white rounded-2xl shadow-lg p-6">
+          <h2 className="text-2xl font-semibold text-[#5c2c90] mb-4">
+            Bem-vinda, {nomeUsuario}
+          </h2>
+          <div className="flex flex-col items-center gap-4">
+            {profileImageUrl ? (
+              <img
+                src={profileImageUrl}
+                alt="Perfil"
+                className="w-40 h-40 rounded-full border-4 border-[#5c2c90] object-cover shadow-md"
+              />
+            ) : (
+              <div className="w-40 h-40 rounded-full bg-[#c79bdc] flex items-center justify-center text-white text-lg">
+                Sem foto
               </div>
-          ) : (
-              <div className="foto-perfil-placeholder">
-                <p>Nenhuma foto de perfil</p>
-              </div>
-          )}
-          <button onClick={handleEditarPerfilClick} className="editar-perfil-btn">
-            Editar Perfil
-          </button>
+            )}
+            <button
+              onClick={() => setExibirFormulario(true)}
+              className="bg-[#c79bdc] hover:bg-[#b88bc9] text-white px-6 py-2 rounded-full shadow-md transition"
+            >
+              Editar Perfil
+            </button>
+          </div>
         </div>
 
-        {exibirFormularioEdicaoPerfil && (
-            <div className="formulario-edicao-perfil">
-              <h3>Editar Perfil</h3>
-              <form onSubmit={handleUpdateProfile}>
-                <div className="form-group">
-                  <label htmlFor="novoNome">Novo Nome:</label>
-                  <input
-                      type="text"
-                      id="novoNome"
-                      value={novoNome}
-                      onChange={(e) => setNovoNome(e.target.value)}
-                      required
-                      disabled={isUpdatingProfile}
-                  />
-                </div>
+        {/* Formulário de edição */}
+        {exibirFormulario && (
+          <div className="flex-1 bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-xl font-bold text-[#5c2c90] mb-4">Editar Perfil</h3>
+            <form onSubmit={handleSalvar} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1 text-[#5c2c90]">
+                  Novo Nome:
+                </label>
+                <input
+                  type="text"
+                  value={novoNome}
+                  onChange={(e) => setNovoNome(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#c79bdc]"
+                  required
+                />
+              </div>
 
-                <h4>Alterar Senha (opcional)</h4>
-                <p className="small-text">Preencha apenas se desejar alterar sua senha.</p>
-                <div className="form-group">
-                  <label htmlFor="senhaAtualEditar">Senha Atual:</label>
+              <div>
+                <h4 className="text-lg font-semibold mb-2 text-[#5c2c90]">
+                  Atualizar Foto de Perfil
+                </h4>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <label
+                    htmlFor="profileImageInput"
+                    className="cursor-pointer bg-[#c79bdc] hover:bg-[#b88bc9] text-white px-4 py-2 rounded-full shadow-md transition"
+                  >
+                    Selecionar Foto
+                  </label>
                   <input
-                      type="password"
-                      id="senhaAtualEditar"
-                      value={senhaAtual}
-                      onChange={(e) => setSenhaAtual(e.target.value)}
-                      disabled={isUpdatingProfile || isChangingPassword}
+                    id="profileImageInput"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
                   />
+                  <button
+                    type="button"
+                    onClick={handleUpload}
+                    disabled={!selectedFile}
+                    className={`${
+                      selectedFile
+                        ? 'bg-[#5c2c90] hover:bg-[#47236d]'
+                        : 'bg-gray-300 cursor-not-allowed'
+                    } text-white px-4 py-2 rounded-full shadow-md transition`}
+                  >
+                    Enviar Foto
+                  </button>
                 </div>
-                <div className="form-group">
-                  <label htmlFor="novaSenhaEditar">Nova Senha:</label>
-                  <input
-                      type="password"
-                      id="novaSenhaEditar"
-                      value={novaSenha}
-                      onChange={(e) => setNovaSenha(e.target.value)}
-                      disabled={isUpdatingProfile || isChangingPassword}
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="confirmarNovaSenhaEditar">Confirmar Nova Senha:</label>
-                  <input
-                      type="password"
-                      id="confirmarNovaSenhaEditar"
-                      value={confirmarNovaSenha}
-                      onChange={(e) => setConfirmarNovaSenha(e.target.value)}
-                      disabled={isUpdatingProfile || isChangingPassword}
-                  />
-                </div>
-                <div className="upload-foto-perfil-container" style={{ marginTop: '30px' }}>
-                  <h4>Atualizar Foto de Perfil</h4>
-                  <div className="upload-area">
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        id="profileImageInput"
-                        style={{ display: 'none' }}
-                        disabled={isUploadingImage || isUpdatingProfile}
+                {selectedFile && (
+                  <div className="mt-2 flex items-center gap-4">
+                    <img
+                      src={previewImage}
+                      alt="Preview"
+                      className="w-20 h-20 rounded-full object-cover border-2 border-[#5c2c90]"
                     />
-                    <label htmlFor="profileImageInput" className="selecionar-foto-btn" style={isUploadingImage || isUpdatingProfile ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
-                      {selectedFile ? 'Selecionar outra foto' : 'Selecionar Foto'}
-                    </label>
-                    {selectedFile && (
-                        <p>Arquivo selecionado: {selectedFile.name}</p>
-                    )}
-                    <button onClick={handleUploadProfileImage} type="button" disabled={!selectedFile || isUploadingImage || isUpdatingProfile} className="enviar-foto-btn">
-                      {isUploadingImage ? 'Enviando...' : 'Enviar Foto'}
-                    </button>
+                    <p className="text-sm text-gray-600">
+                      Arquivo: {selectedFile.name}
+                    </p>
                   </div>
-                </div>
+                )}
+              </div>
 
-                <button type="submit" className="salvar-perfil-btn" disabled={isUpdatingProfile || isChangingPassword}>
-                  {isUpdatingProfile ? 'Salvando...' : 'Salvar Alterações'}
+              <div className="flex flex-col md:flex-row gap-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-[#5c2c90] hover:bg-[#47236d] text-white px-4 py-2 rounded-full shadow-md transition"
+                >
+                  Salvar Alterações
                 </button>
-                <button type="button" onClick={handleCancelarEdicaoPerfil} className="cancelar-perfil-btn" disabled={isUpdatingProfile || isChangingPassword}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExibirFormulario(false);
+                    setSelectedFile(null);
+                    setPreviewImage(null);
+                  }}
+                  className="flex-1 bg-red-400 hover:bg-red-500 text-white px-4 py-2 rounded-full shadow-md transition"
+                >
                   Cancelar
                 </button>
-              </form>
-            </div>
+              </div>
+            </form>
+          </div>
         )}
+      </div>
 
-
-        <button onClick={handleLogout} className="logout-btn">
+      <div className="flex justify-end mt-8">
+        <button
+          onClick={() => setShowLogoutModal(true)}
+          className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full shadow-md transition"
+        >
           Sair
         </button>
       </div>
+
+      {/* Modal de logout */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-2xl p-6 shadow-lg w-[90%] max-w-md">
+            <h2 className="text-xl font-bold text-[#5c2c90] mb-4">
+              Deseja mesmo sair?
+            </h2>
+            <div className="flex gap-4">
+              <button
+                onClick={handleLogout}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md transition"
+              >
+                Sim, sair
+              </button>
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 bg-gray-300 hover:bg-gray-400 text-[#5c2c90] px-4 py-2 rounded-full shadow-md transition"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
