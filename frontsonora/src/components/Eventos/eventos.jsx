@@ -138,17 +138,23 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         setFormMessage('');
         const token = localStorage.getItem('token');
 
-        // VALIDAÇÃO ATUALIZADA:
         if (!token || usuarioLogado?.role !== 'HOST' || !userId || !selectedGeneroId || !localEventoNome || !cep || !numero || !eventImageFile || !classificacao.trim()) {
             setFormMessage('Por favor, preencha todos os campos obrigatórios para cadastrar o evento, incluindo a classificação e a imagem.');
             return;
         }
 
+        if (!classificacao.trim()) {
+            setFormMessage('Por favor, selecione uma classificação para o evento.');
+            return;
+        }
+
         try {
             const formattedDataHora = formatDateTime(dataHora);
-            // CORREÇÃO: Usar horaEncerramento do state para a formatação
-            const formattedHoraEncerramento = formatDateTime(horaEncerramento);
-
+            let formattedHoraEncerramento = '00:00:00';
+            if (horaEncerramento) {
+                const [hours, minutes] = horaEncerramento.split(':');
+                formattedHoraEncerramento = `${hours}:${minutes}:00`;
+            }
             const placeResponse = await axios.post('/places', {
                 local: localEventoNome,
                 cep: cep,
@@ -161,12 +167,23 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
             });
             const placeData = placeResponse.data;
 
+            console.log('Dados do evento (JSON):', JSON.stringify({
+                nomeEvento,
+                dataHora: formattedDataHora,
+                horaEncerramento: formattedHoraEncerramento,
+                descricao,
+                classificacao,
+                generoMusical: { idGeneroMusical: selectedGeneroId },
+                localEvento: { idLocalEvento: placeData.idLocalEvento },
+                host: { id: userId }
+            }, null, 2));
+
             const eventData = {
                 nomeEvento,
                 dataHora: formattedDataHora,
-                horaEncerramento: formattedHoraEncerramento, // CORRIGIDO AQUI
-                descricao,
-                classificacao, // Já está sendo enviado
+                horaEncerramento: formattedHoraEncerramento,
+                descricao: descricao,
+                classificacao: classificacao,
                 generoMusical: { idGeneroMusical: selectedGeneroId },
                 localEvento: { idLocalEvento: placeData.idLocalEvento },
                 host: { id: userId }
@@ -264,8 +281,8 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         <div className="bg-[#EDE6F2] px-4 py-8 min-h-[70vh] mb-20">
             {usuarioLogado?.role === 'HOST' && (
                 <div className="max-w-6xl mx-auto mb-6">
-                    <button 
-                        onClick={() => setShowCadastro(!showCadastro)} 
+                    <button
+                        onClick={() => setShowCadastro(!showCadastro)}
                         className="!text-white bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] lg:h-[25px] mx-auto"
                     >
                         {showCadastro ? 'Cancelar Cadastro' : 'Cadastrar Novo Evento'}
@@ -277,26 +294,26 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                             <form onSubmit={handleCadastrarEvento} className="space-y-3 sm:space-y-4">
                                 <div className="space-y-1 sm:space-y-2">
                                     <label htmlFor="nomeEvento" className="block text-gray-700 text-sm sm:text-base font-medium">Nome do Evento:</label>
-                                    <input 
-                                        type="text" 
-                                        id="nomeEvento" 
-                                        name="nomeEvento" 
-                                        value={nomeEvento} 
-                                        onChange={handleInputChange} 
-                                        required 
+                                    <input
+                                        type="text"
+                                        id="nomeEvento"
+                                        name="nomeEvento"
+                                        value={nomeEvento}
+                                        onChange={handleInputChange}
+                                        required
                                         className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
                                     />
                                 </div>
-                                
+
                                 <div className="space-y-1 sm:space-y-2">
                                     <label htmlFor="dataHora" className="block text-gray-700 text-sm sm:text-base font-medium">Data e Hora:</label>
-                                    <input 
-                                        type="datetime-local" 
-                                        id="dataHora" 
-                                        name="dataHora" 
-                                        value={dataHora} 
-                                        onChange={handleInputChange} 
-                                        required 
+                                    <input
+                                        type="datetime-local"
+                                        id="dataHora"
+                                        name="dataHora"
+                                        value={dataHora}
+                                        onChange={handleInputChange}
+                                        required
                                         className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
                                     />
                                 </div>
@@ -304,7 +321,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                 <div className="space-y-1 sm:space-y-2">
                                     <label htmlFor="horaEncerramento" className="block text-gray-700 text-sm sm:text-base font-medium">Hora de Encerramento:</label>
                                     <input
-                                        type="datetime-local"
+                                        type="time"
                                         id="horaEncerramento"
                                         name="horaEncerramento"
                                         value={horaEncerramento}
@@ -313,31 +330,38 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
                                     />
                                 </div>
-                                
+
                                 <div className="space-y-1 sm:space-y-2">
                                     <label htmlFor="descricao" className="block text-gray-700 text-sm sm:text-base font-medium">Descrição:</label>
-                                    <textarea 
-                                        id="descricao" 
-                                        name="descricao" 
-                                        value={descricao} 
-                                        onChange={handleInputChange} 
-                                        required 
+                                    <textarea
+                                        id="descricao"
+                                        name="descricao"
+                                        value={descricao}
+                                        onChange={handleInputChange}
+                                        required
                                         className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD] min-h-[80px] sm:min-h-[100px]"
                                     />
                                 </div>
 
                                 <div className="space-y-1 sm:space-y-2">
                                     <label htmlFor="classificacao" className="block text-gray-700 text-sm sm:text-base font-medium">Classificação:</label>
-                                    <textarea
+                                    <select
                                         id="classificacao"
                                         name="classificacao"
                                         value={classificacao}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD] min-h-[80px] sm:min-h-[100px]"
-                                    />
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                    >
+                                        <option value="">Selecione uma classificação</option>
+                                        <option value="Livre">Livre</option>
+                                        <option value="12+">12+</option>
+                                        <option value="14+">14+</option>
+                                        <option value="16+">16+</option>
+                                        <option value="18+">18+</option>
+                                    </select>
                                 </div>
-                                
+
                                 <div className="space-y-1 sm:space-y-2">
                                     <label htmlFor="generoMusical" className="block text-gray-700 text-sm sm:text-base font-medium">Gênero Musical:</label>
                                     <select
@@ -356,41 +380,41 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         ))}
                                     </select>
                                 </div>
-                                
+
                                 <div className="space-y-1 sm:space-y-2">
                                     <label htmlFor="local" className="block text-gray-700 text-sm sm:text-base font-medium">Local:</label>
-                                    <input 
-                                        type="text" 
-                                        id="local" 
-                                        name="local" 
-                                        value={localEventoNome} 
-                                        onChange={handleInputChange} 
-                                        required 
+                                    <input
+                                        type="text"
+                                        id="local"
+                                        name="local"
+                                        value={localEventoNome}
+                                        onChange={handleInputChange}
+                                        required
                                         className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
                                     />
                                 </div>
-                                
+
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     <div className="space-y-1 sm:space-y-2">
                                         <label htmlFor="cep" className="block text-gray-700 text-sm sm:text-base font-medium">CEP do Local:</label>
-                                        <input 
-                                            type="text" 
-                                            id="cep" 
-                                            name="cep" 
-                                            value={cep} 
-                                            onChange={handleInputChange} 
+                                        <input
+                                            type="text"
+                                            id="cep"
+                                            name="cep"
+                                            value={cep}
+                                            onChange={handleInputChange}
                                             className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
                                         />
                                     </div>
-                                    
+
                                     <div className="space-y-1 sm:space-y-2">
                                         <label htmlFor="numero" className="block text-gray-700 text-sm sm:text-base font-medium">Número do Local:</label>
-                                        <input 
-                                            type="text" 
-                                            id="numero" 
-                                            name="numero" 
-                                            value={numero} 
-                                            onChange={handleInputChange} 
+                                        <input
+                                            type="text"
+                                            id="numero"
+                                            name="numero"
+                                            value={numero}
+                                            onChange={handleInputChange}
                                             className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
                                         />
                                     </div>
@@ -410,21 +434,21 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 sm:gap-3 pt-1 sm:pt-2">
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         className="bg-[#613176] hover:bg-[#6C3483] text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
                                     >
                                         Cadastrar
                                     </button>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setShowCadastro(false)} 
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCadastro(false)}
                                         className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
                                     >
                                         Cancelar
                                     </button>
                                 </div>
-                                
+
                                 {formMessage && (
                                     <p className={`mt-2 text-sm sm:text-base font-medium ${formMessage.startsWith('Erro') ? 'text-red-600' : 'text-green-600'}`}>
                                         {formMessage}
