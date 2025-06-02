@@ -266,14 +266,14 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 <div className="max-w-6xl mx-auto mb-6">
                     <button 
                         onClick={() => setShowCadastro(!showCadastro)} 
-                        className="bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] mx-auto"
+                        className="!text-white bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] lg:h-[25px] mx-auto"
                     >
                         {showCadastro ? 'Cancelar Cadastro' : 'Cadastrar Novo Evento'}
                     </button>
 
                     {showCadastro && (
                         <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mt-4 max-w-3xl mx-auto">
-                            <h3 className="text-[#8E44AD] text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center">Cadastrar Novo Evento</h3>
+                            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center !text-white">Cadastrar Novo Evento</h3>
                             <form onSubmit={handleCadastrarEvento} className="space-y-3 sm:space-y-4">
                                 <div className="space-y-1 sm:space-y-2">
                                     <label htmlFor="nomeEvento" className="block text-gray-700 text-sm sm:text-base font-medium">Nome do Evento:</label>

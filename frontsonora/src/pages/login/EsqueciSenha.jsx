@@ -140,7 +140,7 @@ function EsqueciSenha() {
                             disabled={isLoading}
                             className="bg-[#1F1536] text-white px-4 py-3 rounded text-sm sm:text-lg transition-colors duration-300 hover:bg-[#564a72]"
                         >
-                            {isLoading ? 'Verificando...' : 'Enviar email de recuperação'}
+                            {isLoading ? 'Só um momento...' : 'Recuperar'}
                         </button>
                     </form>
                 ) : (
