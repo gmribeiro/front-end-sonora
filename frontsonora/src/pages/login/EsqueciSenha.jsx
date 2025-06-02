@@ -23,7 +23,7 @@ function EsqueciSenha() {
         setIsLoading(true);
 
         try {
-            const response = await axios.get(`/auth/check-email?email=${email}`);
+            const response = await axios.get(`/auth/validate-email?email=${email}`);
             if (response.status === 200) {
                 setEmailVerificado(true);
                 showFeedback('Email verificado com sucesso! Agora, por favor, insira sua nova senha.', 'sucesso');

@@ -175,7 +175,7 @@ const Acessar = () => {
                     </div>
 
                     <div className="mt-2 text-[#1F1536] text-center text-base sm:text-lg">
-                        <Link to="/esquecisenha" className="text-[#A48BB3] hover:text-[#1F1536] hover:underline">Esqueci a senha</Link>
+                        <Link to="/check-email" className="text-[#A48BB3] hover:text-[#1F1536] hover:underline">Esqueci a senha</Link>
                     </div>
                 </div>
             </div>
