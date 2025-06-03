@@ -8,7 +8,7 @@ const SobreNos = () => {
       
       <section className="flex flex-col lg:flex-row items-center justify-between gap-8 px-6 sm:px-10 md:px-[8%] py-10 sm:py-10">
         <div className="w-full lg:w-1/2 lg:pr-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-left">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-left !text-[#564A72]">
             Sobre o Sonora
           </h1>
         </div>
