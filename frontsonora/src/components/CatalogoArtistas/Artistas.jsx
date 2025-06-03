@@ -236,9 +236,16 @@ const Artistas = () => {
                             )}
                             <h3 className="text-xl font-semibold">{artista.nomeArtistico}</h3>
                             {artista.redesSociais && (
-                                <p className="text-blue-600 underline break-words">
+                                <p className="text-[#c2a0bb] hover:text-[#564A72] underline break-words">
                                     <a href={artista.redesSociais} target="_blank" rel="noreferrer">
                                         {artista.redesSociais}
+                                    </a>
+                                </p>
+                            )}
+                            {artista.email && (
+                                <p className="text-[#564A72] break-words">
+                                    <a href={artista.email} target="_blank" rel="noreferrer">
+                                        {artista.email}
                                     </a>
                                 </p>
                             )}
@@ -279,7 +286,7 @@ const Artistas = () => {
                                     ) : (
                                         <button
                                             onClick={() => handleContratarClick(artista.idMusico)}
-                                            className="mt-3 bg-[#564A72] text-white px-4 py-1 rounded-md hover:bg-[#c2a0bb] sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="mt-3 bg-[#c2a0bb] text-white px-4 py-1 hover:bg-[#564A72] sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             Contratar
                                         </button>
@@ -292,7 +299,8 @@ const Artistas = () => {
 
                 <div className="flex justify-end">
                     <button
-                        className="mt-8 px-6 py-3 bg-white text-[#564A72] hover:bg-[#564A72] hover:text-white sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="mt-8 px-6 py-3 bg-white text-[#564A72] hover:bg-[#564A72] hover:text-white sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50"
+                        onClick={() => window.location.href = '/'}
                     >
                         Voltar
                     </button>

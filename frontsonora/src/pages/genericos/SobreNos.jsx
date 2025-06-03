@@ -23,7 +23,7 @@ const SobreNos = () => {
 
       <section className="px-6 sm:px-10 md:px-[8%] py-10 sm:py-16 !text-[#564A72]">
 
-        <p className="text-[1.05rem] sm:text-[1.1rem] mb-6 first-letter:text-2xl first-letter:font-bold first-letter:!text-[#564A72] first-letter:mr-1 first-letter:float-left first-letter:leading-none !text-[#564A72]">
+        <p className="text-[1.05rem] sm:text-[1.1rem] mb-6 first-letter:text-2xl first-letter:font-bold first-letter:text-[#564A72] first-letter:mr-1 first-letter:float-left first-letter:leading-none !text-[#564A72]">
           O  Sonora é mais do que uma simples plataforma de reservas musicais — é uma expressão do amor pela música e do desejo de transformar a cena musical brasileira. Criado em 2024 por seis jovens desenvolvedores — Luisa Elias de Melo, Gabriel de Melo Ribeiro, Maria Fernanda Spinula, Gabriel Henrique Mariotto, Vitor Conde Falcão e Lucas de Moraes Marçoli — o projeto nasceu dentro da Fundação Indaiatubana de Educação e Cultura (FIEC), na cidade de Indaiatuba, São Paulo.
         </p>
 
