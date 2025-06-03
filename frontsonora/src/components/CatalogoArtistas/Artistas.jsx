@@ -232,16 +232,9 @@ const Artistas = () => {
                             )}
                             <h3 className="text-xl font-semibold">{artista.nomeArtistico}</h3>
                             {artista.redesSociais && (
-                                <p className="text-[#c2a0bb] hover:text-[#564A72] underline break-words">
+                                <p className="text-[#c2a0bb] hover:text-[#564A72] underline break-words mb-1">
                                     <a href={artista.redesSociais} target="_blank" rel="noreferrer">
                                         {artista.redesSociais}
-                                    </a>
-                                </p>
-                            )}
-                            {artista.email && (
-                                <p className="text-[#564A72] break-words">
-                                    <a href={artista.email} target="_blank" rel="noreferrer">
-                                        {artista.email}
                                     </a>
                                 </p>
                             )}
@@ -295,7 +288,7 @@ const Artistas = () => {
 
                 <div className="flex justify-end">
                     <button
-                        className="mt-8 px-6 py-3 bg-white text-[#564A72] hover:bg-[#564A72] hover:text-white sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50"
+                        className="mt-8 px-6 py-3 bg-white text-[#c2a0bb] hover:bg-[#564A72] hover:text-white sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50"
                         onClick={() => window.location.href = '/'}
                     >
                         Voltar

@@ -283,7 +283,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 <div className="max-w-6xl mx-auto mb-6">
                     <button
                         onClick={() => setShowCadastro(!showCadastro)}
-                        className="!text-white bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] lg:h-[25px] mx-auto"
+                        className="!text-white bg-gradient-to-b from-[#342e5a] via-[#5A4E75] to-[#7d6588] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] lg:h-[25px] lg:mb-15 mx-auto"
                     >
                         {showCadastro ? 'Cancelar Cadastro' : 'Cadastrar Novo Evento'}
                     </button>
@@ -293,7 +293,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                             <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center !text-white">Cadastrar Novo Evento</h3>
                             <form onSubmit={handleCadastrarEvento} className="space-y-3 sm:space-y-4">
                                 <div className="space-y-1 sm:space-y-2">
-                                    <label htmlFor="nomeEvento" className="block text-gray-700 text-sm sm:text-base font-medium">Nome do Evento:</label>
+                                    <label htmlFor="nomeEvento" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Nome do Evento:</label>
                                     <input
                                         type="text"
                                         id="nomeEvento"
@@ -301,12 +301,12 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         value={nomeEvento}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     />
                                 </div>
 
                                 <div className="space-y-1 sm:space-y-2">
-                                    <label htmlFor="dataHora" className="block text-gray-700 text-sm sm:text-base font-medium">Data e Hora:</label>
+                                    <label htmlFor="dataHora" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Data e Hora:</label>
                                     <input
                                         type="datetime-local"
                                         id="dataHora"
@@ -314,12 +314,12 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         value={dataHora}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     />
                                 </div>
 
                                 <div className="space-y-1 sm:space-y-2">
-                                    <label htmlFor="horaEncerramento" className="block text-gray-700 text-sm sm:text-base font-medium">Hora de Encerramento:</label>
+                                    <label htmlFor="horaEncerramento" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Hora de Encerramento:</label>
                                     <input
                                         type="time"
                                         id="horaEncerramento"
@@ -327,31 +327,31 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         value={horaEncerramento}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     />
                                 </div>
 
                                 <div className="space-y-1 sm:space-y-2">
-                                    <label htmlFor="descricao" className="block text-gray-700 text-sm sm:text-base font-medium">Descrição:</label>
+                                    <label htmlFor="descricao" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Descrição:</label>
                                     <textarea
                                         id="descricao"
                                         name="descricao"
                                         value={descricao}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD] min-h-[80px] sm:min-h-[100px]"
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588] min-h-[80px] sm:min-h-[100px]"
                                     />
                                 </div>
 
                                 <div className="space-y-1 sm:space-y-2">
-                                    <label htmlFor="classificacao" className="block text-gray-700 text-sm sm:text-base font-medium">Classificação:</label>
+                                    <label htmlFor="classificacao" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Classificação:</label>
                                     <select
                                         id="classificacao"
                                         name="classificacao"
                                         value={classificacao}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     >
                                         <option value="">Selecione uma classificação</option>
                                         <option value="Livre">Livre</option>
@@ -363,14 +363,14 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                 </div>
 
                                 <div className="space-y-1 sm:space-y-2">
-                                    <label htmlFor="generoMusical" className="block text-gray-700 text-sm sm:text-base font-medium">Gênero Musical:</label>
+                                    <label htmlFor="generoMusical" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Gênero Musical:</label>
                                     <select
                                         id="generoMusical"
                                         name="generoMusical"
                                         value={selectedGeneroId}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     >
                                         <option value="">Selecione um gênero</option>
                                         {generos.map(genero => (
@@ -382,7 +382,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                 </div>
 
                                 <div className="space-y-1 sm:space-y-2">
-                                    <label htmlFor="local" className="block text-gray-700 text-sm sm:text-base font-medium">Local:</label>
+                                    <label htmlFor="local" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Local:</label>
                                     <input
                                         type="text"
                                         id="local"
@@ -390,38 +390,38 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         value={localEventoNome}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     <div className="space-y-1 sm:space-y-2">
-                                        <label htmlFor="cep" className="block text-gray-700 text-sm sm:text-base font-medium">CEP do Local:</label>
+                                        <label htmlFor="cep" className="block text-[#5A4E75] text-sm sm:text-base font-medium">CEP do Local:</label>
                                         <input
                                             type="text"
                                             id="cep"
                                             name="cep"
                                             value={cep}
                                             onChange={handleInputChange}
-                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                         />
                                     </div>
 
                                     <div className="space-y-1 sm:space-y-2">
-                                        <label htmlFor="numero" className="block text-gray-700 text-sm sm:text-base font-medium">Número do Local:</label>
+                                        <label htmlFor="numero" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Número do Local:</label>
                                         <input
                                             type="text"
                                             id="numero"
                                             name="numero"
                                             value={numero}
                                             onChange={handleInputChange}
-                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-1 sm:space-y-2">
-                                    <label htmlFor="eventImage" className="block text-gray-700 text-sm sm:text-base font-medium">Foto do Evento:</label>
+                                    <label htmlFor="eventImage" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Foto do Evento:</label>
                                     <input
                                         type="file"
                                         id="eventImage"
@@ -429,14 +429,14 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                         accept="image/*"
                                         onChange={handleImageChange}
                                         required
-                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8E44AD]"
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     />
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 sm:gap-3 pt-1 sm:pt-2">
                                     <button
                                         type="submit"
-                                        className="bg-[#613176] hover:bg-[#6C3483] text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
+                                        className="bg-[#5A4E75] hover:bg-[#7d6588] text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
                                     >
                                         Cadastrar
                                     </button>

@@ -111,10 +111,10 @@ const Header = () => {
             <div className="relative border-2 border-[#c2a0bb] rounded-[22px] py-2 w-full max-w-[600px] lg:max-w-[1000px] lg:min-w-[600px] mx-auto px-4">
               <input
                   type="text"
-                  placeholder="Encontre seu estilo favorito"
+                  placeholder="Busque seu evento desejado"
                   className="bg-transparent border-none outline-none text-[#c2a0bb] text-[16px] placeholder:text-[#c2a0bb] w-full pr-[45px] pl-[15px] text-left"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o estado ao digitar
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={handleKeyDown}
               />
               <FaSearch
