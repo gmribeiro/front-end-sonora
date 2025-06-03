@@ -23,6 +23,8 @@ const EventoDetalhes = () => {
     const [escalasDoEvento, setEscalasDoEvento] = useState([]);
     const [carregandoEscalas, setCarregandoEscalas] = useState(false);
     const [erroEscalas, setErroEscalas] = useState(null);
+    const [jaReservado, setJaReservado] = useState(false);
+    const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
 
     useEffect(() => {
         const carregarDados = async () => {
@@ -39,8 +41,16 @@ const EventoDetalhes = () => {
                 let loggedInUser = null;
                 if (token) {
                     loggedInUser = await verificarUsuarioLogado(token);
+                    setUsuarioLogado(loggedInUser);
+
+                    // Verificar se usuário já reservou este evento
+                    if (loggedInUser?.id && eventoData?.idEvento) {
+                        const reservasResponse = await axios.get(`/reservas/usuario/${loggedInUser.id}/evento/${eventoData.idEvento}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        setJaReservado(reservasResponse.data.length > 0);
+                    }
                 }
-                setUsuarioLogado(loggedInUser);
 
                 if (eventoData && eventoData.idEvento) {
                     try {
@@ -82,9 +92,7 @@ const EventoDetalhes = () => {
 
     useEffect(() => {
         const fetchEscalasDoEvento = async () => {
-            if (!id) {
-                return;
-            }
+            if (!id) return;
             setCarregandoEscalas(true);
             setErroEscalas(null);
             try {
@@ -122,10 +130,17 @@ const EventoDetalhes = () => {
             setMensagemReserva('Apenas clientes podem fazer reservas.');
             return;
         }
+
+        if (jaReservado && !mostrarConfirmacao) {
+            setMostrarConfirmacao(true);
+            return;
+        }
+
         if (!evento?.idEvento) {
             alert('Dados do evento incompletos');
             return;
         }
+
         if (!usuarioLogado?.id) {
             setCarregandoUsuarioReserva(true);
             const token = localStorage.getItem('token');
@@ -151,6 +166,7 @@ const EventoDetalhes = () => {
                 return;
             }
         }
+
         setReservando(true);
         setMensagemReserva('');
         try {
@@ -171,6 +187,8 @@ const EventoDetalhes = () => {
                 }
             });
             setMensagemReserva(`Reserva para "${evento.nomeEvento || evento.titulo}" realizada com sucesso!`);
+            setJaReservado(true);
+            setMostrarConfirmacao(false);
         } catch (error) {
             let errorMessage = 'Erro ao processar reserva';
             if (error.response?.status === 401) {
@@ -187,7 +205,6 @@ const EventoDetalhes = () => {
     };
 
     const formatarDataHora = (dataHoraStr, horaEncerramentoStr) => {
-        // Retorna uma mensagem padrão se a data principal não estiver disponível
         if (!dataHoraStr) return 'Data e hora não informadas';
 
         let data = 'Data não informada';
@@ -240,6 +257,7 @@ const EventoDetalhes = () => {
             return 'Erro ao processar data/hora.';
         }
     };
+
     if (carregando) {
         return <div className="text-center py-10 text-white">Carregando...</div>;
     }
@@ -279,7 +297,6 @@ const EventoDetalhes = () => {
             </div>
 
             <div className="relative w-full h-[240px] md:h-[320px] lg:h-[420px] overflow-hidden">
-
                 <img
                     src={eventImageUrl || '/images/evento_padrao.png'}
                     alt="Imagem de fundo do evento"
@@ -302,7 +319,6 @@ const EventoDetalhes = () => {
                 >
                     Voltar
                 </button>
-
             </div>
 
             <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mt-8 sm:mt-16 mb-6 sm:mb-12 text-center !text-[#564A72] px-4 max-w-[600px] mx-auto truncate">
@@ -362,6 +378,31 @@ const EventoDetalhes = () => {
                         {mensagemReserva}
                     </div>
                 )}
+
+                {mostrarConfirmacao && (
+                    <div className="mb-4 p-4 bg-yellow-100 text-yellow-800 rounded">
+                        <p className="font-semibold mb-2">Você já reservou esse evento!</p>
+                        <p>Tem certeza que deseja fazer mais uma reserva?</p>
+                        <div className="flex gap-2 mt-3">
+                            <button
+                                onClick={() => {
+                                    setMostrarConfirmacao(false);
+                                    handleReservar();
+                                }}
+                                className="bg-yellow-600 text-white px-4 py-1 rounded hover:bg-yellow-700"
+                            >
+                                Sim, reservar novamente
+                            </button>
+                            <button
+                                onClick={() => setMostrarConfirmacao(false)}
+                                className="bg-gray-200 text-gray-800 px-4 py-1 rounded hover:bg-gray-300"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <button
                     onClick={handleReservar}
                     disabled={!podeReservar || reservando}
