@@ -18,12 +18,8 @@ const Artistas = () => {
     const [profileImages, setProfileImages] = useState({});
 
     const fetchProfileImage = async (userId) => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
         try {
-            const response = await axios.get(`auth/users/${userId}/profile-image`, {
-                headers: { 'Authorization': `Bearer ${token}` },
+            const response = await axios.get(`/auth/users/${userId}/profile-image`, {
                 responseType: 'arraybuffer'
             });
 
