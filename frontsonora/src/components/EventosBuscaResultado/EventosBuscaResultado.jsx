@@ -3,14 +3,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useTitle from '../../hooks/useTitle';
-import { FaCalendarAlt } from "react-icons/fa";
-import { MdPlace } from "react-icons/md";
-import { IoMdMusicalNotes } from "react-icons/io";
-
-// Importa os componentes Header e Footer iguais aos da Home.jsx
-import Header from '../Header/Header';  
-import Footer from '../Footer/Footer';
-import Carrossel from '../Carrossel/carrossel'
+import './EventosBuscaResultado.css';
+import {FaCalendarAlt} from "react-icons/fa";
+import {MdPlace} from "react-icons/md";
+import {IoMdMusicalNotes} from "react-icons/io";
 
 const EventosBuscaResultados = () => {
     useTitle('Resultados da Busca - Sonora');
@@ -51,126 +47,60 @@ const EventosBuscaResultados = () => {
     }, [location.search]);
 
     if (carregando) {
-        return (
-            <div className="flex items-center justify-center h-screen w-screen text-white text-xl bg-black">
-                Carregando resultados da busca...
-            </div>
-        );
+        return <div className="text-center py-10 text-white">Carregando resultados da busca...</div>;
     }
 
     if (erro) {
         return (
-            <div className="flex flex-col items-center justify-center h-screen w-screen text-red-500 text-center bg-white">
+            <div className="text-center py-10 text-red-500">
                 <p>{erro}</p>
-                <button
-                    onClick={() => navigate('/')}
-                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-                >
-                    Voltar para Home
-                </button>
+                <button onClick={() => navigate('/')} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Voltar para Home</button>
             </div>
         );
     }
 
     if (eventos.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center h-screen w-screen text-white text-center bg-black">
+            <div className="text-center py-10 text-white">
                 <p>Nenhum evento encontrado com o nome fornecido.</p>
-                <button
-                    onClick={() => navigate('/')}
-                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-                >
-                    Voltar para Home
-                </button>
+                <button onClick={() => navigate('/')} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Voltar para Home</button>
             </div>
         );
     }
 
-    
-
     return (
-        <div className="flex flex-col min-h-screen bg-[#EDE6F2]">
-            <Header />
-
-            <Carrossel/>
-
-            <div className={`max-w-7xl mx-auto ${isAnimating ? 'opacity-0 translate-y-5' : 'opacity-100 translate-y-0'} transition-all duration-300`}>
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 justify-items-center max-w-7xl mx-auto px-4">
-                {eventosPaginaAtual.map(evento => (
-                    <div
-                    key={evento.id}
-                    onClick={() => handleEventoClick(evento.id)}
-                    className="bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] mx-auto"
-                    >
-                    <div className="relative w-full h-[216px] sm:h-[288px] md:h-[400px] overflow-hidden">
-                        <img
-                        src={evento.imagem || '/images/evento_padrao.png'}
-                        alt={evento.titulo}
-                        className="absolute top-0 left-0 w-full h-full object-cover"
-                        />
-                    </div>
-                    <div className="p-5 sm:p-6 flex-grow flex flex-col">
-                        <h3 className="text-[#564A72] text-sm sm:text-base font-semibold truncate mb-1 sm:mb-2">{evento.titulo}</h3>
-                        <p className="!text-[#564A72] text-xs sm:text-sm mb-2 sm:mb-3">{evento.local} - {evento.hora}</p>
-                                                {usuarioLogado?.role === 'CLIENT' && (
-                                                    <div className="mt-auto">
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleReservar(evento.id);
-                                                            }}
-                                                            disabled={reservandoId === evento.id}
-                                                            className="w-full bg-[#5A4E75] hover:bg-[#2E284E] text-white py-2 px-4 sm:py-3 sm:px-5 text-sm sm:text-base rounded-md transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
-                                                        >
-                                                            {reservandoId === evento.id ? 'Reservando...' : 'Reservar'}
-                                                        </button>
-                                                    </div>
-                                                )}
-                                                {mensagemReserva && reservandoId === evento.id && (
-                                                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-center text-white">{mensagemReserva}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+        <div className="eventos-busca-container bg-cover bg-center min-h-screen px-4 py-8 text-[#564A72]" style={{ backgroundImage: "url('/images/detalheevento.png')" }}>
+            <div className="max-w-4xl mx-auto bg-[#EDE6F2] bg-opacity-80 p-6 rounded shadow-md">
+                <h1 className="text-4xl font-bold text-center mb-6">Resultados da Busca</h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {eventos.map((evento) => (
+                        <div
+                            key={evento.idEvento}
+                            className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-transform duration-300 hover:scale-105"
+                            onClick={() => navigate(`/detalhes/${evento.idEvento}`)}>
+                            <img
+                                src={evento.foto || '/images/evento_padrao.png'}
+                                alt={evento.nomeEvento || evento.titulo}
+                                className="w-full h-48 object-cover"
+                            />
+                            <div className="p-4">
+                                <h2 className="text-xl font-semibold mb-2">{evento.nomeEvento || evento.titulo}</h2>
+                                <p className="text-gray-600 text-sm mb-1">
+                                    <FaCalendarAlt className="inline-block mr-1" /> {evento.dataHora}
+                                </p>
+                                <p className="text-gray-600 text-sm mb-1">
+                                    <MdPlace className="inline-block mr-1" /> {evento.localEvento?.local || evento.local || 'Local não informado'}
+                                </p>
+                                <p className="text-gray-600 text-sm">
+                                    <IoMdMusicalNotes className="inline-block mr-1" /> {evento.generoMusical?.nomeGenero || evento.genero || 'Não especificado'}
+                                </p>
                             </div>
-
-                            {totalPaginas > 1 && (
-                                <div className="flex justify-center items-center gap-3 sm:gap-4 md:gap-6 mt-8 sm:mt-10 md:mt-12">
-                                    <button
-                                        onClick={() => mudarPagina(currentPage - 1)}
-                                        disabled={currentPage === 1 || isAnimating}
-                                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
-                                    >
-                                        &lt;
-                                    </button>
-
-                                    <span className="text-[#2E284E] font-bold text-sm sm:text-base">Página {currentPage} de {totalPaginas}</span>
-
-                                    <button
-                                        onClick={() => mudarPagina(currentPage + 1)}
-                                        disabled={currentPage === totalPaginas || isAnimating}
-                                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
-                                    >
-                                        &gt;
-                                    </button>
-                                </div>
-                            )}
                         </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     );
-}
-
-Eventos.propTypes = {
-    eventosFiltrados: PropTypes.array.isRequired,
-    currentPage: PropTypes.number.isRequired,
-    setCurrentPage: PropTypes.func.isRequired,
-    onEventoCadastrado: PropTypes.func
 };
-
-Eventos.defaultProps = {
-    onEventoCadastrado: () => {}
-};
-
-            <Footer />
 
 export default EventosBuscaResultados;
