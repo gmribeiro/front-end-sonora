@@ -468,7 +468,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
       onClick={() => handleEventoClick(evento.id)}
       className="bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] mx-auto"
     >
-      <div className="relative w-full h-[216px] sm:h-[288px] md:h-[400px] overflow-hidden">
+      <div className="relative w-full h-[216px] sm:h-[288px] md:h-[400px] lg:h-[400px] overflow-hidden">
         <img
           src={evento.imagem || '/images/evento_padrao.png'}
           alt={evento.titulo}

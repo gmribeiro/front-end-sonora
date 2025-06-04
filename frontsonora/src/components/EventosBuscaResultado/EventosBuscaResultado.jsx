@@ -94,9 +94,8 @@ const EventosBuscaResultados = () => {
   return (
     <div className="flex flex-col min-h-screen bg-[#EDE6F2]">
       <Header />
-      <Carrossel />
 
-      <main className="flex-grow max-w-7xl mx-auto px-4 mb-50">
+      <main className="flex-grow max-w-7xl mx-auto px-4 mb-25 mt-25">
   <div className="flex items-center justify-between mb-10">
     <h1 className="text-3xl font-bold text-[#564A72] flex items-center gap-5">
       Resultados da sua Busca <FaMagnifyingGlass />
@@ -106,7 +105,7 @@ const EventosBuscaResultados = () => {
       className="text-[#564A72] hover:text-[#7d6aaa] underline font-semibold flex items-center text-xl"
       type="button"
     >
-      Excluir pesquisa
+      Voltar para página inicial
     </button>
   </div>
 

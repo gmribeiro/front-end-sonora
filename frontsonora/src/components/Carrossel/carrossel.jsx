@@ -123,7 +123,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
   const itensVisiveis = generosBackend.slice(startIndex, startIndex + visibleItems);
 
   return (
-    <div className="w-full py-8 bg-[#EDE6F2] my-20 relative overflow-visible">
+    <div className="w-full py-8 bg-[#EDE6F2] my-1 relative overflow-visible">
       <div className="flex items-center max-w-[1050px] mx-auto px-5 sm:px-10 relative overflow-visible">
 
         <button

@@ -108,17 +108,17 @@ const Header = () => {
               </Link>
             </div>
 
-            <div className="relative border-2 border-[#c2a0bb] rounded-[22px] py-2 w-full max-w-[600px] lg:max-w-[1000px] lg:min-w-[600px] mx-auto px-4">
+            <div className="relative border-2 bg-[#EDE6F2] border-[#c2a0bb] rounded-[22px] py-2 w-full max-w-[600px] lg:max-w-[1000px] lg:min-w-[600px] mx-auto px-4">
               <input
                   type="text"
                   placeholder="Busque seu evento desejado"
-                  className="bg-transparent border-none outline-none text-[#c2a0bb] text-[16px] placeholder:text-[#c2a0bb] w-full pr-[45px] pl-[15px] text-left"
+                  className="border-none outline-none text-[#c2a0bb] text-[16px] placeholder:text-[#c2a0bb] w-full pr-[45px] pl-[15px] text-left"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={handleKeyDown}
               />
               <FaSearch
-                  className="absolute right-[25px] top-1/2 transform -translate-y-1/2 text-[#c2a0bb] text-[15px] cursor-pointer"
+                  className="absolute right-[25px] top-1/2 transform -translate-y-1/2 text-[#c2a0bb] text-[20px] cursor-pointer"
                   onClick={handleSearch}
               />
             </div>
