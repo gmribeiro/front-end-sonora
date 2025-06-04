@@ -338,10 +338,27 @@ const EventoDetalhes = () => {
                     <span className="text-lg sm:text-2xl whitespace-nowrap">{evento.localEvento?.local || evento.local || 'Local não informado'}</span>
                 </div>
 
-                <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto">
-                    <MdPlace className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
-                    <span className="text-lg sm:text-2xl whitespace-nowrap">{evento.localEvento?.classificacao || evento.classificacao || 'Classificacão não informada'}</span>
+                <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto gap-2">
+                    <span className="text-lg sm:text-2xl whitespace-nowrap">
+                       Classificação: 
+                    </span>
+                    <img
+                        src={
+                        evento.classificacao === 'Livre' ? '/images/classificacaolivre.png' :
+                        evento.classificacao === '10+' ? '/images/classificacao10.png' :
+                        evento.classificacao === '12+' ? '/images/classificacao12.png' :
+                        evento.classificacao === '14+' ? '/images/classificacao14.png' :
+                        evento.classificacao === '16+' ? '/images/classificacao16.png' :
+                        evento.classificacao === '18+' ? '/images/classificacao18.png' :
+                        undefined
+                        }
+                        alt={`Classificação ${evento.localEvento?.classificacao || 'não informada'}`}
+                        className="w-6 h-6 sm:w-8 sm:h-8 mr-2 flex-shrink-0"
+                    />  
                 </div>
+
+
+
 
                 <div className="mb-10 sm:mb-15">
                     <h2 className="!text-left !text-[#564A72] text-xl sm:text-2xl font-semibold mb-2">Descrição</h2>
