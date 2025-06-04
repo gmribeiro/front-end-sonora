@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useTitle from '../../hooks/useTitle';
-
 import { FaCalendarAlt } from 'react-icons/fa';
 import { MdPlace } from 'react-icons/md';
 import { IoMdMusicalNotes } from 'react-icons/io';
+import { FaMagnifyingGlass } from "react-icons/fa6";
 
 // Componentes reutilizados
 import Header from '../Header/Header';
@@ -39,7 +39,9 @@ const EventosBuscaResultados = () => {
       }
 
       try {
-        const response = await axios.get(`/eventos/search?nomeEvento=${encodeURIComponent(nomeEvento)}`);
+        const response = await axios.get(
+          `/eventos/search?nomeEvento=${encodeURIComponent(nomeEvento)}`
+        );
         setEventos(response.data);
       } catch (error) {
         console.error('Erro ao buscar eventos:', error);
@@ -94,35 +96,37 @@ const EventosBuscaResultados = () => {
       <Header />
       <Carrossel />
 
-      <main className="flex-grow px-6 py-10 max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-[#564A72]">Resultados da Busca</h1>
+      <main className="flex-grow max-w-7xl mx-auto px-4 mb-50">
+      <h1 className="text-3xl font-bold mb-8 text-[#564A72] flex items-center gap-5"> Resultados da sua Busca<FaMagnifyingGlass /></h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 justify-items-center max-w-7xl mx-auto">
           {eventos.map((evento) => (
             <div
               key={evento.idEvento}
-              className="bg-[#F9F5FB] rounded-xl shadow-lg overflow-hidden cursor-pointer transform transition-transform duration-300 hover:scale-105"
+              className="relative h-[400px] sm:h-[300px] md:h-[400px] lg:h-[620px] overflow-hidden bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] lg:min-w-[400px] mx-auto"
               onClick={() => navigate(`/detalhes/${evento.idEvento}`)}
             >
               <img
                 src={evento.foto || '/images/evento_padrao.png'}
                 alt={evento.nomeEvento || evento.titulo}
-                className="w-full h-72 object-cover"
+                className="w-full h-100 object-cover"
               />
-              <div className="p-6">
-                <h2 className="text-2xl font-bold mb-3 text-[#564A72]">
-                  {evento.nomeEvento || evento.titulo}
-                </h2>
-                <p className="text-gray-700 text-base mb-2 flex items-center">
-                  <FaCalendarAlt className="mr-2" />
-                  {evento.dataHora}
-                </p>
-                <p className="text-gray-700 text-base mb-2 flex items-center">
-                  <MdPlace className="mr-2" />
-                  {evento.localEvento?.local || evento.local || 'Local não informado'}
-                </p>
+              <div className="p-8 flex-grow flex flex-col justify-between">
+                <div className="flex-grow">
+                  <h2 className="text-2xl font-bold mb-6 text-[#564A72]">
+                    {evento.nomeEvento || evento.titulo}
+                  </h2>
+                  <p className="text-gray-700 text-base mb-4 flex items-center">
+                    <FaCalendarAlt className="mr-3 text-[#564A72]" />
+                    {evento.dataHora}
+                  </p>
+                  <p className="text-gray-700 text-base mb-4 flex items-center">
+                    <MdPlace className="mr-3 text-[#564A72]" />
+                    {evento.localEvento?.local || evento.local || 'Local não informado'}
+                  </p>
+                </div>
                 <p className="text-gray-700 text-base flex items-center">
-                  <IoMdMusicalNotes className="mr-2" />
+                  <IoMdMusicalNotes className="mr-3 text-[#564A72]" />
                   {evento.generoMusical?.nomeGenero || evento.genero || 'Não especificado'}
                 </p>
               </div>
