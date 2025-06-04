@@ -158,7 +158,7 @@ const Artistas = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            setContratacaoStatus({ type: 'success', message: 'Contratação realizada com sucesso!' });
+            setContratacaoStatus({ type: 'success', message: 'Proposta enviada ao artista!' });
             setShowContratarForm(null);
             setTimeout(() => setContratacaoStatus(null), 5000);
         } catch (error) {

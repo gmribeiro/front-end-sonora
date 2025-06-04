@@ -366,7 +366,7 @@ const EventoDetalhes = () => {
                 </div>
 
                 <div className="mb-16 sm:mb-20">
-                    <h2 className="!text-[#564A72] flex items-center text-xl sm:text-2xl font-semibold mb-3 overflow-x-auto">
+                    <h2 className="!text-[#564A72] flex items-center text-2xl sm:text-2xl font-semibold mb-3 overflow-x-auto">
                         <IoMdMusicalNotes className="mr-2 flex-shrink-0" /> Artistas Escalados
                     </h2>
                     {carregandoEscalas ? (
@@ -376,7 +376,7 @@ const EventoDetalhes = () => {
                     ) : escalasDoEvento.length === 0 ? (
                         <p className='!text-[#564A72] mt-10'>Nenhum artista escalado para este evento.</p>
                     ) : (
-                        <ul className="list-disc list-inside !text-[#564A72] max-w-full overflow-x-auto">
+                        <ul className="list-disc list-inside !text-[#564A72] max-w-full overflow-x-auto text-2xl">
                             {escalasDoEvento.map((artistaNome, index) => (
                                 <li key={index} className="truncate">{artistaNome}</li>
                             ))}

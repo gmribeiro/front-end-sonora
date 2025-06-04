@@ -127,7 +127,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
       <div className="flex items-center max-w-[1050px] mx-auto px-5 sm:px-10 relative overflow-visible">
 
         <button
-          className={`bg-[#564a72] text-white rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:bg-[#C5B6D2]
+          className={`bg-[#564a72] text-[#EDE6F2] rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:bg-[#C5B6D2]
             ${startIndex === 0 ? "opacity-50 cursor-not-allowed" : ""}
           `}
           onClick={scrollLeft}
@@ -187,14 +187,14 @@ const Carrossel = ({ onGeneroSelecionado }) => {
                 >
                   <span
                     className={`${textoIcone} mb-2 transition-colors duration-300 ${
-                      generoAtivo === categoria.nome ? "!text-[#564a72]" : "text-white"
+                      generoAtivo === categoria.nome ? "!text-[#564a72]" : "text-[#EDE6F2]"
                     }`}
                   >
                     {categoria.icone}
                   </span>
                   <p
                     className={`mt-2 transition-colors duration-300 ${textoGenero} ${
-                      generoAtivo === categoria.nome ? "!text-[#564a72]" : "text-white"
+                      generoAtivo === categoria.nome ? "!text-[#564a72]" : "text-[#EDE6F2]"
                     }`}
                   >
                     {categoria.nome}
@@ -206,7 +206,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
         </div>
 
         <button
-          className={`bg-[#564a72] text-white rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:bg-[#C5B6D2]
+          className={`bg-[#564a72] text-[#EDE6F2] rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:bg-[#C5B6D2]
             ${
               startIndex === generosBackend.length - visibleItems ||
               generosBackend.length <= visibleItems
