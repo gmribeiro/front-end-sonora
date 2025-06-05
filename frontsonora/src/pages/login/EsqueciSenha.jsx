@@ -3,7 +3,7 @@ import useTitle from '../../hooks/useTitle.js';
 import axios from 'axios';
 
 function EsqueciSenha() {
-    useTitle('Recuperar Senha - Sonora');
+    useTitle('Definir nova senha - Sonora');
 
     const [email, setEmail] = useState('');
     const [emailVerificado, setEmailVerificado] = useState(false);
@@ -66,10 +66,11 @@ function EsqueciSenha() {
             });
 
             if (response.status === 200) {
-                showFeedback('Senha redefinida com sucesso! Você pode fazer login agora.', 'sucesso');
+                showFeedback('Senha redefinida com sucesso! Essa página irá se fechar.', 'sucesso');
                 setTimeout(() => {
+                    window.close();
                     window.location.href = '/Acesso';
-                }, 2000);
+                }, 4000);
 
                 setEmailVerificado(false);
                 setEmail('');
