@@ -113,12 +113,12 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-[#564A72] w-full py-2">
+    <header className="bg-[#564A72] w-full py-3">
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col sm:flex-row items-center gap-6 w-full md:w-auto">
           <div className="w-[140px] h-[30px] flex items-center justify-center sm:justify-start">
             <Link to="/">
-              <img src="../images/logosemfundo.png" alt="Logo" className="h-[60px] w-auto object-contain" />
+              <img src="../images/logosemfundo.png" alt="Logo" className="h-[60px] w-auto object-contain transition-transform duration-300 transform hover:scale-110"/>
             </Link>
           </div>
 

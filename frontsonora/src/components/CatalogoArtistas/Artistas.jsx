@@ -234,7 +234,7 @@ const Artistas = () => {
                             {artista.redesSociais && (
                                 <p className="text-[#c2a0bb] hover:text-[#564A72] underline break-words mb-1">
                                     <a href={artista.redesSociais} target="_blank" rel="noreferrer">
-                                        @{artista.redesSociais}
+                                        {artista.redesSociais}
                                     </a>
                                 </p>
                             )}

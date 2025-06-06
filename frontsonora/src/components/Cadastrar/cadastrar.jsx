@@ -8,6 +8,7 @@ const Cadastrar = () => {
     name: '',
     email: '',
     senha: '',
+    confirmarSenha: '',
     telefone: '',
     cpf: '',
     genero: '',
@@ -36,15 +37,41 @@ const Cadastrar = () => {
     }
   }, [cadastroConcluido, navigate]);
 
+  const formatTelefone = (value) => {
+    const cleaned = value.replace(/\D/g, '').slice(0, 13);
+    const match = cleaned.match(/^(\d{2})(\d{2})(\d{4,5})(\d{0,4})$/);
+
+    if (match) {
+      const intl = match[1] ? `+${match[1]}` : '';
+      const ddd = match[2] ? ` (${match[2]})` : '';
+      const first = match[3] ? ` ${match[3]}` : '';
+      const last = match[4] ? `-${match[4]}` : '';
+      return `${intl}${ddd}${first}${last}`.trim();
+    }
+    return value;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({...formData, [name]: value});
+    if (name === 'telefone') {
+      const formatted = formatTelefone(value);
+      setFormData(prev => ({ ...prev, telefone: formatted }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.senha !== formData.confirmarSenha) {
+      setMensagem('As senhas não coincidem.');
+      return;
+    }
+
     try {
-      const response = await axios.post('http://localhost:8080/auth/register', formData);
+      const { confirmarSenha, ...payload } = formData;
+      const response = await axios.post('http://localhost:8080/auth/register', payload);
       if (response.status >= 200 && response.status < 300) {
         setCadastroConcluido(true);
       }
@@ -105,7 +132,7 @@ const Cadastrar = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536]"
               />
 
               <label htmlFor="email" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">E-mail</label>
@@ -117,7 +144,7 @@ const Cadastrar = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536]"
               />
 
               <label htmlFor="senha" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Senha</label>
@@ -129,7 +156,19 @@ const Cadastrar = () => {
                 value={formData.senha}
                 onChange={handleChange}
                 required
-                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536]"
+              />
+
+              <label htmlFor="confirmarSenha" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Confirmar Senha</label>
+              <input
+                type="password"
+                id="confirmarSenha"
+                name="confirmarSenha"
+                placeholder="Digite a senha novamente"
+                value={formData.confirmarSenha}
+                onChange={handleChange}
+                required
+                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536]"
               />
 
               <label htmlFor="role" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Tipo de Usuário</label>
@@ -139,7 +178,7 @@ const Cadastrar = () => {
                 value={formData.role}
                 onChange={handleChange}
                 required
-                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536]"
               >
                 <option value="CLIENT">Cliente (Padrão)</option>
                 <option value="HOST">Anfitrião</option>
@@ -157,7 +196,7 @@ const Cadastrar = () => {
                     value={formData.nomeArtistico}
                     onChange={handleChange}
                     required
-                    className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                    className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536]"
                   />
 
                   <label htmlFor="redesSociais" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Redes Sociais</label>
@@ -168,7 +207,7 @@ const Cadastrar = () => {
                     placeholder="Links para suas redes sociais"
                     value={formData.redesSociais}
                     onChange={handleChange}
-                    className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                    className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536]"
                   />
                 </>
               )}
@@ -180,11 +219,12 @@ const Cadastrar = () => {
                     type="tel"
                     id="telefone"
                     name="telefone"
-                    placeholder="(00) 00000-0000"
+                    placeholder="+55 (11) 91234-5678"
                     value={formData.telefone}
                     onChange={handleChange}
                     required
-                    className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#A48BB3]"
+                    maxLength={20}
+                    className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536]"
                   />
                 </>
               )}

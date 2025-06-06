@@ -57,9 +57,9 @@ const EventosBuscaResultados = () => {
 
   if (carregando) {
     return (
-      <div className="flex items-center justify-center h-screen w-screen text-white text-xl bg-black">
-        Carregando resultados da busca...
-      </div>
+      <div className="flex items-center justify-center h-screen w-screen text-white text-xl bg-[#564A72]">
+        Carregando resultados da busca... <FaMagnifyingGlass />
+      </div> 
     );
   }
 
@@ -69,7 +69,7 @@ const EventosBuscaResultados = () => {
         <p>{erro}</p>
         <button
           onClick={() => navigate('/')}
-          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          className="mt-4 bg-[#564A72] hover:bg-[#7d6aaa] text-white px-4 py-2 rounded"
         >
           Voltar para Home
         </button>
@@ -83,7 +83,7 @@ const EventosBuscaResultados = () => {
         <p>Nenhum evento encontrado com o nome fornecido.</p>
         <button
           onClick={() => navigate('/')}
-          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          className="mt-4 bg-[#564A72] hover:bg-[#7d6aaa] text-white px-4 py-2 rounded"
         >
           Voltar para Home
         </button>
