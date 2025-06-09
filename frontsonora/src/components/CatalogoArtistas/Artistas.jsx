@@ -1,23 +1,36 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Artistas = () => {
-    const [artistaIds, setArtistaIds] = useState([]);
+    // Estados para gerenciar dados dos artistas e do usuário logado
     const [artistas, setArtistas] = useState([]);
     const [usuarioLogado, setUsuarioLogado] = useState(null);
     const [isLoadingArtistas, setIsLoadingArtistas] = useState(true);
     const [errorArtistas, setErrorArtistas] = useState(null);
+
+    // Estados para gerenciar eventos do host
     const [eventosHost, setEventosHost] = useState([]);
     const [isLoadingEventos, setIsLoadingEventos] = useState(true);
     const [errorEventos, setErrorEventos] = useState(null);
     const [eventoSelecionado, setEventoSelecionado] = useState('');
+
+    // Estados para gerenciar contratações
     const [contratandoId, setContratandoId] = useState(null);
-    const [contratacaoStatus, setContratacaoStatus] = useState(null);
-    const [contratacaoDetalhes, setContratacaoDetalhes] = useState({});
-    const [showContratarForm, setShowContratarForm] = useState(null);
+    const [contratacaoStatus, setContratacaoStatus] = useState(null); // { type: 'success'|'error'|'loading', message: '...' }
+    const [contratacaoDetalhes, setContratacaoDetalhes] = useState({}); // { valor: '', detalhes: '' }
+    const [showContratarForm, setShowContratarForm] = useState(null); // id do artista cujo formulário está aberto
+
+    // Estado para gerenciar imagens de perfil
     const [profileImages, setProfileImages] = useState({});
 
+    /**
+     * Busca a imagem de perfil de um usuário específico.
+     * @param {number} userId O ID do usuário cuja imagem de perfil será buscada.
+     */
     const fetchProfileImage = async (userId) => {
+        if (!userId) return;
+
         try {
             const response = await axios.get(`/auth/users/${userId}/profile-image`, {
                 responseType: 'arraybuffer'
@@ -31,11 +44,12 @@ const Artistas = () => {
                 setProfileImages(prev => ({ ...prev, [userId]: null }));
             }
         } catch (error) {
-            console.error(`Erro ao buscar imagem:`, error);
+            console.error(`Erro ao buscar imagem para o usuário ${userId}:`, error);
             setProfileImages(prev => ({ ...prev, [userId]: null }));
         }
     };
 
+    // Efeito para carregar artistas e o usuário logado ao montar o componente
     useEffect(() => {
         const buscarArtistas = async () => {
             setIsLoadingArtistas(true);
@@ -43,25 +57,22 @@ const Artistas = () => {
                 const res = await axios.get('/musicos');
                 if (Array.isArray(res.data)) {
                     setArtistas(res.data);
-                    const ids = res.data.map(a => a.idMusico);
-                    setArtistaIds(ids);
-
                     res.data.forEach(a => {
-                        const userId = a.usuario?.id ?? a.idMusico;
+                        const userId = a.usuario?.id;
                         setProfileImages(prev => ({ ...prev, [userId]: null }));
                         fetchProfileImage(userId);
                     });
                 } else {
-                    setErrorArtistas('Dados inválidos do servidor.');
+                    setErrorArtistas('Dados de artistas inválidos do servidor.');
                 }
             } catch (err) {
-                setErrorArtistas('Erro ao carregar os artistas.');
+                setErrorArtistas('Erro ao carregar os artistas. Tente novamente mais tarde.');
             } finally {
                 setIsLoadingArtistas(false);
             }
         };
 
-        const buscarUsuario = async () => {
+        const buscarUsuarioLogado = async () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
@@ -70,15 +81,16 @@ const Artistas = () => {
                     });
                     setUsuarioLogado(res.data);
                 } catch (err) {
-                    console.error('Erro ao buscar usuário:', err);
+                    console.error('Erro ao buscar dados do usuário logado:', err);
                 }
             }
         };
 
         buscarArtistas();
-        buscarUsuario();
+        buscarUsuarioLogado();
     }, []);
 
+    // Efeito para carregar eventos do host quando o usuário logado é definido ou muda
     useEffect(() => {
         const buscarEventosHost = async () => {
             setIsLoadingEventos(true);
@@ -90,7 +102,7 @@ const Artistas = () => {
                     });
                     setEventosHost(Array.isArray(res.data) ? res.data : []);
                 } catch (err) {
-                    setErrorEventos('Erro ao carregar eventos.');
+                    setErrorEventos('Erro ao carregar seus eventos. Verifique sua conexão.');
                 } finally {
                     setIsLoadingEventos(false);
                 }
@@ -102,6 +114,7 @@ const Artistas = () => {
         buscarEventosHost();
     }, [usuarioLogado]);
 
+    // Efeito de limpeza para revogar URLs de objetos Blob (imagens) ao desmontar o componente
     useEffect(() => {
         return () => {
             Object.values(profileImages).forEach(url => {
@@ -112,188 +125,259 @@ const Artistas = () => {
         };
     }, [profileImages]);
 
-    const handleContratarClick = (id) => {
+    /**
+     * Lida com o clique no botão "Contratar", exibindo o formulário.
+     * @param {number} artistaId O ID do artista a ser contratado.
+     */
+    const handleContratarClick = (artistaId) => {
         if (!eventoSelecionado) {
-            setContratacaoStatus({ type: 'error', message: 'Selecione um evento primeiro.' });
-            setTimeout(() => setContratacaoStatus(null), 3000);
+            setContratacaoStatus({ type: 'error', message: 'Selecione um evento para enviar a proposta.' });
+            setTimeout(() => setContratacaoStatus(null), 4000);
             return;
         }
-        setShowContratarForm(id);
+        setShowContratarForm(artistaId);
         setContratacaoDetalhes({ valor: '', detalhes: '' });
     };
 
+    /**
+     * Lida com as mudanças nos campos do formulário de contratação.
+     * @param {Event} e O evento de mudança do input.
+     */
     const handleContratacaoDetalhesChange = (e) => {
         const { name, value } = e.target;
         setContratacaoDetalhes(prev => ({ ...prev, [name]: value }));
     };
 
-    const confirmarContratacao = async (id) => {
-        if (!contratacaoDetalhes.valor) {
-            setContratacaoStatus({ type: 'error', message: 'Informe o valor da contratação.' });
-            setTimeout(() => setContratacaoStatus(null), 3000);
+    /**
+     * Confirma e envia a proposta de contratação para o backend.
+     * @param {number} artistaId O ID do artista a ser contratado.
+     */
+    const confirmarContratacao = async (artistaId) => {
+        const valorNumerico = parseFloat(contratacaoDetalhes.valor);
+        if (isNaN(valorNumerico) || valorNumerico <= 0) {
+            setContratacaoStatus({ type: 'error', message: 'Por favor, informe um valor numérico válido para a contratação.' });
+            setTimeout(() => setContratacaoStatus(null), 4000);
             return;
         }
 
         const parsedEventoId = parseInt(eventoSelecionado);
-        const parsedArtistaId = parseInt(id);
-        if (isNaN(parsedEventoId) || isNaN(parsedArtistaId)) {
-            setContratacaoStatus({ type: 'error', message: 'IDs inválidos.' });
+        if (isNaN(parsedEventoId)) {
+            setContratacaoStatus({ type: 'error', message: 'ID do evento selecionado é inválido.' });
+            setTimeout(() => setContratacaoStatus(null), 4000);
             return;
         }
 
-        setContratandoId(id);
-        setContratacaoStatus({ type: 'loading', message: 'Contratando...' });
+        setContratandoId(artistaId);
+        setContratacaoStatus({ type: 'loading', message: 'Enviando proposta de contratação...' });
 
         try {
             const token = localStorage.getItem('token');
             await axios.post('/contratos', {
                 idContrato: {
                     evento: { idEvento: parsedEventoId },
-                    musico: { idMusico: parsedArtistaId },
+                    musico: { idMusico: artistaId },
                 },
-                valor: parseFloat(contratacaoDetalhes.valor),
+                valor: valorNumerico,
                 detalhes: contratacaoDetalhes.detalhes,
                 status: false,
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            setContratacaoStatus({ type: 'success', message: 'Proposta enviada ao artista!' });
+            setContratacaoStatus({ type: 'success', message: 'Proposta enviada ao artista com sucesso!' });
             setShowContratarForm(null);
+            setContratacaoDetalhes({});
             setTimeout(() => setContratacaoStatus(null), 5000);
         } catch (error) {
+            console.error('Erro ao confirmar contratação:', error);
             setContratacaoStatus({
                 type: 'error',
-                message: `Erro: ${error.response?.data?.error || error.message}`
+                message: `Erro ao enviar proposta: ${error.response?.data?.message || 'Ocorreu um erro inesperado. Tente novamente.'}`
             });
+            setTimeout(() => setContratacaoStatus(null), 5000);
         } finally {
             setContratandoId(null);
         }
     };
 
-    const cancelarContratacao = () => setShowContratarForm(null);
+    /**
+     * Cancela a exibição do formulário de contratação.
+     */
+    const cancelarContratacao = () => {
+        setShowContratarForm(null);
+        setContratacaoDetalhes({});
+    };
 
+    /**
+     * Lida com a mudança do evento selecionado.
+     * @param {Event} e O evento de mudança do select.
+     */
     const handleEventoChange = (e) => setEventoSelecionado(e.target.value);
 
     return (
         <div
-            className="min-h-screen w-full bg-cover bg-center bg-no-repeat overflow-y-auto"
+            className="min-h-screen w-full bg-cover bg-center bg-no-repeat overflow-y-auto font-['Poppins',_sans-serif] text-gray-800 p-8 md:p-12"
             style={{ backgroundImage: "url('/images/fundocatalogo.png')" }}
         >
-            <div className="p-6 max-w-6xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6 text-white drop-shadow">Artistas Disponíveis</h2>
+            {/* Cabeçalho da Página */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-12 md:mb-20 gap-6">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white tracking-tight drop-shadow-lg text-center md:text-left">Artistas Disponíveis</h1>
+                <Link
+                    to="/"
+                    className="flex-shrink-0 bg-gradient-to-r from-[#c79bdc] to-[#a06cb3] hover:from-[#b88bc9] hover:to-[#8e5a9c] text-white px-7 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#c79bdc] focus:ring-opacity-75 font-semibold text-xl"
+                >
+                    ← Voltar para Home
+                </Link>
+            </div>
 
-                {usuarioLogado?.role === 'HOST' && (
-                    <div className="mb-6 bg-white p-4 rounded-lg shadow">
-                        <label htmlFor="evento" className="block font-medium mb-1">Selecionar Evento:</label>
-                        {isLoadingEventos && <p className="text-gray-500">Carregando eventos...</p>}
-                        {errorEventos && <p className="text-red-500">{errorEventos}</p>}
-                        {!isLoadingEventos && eventosHost.length > 0 && (
-                            <select
-                                id="evento"
-                                value={eventoSelecionado}
-                                onChange={handleEventoChange}
-                                className="w-full border border-gray-300 rounded-md px-3 py-2"
-                            >
-                                <option value="">Selecione um evento</option>
-                                {eventosHost.map(e => (
-                                    <option key={e.idEvento} value={e.idEvento}>
-                                        {e.nome} {e.nomeEvento && `- ${e.nomeEvento}`} {e.data && `- ${new Date(e.data).toLocaleDateString()}`}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                        {!isLoadingEventos && eventosHost.length === 0 && <p>Nenhum evento encontrado.</p>}
-                    </div>
-                )}
+            {/* Seção de Seleção de Evento (apenas para Hosts) */}
+            {usuarioLogado?.role === 'HOST' && (
+                <div className="mb-10 bg-white p-7 rounded-3xl shadow-xl border border-gray-100 bg-opacity-95 backdrop-blur-sm">
+                    <label htmlFor="evento" className="block text-2xl font-bold mb-4 text-[#5c2c90]">
+                        Selecione o Evento para Contratar um Artista:
+                    </label>
+                    {isLoadingEventos && <p className="text-xl text-gray-600">Carregando seus eventos...</p>}
+                    {errorEventos && <p className="text-xl text-red-600">{errorEventos}</p>}
+                    {!isLoadingEventos && eventosHost.length > 0 ? (
+                        <select
+                            id="evento"
+                            value={eventoSelecionado}
+                            onChange={handleEventoChange}
+                            className="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-[#a06cb3] focus:border-[#a06cb3] outline-none transition-all duration-200 text-lg placeholder-gray-400 shadow-sm focus:shadow-md"
+                        >
+                            <option value="">-- Selecione um evento --</option>
+                            {eventosHost.map(e => (
+                                <option key={e.idEvento} value={e.idEvento}>
+                                    {e.nome} {e.nomeEvento && `- ${e.nomeEvento}`} {e.data && `- ${new Date(e.data).toLocaleDateString('pt-BR')}`}
+                                </option>
+                            ))}
+                        </select>
+                    ) : (
+                        !isLoadingEventos && !errorEventos && (
+                            <p className="text-xl text-gray-600">Você não tem eventos criados. Crie um evento para poder contratar artistas.</p>
+                        )
+                    )}
+                </div>
+            )}
 
-                {isLoadingArtistas && <p className="text-gray-100">Carregando artistas...</p>}
-                {errorArtistas && <p className="text-red-500">{errorArtistas}</p>}
+            {/* Mensagens de Status (Carregamento, Erro, Sucesso) */}
+            {isLoadingArtistas && <p className="text-3xl text-white text-center mt-12">Carregando artistas...</p>}
+            {errorArtistas && <p className="text-3xl text-red-500 text-center mt-12">{errorArtistas}</p>}
 
-                {contratacaoStatus && (
-                    <div className={`p-3 rounded-md mb-4 ${contratacaoStatus.type === 'error' ? 'bg-red-100 text-red-700' : contratacaoStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                        {contratacaoStatus.message}
-                    </div>
-                )}
+            {contratacaoStatus && (
+                <div className={`p-5 rounded-xl mb-8 text-2xl text-center shadow-lg font-semibold ${
+                    contratacaoStatus.type === 'error' ? 'bg-red-100 text-red-700 border border-red-300' :
+                    contratacaoStatus.type === 'success' ? 'bg-green-100 text-green-700 border border-green-300' :
+                    'bg-blue-100 text-blue-700 border border-blue-300'
+                }`}>
+                    {contratacaoStatus.message}
+                </div>
+            )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {artistas.map(artista => (
-                        <div key={artista.idMusico} className="border rounded-lg p-6 shadow-md bg-white flex flex-col items-center text-center min-h-[270px] min-w-[250px]">
+            {/* Grid de Cards de Artistas */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-12">
+                {artistas.length > 0 ? (
+                    artistas.map(artista => (
+                        <div key={artista.idMusico} className="bg-white rounded-3xl p-7 shadow-xl flex flex-col items-center text-center transform transition-transform duration-300 hover:scale-[1.03] border border-gray-100 bg-opacity-95 backdrop-blur-sm min-h-[420px]">
+                            {/* Imagem de Perfil ou Placeholder */}
                             {profileImages[artista.usuario?.id] ? (
                                 <img
                                     src={profileImages[artista.usuario.id]}
                                     alt={`Foto de ${artista.nomeArtistico}`}
-                                    className="w-32 h-32 rounded-full object-cover mb-3"
+                                    className="w-36 h-36 rounded-full object-cover mb-4 border-4 border-[#a06cb3] shadow-md"
                                 />
                             ) : (
-                                <div className="w-32 h-32 flex items-center justify-center bg-gray-200 rounded-full mb-3 text-3xl font-bold text-gray-600">
+                                <div className="w-36 h-36 flex items-center justify-center bg-gradient-to-br from-[#c79bdc] to-[#a06cb3] rounded-full mb-4 text-4xl font-bold text-white shadow-md">
                                     {artista.nomeArtistico.charAt(0).toUpperCase()}
                                 </div>
                             )}
-                            <h3 className="text-xl font-semibold">{artista.nomeArtistico}</h3>
+
+                            {/* Nome Artístico */}
+                            <h3 className="text-2xl font-bold text-[#5c2c90] mb-2">{artista.nomeArtistico}</h3>
+
+                            {/* Redes Sociais */}
                             {artista.redesSociais && (
-                                <p className="text-[#c2a0bb] hover:text-[#564A72] underline break-words mb-1">
-                                    <a href={artista.redesSociais} target="_blank" rel="noreferrer">
-                                        {artista.redesSociais}
+                                <p className="text-base text-gray-600 hover:text-[#564A72] mb-3">
+                                    <a href={artista.redesSociais} target="_blank" rel="noreferrer" className="underline break-words">
+                                        {artista.redesSociais.length > 35 ? `${artista.redesSociais.substring(0, 32)}...` : artista.redesSociais}
                                     </a>
                                 </p>
                             )}
+
+                            {/* Biografia do Artista */}
+                            <div className="mb-5 text-base text-gray-700 max-h-28 overflow-hidden w-full px-2 flex-grow">
+                                <p className="whitespace-pre-line leading-relaxed">
+                                    {artista.usuario?.bio ?
+                                        (artista.usuario.bio.length > 180 ? `${artista.usuario.bio.substring(0, 177)}...` : artista.usuario.bio)
+                                        : "Nenhuma biografia disponível para este artista."}
+                                </p>
+                            </div>
+
+                            {/* Botão de Contratação / Formulário de Contratação (apenas para Hosts) */}
                             {usuarioLogado?.role === 'HOST' && (
-                                <>
+                                <div className="w-full mt-auto"> {/* mt-auto para empurrar para o final do card */}
                                     {showContratarForm === artista.idMusico ? (
-                                        <div className="w-full mt-4 space-y-2">
-                                            <label className="block text-left text-sm">Valor:</label>
-                                            <input
-                                                type="number"
-                                                name="valor"
-                                                value={contratacaoDetalhes.valor}
-                                                onChange={handleContratacaoDetalhesChange}
-                                                className="w-full border px-3 py-1 rounded-md"
-                                                required
-                                            />
-                                            <label className="block text-left text-sm">Detalhes:</label>
-                                            <textarea
-                                                name="detalhes"
-                                                value={contratacaoDetalhes.detalhes}
-                                                onChange={handleContratacaoDetalhesChange}
-                                                className="w-full border px-3 py-1 rounded-md"
-                                            />
-                                            <button
-                                                onClick={() => confirmarContratacao(artista.idMusico)}
-                                                className="bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700 disabled:opacity-50"
-                                                disabled={contratandoId === artista.idMusico}
-                                            >
-                                                {contratandoId === artista.idMusico ? 'Contratando...' : 'Confirmar'}
-                                            </button>
-                                            <button
-                                                onClick={cancelarContratacao}
-                                                className="text-red-600 text-sm hover:underline"
-                                            >
-                                                Cancelar
-                                            </button>
+                                        <div className="space-y-4">
+                                            <div className="text-left">
+                                                <label htmlFor={`valor-${artista.idMusico}`} className="block text-base font-semibold mb-2 text-[#5c2c90]">Valor (R$):</label>
+                                                <input
+                                                    id={`valor-${artista.idMusico}`}
+                                                    type="number"
+                                                    name="valor"
+                                                    value={contratacaoDetalhes.valor}
+                                                    onChange={handleContratacaoDetalhesChange}
+                                                    className="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-[#a06cb3] focus:border-[#a06cb3] outline-none transition-all duration-200 placeholder-gray-400 shadow-sm"
+                                                    placeholder="Ex: 500.00"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="text-left">
+                                                <label htmlFor={`detalhes-${artista.idMusico}`} className="block text-base font-semibold mb-2 text-[#5c2c90]">Detalhes:</label>
+                                                <textarea
+                                                    id={`detalhes-${artista.idMusico}`}
+                                                    name="detalhes"
+                                                    value={contratacaoDetalhes.detalhes}
+                                                    onChange={handleContratacaoDetalhesChange}
+                                                    rows="3"
+                                                    className="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-[#a06cb3] focus:border-[#a06cb3] outline-none transition-all duration-200 placeholder-gray-400 shadow-sm resize-y"
+                                                    placeholder="Tipo de apresentação, duração, etc."
+                                                />
+                                            </div>
+                                            <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                                                <button
+                                                    onClick={() => confirmarContratacao(artista.idMusico)}
+                                                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 ease-in-out font-semibold text-base transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    disabled={contratandoId === artista.idMusico}
+                                                >
+                                                    {contratandoId === artista.idMusico ? 'Contratando...' : 'Confirmar'}
+                                                </button>
+                                                <button
+                                                    onClick={cancelarContratacao}
+                                                    className="flex-1 bg-gray-200 hover:bg-gray-300 text-[#5c2c90] px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 ease-in-out font-semibold text-base transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
+                                                >
+                                                    Cancelar
+                                                </button>
+                                            </div>
                                         </div>
                                     ) : (
                                         <button
                                             onClick={() => handleContratarClick(artista.idMusico)}
-                                            className="mt-3 bg-[#c2a0bb] text-white px-4 py-1 hover:bg-[#564A72] sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full bg-gradient-to-r from-[#c79bdc] to-[#a06cb3] hover:from-[#b88bc9] hover:to-[#8e5a9c] text-white px-7 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-lg transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#c79bdc] focus:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            disabled={!eventoSelecionado}
                                         >
-                                            Contratar
+                                            Contratar Artista
                                         </button>
                                     )}
-                                </>
+                                </div>
                             )}
                         </div>
-                    ))}
-                </div>
-
-                <div className="flex justify-end">
-                    <button
-                        className="mt-8 px-6 py-3 bg-white text-[#c2a0bb] hover:bg-[#564A72] hover:text-white sm:text-base transition transform duration-300 rounded ease-in-out hover:scale-105 disabled:opacity-50"
-                        onClick={() => window.location.href = '/'}
-                    >
-                        Voltar
-                    </button>
-                </div>
+                    ))
+                ) : (
+                    // Mensagem para quando não há artistas
+                    !isLoadingArtistas && !errorArtistas && (
+                        <p className="text-3xl text-white text-center col-span-full mt-12">Nenhum artista encontrado no momento. Volte mais tarde!</p>
+                    )
+                )}
             </div>
         </div>
     );
