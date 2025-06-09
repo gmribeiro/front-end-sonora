@@ -26,6 +26,8 @@ function MeuPerfil() {
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmaSenha, setConfirmaSenha] = useState('');
 
+  const [role, setUserRole] = useState('');
+
   const navigate = useNavigate();
 
   // Utility functions for alerts
@@ -65,6 +67,7 @@ function MeuPerfil() {
         setNomeUsuario(res.data.nome);
         setNovoNome(res.data.nome); // Initialize new name with current name
         setUserId(res.data.id);
+        setUserRole(res.data.role)
         // Assuming your backend sends a creation date and a bio
         const date = res.data.createdAt ? new Date(res.data.createdAt) : new Date();
         setAccountCreationDate(date.toLocaleDateString('pt-BR'));
@@ -242,7 +245,7 @@ function MeuPerfil() {
           <div className="bg-gray-50 rounded-2xl shadow-inner p-6 my-10 border border-gray-100">
             <h3 className="text-2xl font-bold text-[#55286B] mb-4">Informações da Conta</h3>
             <p className="text-lg text-gray-700 mb-3">
-              <strong>Email:</strong> <span className="font-medium text-gray-800">usuario@email.com</span>
+              <strong>Tipo de usuário:</strong> <span className="font-medium text-gray-800">{role}</span>
             </p>
             <p className="text-lg text-gray-700">
               <strong>Data de Criação da Conta:</strong> <span className="font-medium text-gray-800">{accountCreationDate}</span>
