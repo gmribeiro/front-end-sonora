@@ -18,29 +18,16 @@ import Artista from "./pages/artistas/Artista.jsx";
 import DetalhesEvento from "./pages/detalhes-evento/DetalhesEvento.jsx";
 import EventosBuscaResultados from './components/EventosBuscaResultado/EventosBuscaResultado.jsx';
 import EmailRecoveryForm from "./pages/login/EmailRecoveryForm.jsx";
+import App from './App.jsx'
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/meusconvites" element={<Meusconvites />} />
-        <Route path="/acesso" element={<Acesso />} />
-        <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/perfil" element={<Meuperfil />} />
-        <Route path="/avaliacoes" element={<Avaliacoes/>} />
-        <Route path="/artistas" element={<Artista/>} />
-        <Route path="/detalhes/:id" element={<DetalhesEvento/>} />
-        <Route path="/esquecisenha" element={<EsqueciSenha />} />
-        <Route path="/notificacao" element={<Notificacao />} />
-        <Route path="/sobrenos" element={<SobreNos />} />
-        <Route path="/termos" element={<Termos />} />
-        <Route path="/configuracoes-usuario" element={<ConfUsuario />} />
-        <Route path="/configuracoes-musico" element={<ConfMusico />} />
-        <Route path="/eventos/resultado-busca" element={<EventosBuscaResultados />} />
-        <Route path="/check-email" element={<EmailRecoveryForm />} />
-      </Routes>
-    </Router>
 
-  </StrictMode>,
-);
+let startApp = () => {
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render( <App />);
+}
+
+if (!window.cordova) {
+    startApp();
+} else {
+    document.addEventListener('deviceready', startApp, false);
+}

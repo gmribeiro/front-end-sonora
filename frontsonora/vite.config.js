@@ -2,63 +2,65 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+const baseUrl = process.env.REACT_APP_BACKEND_URL
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
       '/auth': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
       '/genres': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
       '/places': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
       '/eventos': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
       '/reservas': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
       '/avaliacoes': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
       '/musicos': {
-        target: 'http://localhost:8080',
+        target: baseUrl',
         changeOrigin: true,
         secure: false
       },
       '/notifications': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
       '/contratos': {
-        target: 'http://localhost:8080',
+        target: baseUrl',
         changeOrigin: true,
         secure: false
       },
       '/users': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
       '/escalas': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       }
