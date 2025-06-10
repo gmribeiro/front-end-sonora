@@ -91,7 +91,6 @@ const Notificacao = () => {
             prev.map(n => (n.idNotificacao === idNotificacao ? { ...n, lida: true } : n))
         );
 
-        // Inicia o desaparecimento após 3 segundos
         setTimeout(() => {
           setNotificacoesVisiveis(prev => ({ ...prev, [idNotificacao]: false }));
         }, 3000);
