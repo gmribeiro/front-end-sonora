@@ -20,7 +20,7 @@ import EventosBuscaResultados from './components/EventosBuscaResultado/EventosBu
 import EmailRecoveryForm from "./pages/login/EmailRecoveryForm.jsx";
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+    
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -42,5 +42,5 @@ createRoot(document.getElementById('root')).render(
       </Routes>
     </Router>
 
-  </StrictMode>,
+,
 );
