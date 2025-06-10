@@ -51,7 +51,7 @@ function MeusContratos() {
 
                 if (musicoLogado && musicoLogado.idMusico) {
                     setArtistaIdLogado(musicoLogado.idMusico);
-                    setNomeArtistaLogado(musicoLogado.nomeMusico || 'Artista Desconhecido');
+                    setNomeArtistaLogado(musicoLogado.nomeArtistico || 'Artista Desconhecido');
                     await fetchMeusContratosArtista(musicoLogado.idMusico, token);
                 } else {
                     console.warn('Nenhum perfil de músico encontrado para o usuário logado.');
