@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    apiKey: process.env.VITE_FIREBASE_API_KEY,
     authDomain: "fir-3mod25.firebaseapp.com",
     projectId: "fir-3mod25",
     storageBucket: "fir-3mod25.firebasestorage.app",
@@ -14,7 +14,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 const messaging = getMessaging(firebaseApp);
 
 export const myGetToken =  (setTokenFound) => {
-    return getToken(messaging, {vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY}).then((currentToken) => {
+    return getToken(messaging, {vapidKey: process.env.VITE_FIREBASE_VAPID_KEY}).then((currentToken) => {
       if (currentToken) {
         console.log('current token for client: ', currentToken);
         setTokenFound(true);

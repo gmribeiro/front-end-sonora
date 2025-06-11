@@ -9,65 +9,68 @@ import tailwindcss from '@tailwindcss/vite'
  
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command, mode }) => {
+  const env = loadEnv(mode, process.cwd())
+return {
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
       '/auth': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/genres': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/places': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/eventos': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/reservas': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/avaliacoes': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/musicos': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/notifications': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/contratos': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/users': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/escalas': {
-        target: import.meta.env.VITE_BACKEND_URL,
+        target: process.env.VITE_APP_BACKEND_URL,
         changeOrigin: true,
         secure: false
       }
     }
   }
+}
 })
