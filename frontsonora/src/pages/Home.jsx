@@ -7,10 +7,11 @@ import useTitle from '../hooks/useTitle';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../components/header/header.jsx';
-import InfoEvento from '../components/InfoEvento/InfoEvento.jsx';
-import Eventos from '../components/Eventos/eventos.jsx';
 
+import Eventos from '../components/Eventos/eventos.jsx';
+import InfoEvento from '../components/InfoEvento/InfoEvento.jsx';
 import Footer from '../components/Footer/footer.jsx';
+
 
 function Home() {
   useTitle('Início - Sonora');
@@ -85,7 +86,7 @@ function Home() {
             />
           } />
           <Route path="/detalhes/:id" element={
-            <InfoEvento
+            <InfoEvento 
                 eventos={eventosCompletos}
                 onVoltar={() => navigate('/')}
             />
