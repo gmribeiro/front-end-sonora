@@ -1,7 +1,7 @@
 importScripts("https://cdnjs.cloudflare.com/ajax/libs/firebase/10.11.1/firebase-app-compat.min.js");
 importScripts("https://cdnjs.cloudflare.com/ajax/libs/firebase/10.11.1/firebase-messaging-compat.min.js");
 const firebaseConfig = {
-    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: "fir-3mod25.firebaseapp.com",
     projectId: "fir-3mod25",
     storageBucket: "fir-3mod25.firebasestorage.app",
