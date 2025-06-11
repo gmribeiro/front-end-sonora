@@ -1,13 +1,16 @@
-import Header from '../components/header/header';
-import Footer from '../components/Footer/footer';
-import Eventos from '../components/Eventos/eventos';
+
 import Carrossel from '../components/Carrossel/carrossel.jsx';
-import InfoEvento from '../components/InfoEvento/InfoEvento';
+
 import './css/global.css';
 import { useState, useEffect } from 'react';
 import useTitle from '../hooks/useTitle';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Header from '../components/header/header.jsx';
+import InfoEvento from '../components/InfoEvento/InfoEvento.jsx';
+import Eventos from '../components/Eventos/eventos.jsx';
+
+import Footer from '../components/Footer/footer.jsx';
 
 function Home() {
   useTitle('Início - Sonora');
