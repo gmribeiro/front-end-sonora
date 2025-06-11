@@ -1,0 +1,133 @@
+.header {
+  background-color: #564A72;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 60px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: 2px solid #c2a0bb;
+  border-radius: 22px;
+  padding: 10px 50px;
+}
+
+.search-icon {
+  color: #c2a0bb;
+  margin-right: 9px;
+  font-size: 15px;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #c2a0bb;
+  font-size: 16px;
+  width: 260px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.divider {
+  height: 45px;
+  width: 3px;
+  background-color: #c2a0bb;
+}
+
+.nav {
+  display: flex;
+  gap: 2.5rem;
+}
+.nav-link {
+  color: #c2a0bb;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.perfil-link {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  text-decoration: none;
+  color: #c2a0bb;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.perfil-link:hover {
+  background-color: rgba(194, 160, 187, 0.2);
+}
+
+.perfil-foto {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  border: 2px solid #c2a0bb;
+}
+.perfil-foto-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #927AA3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-right: 10px;
+  border: 2px solid #c2a0bb;
+}
+.perfil-nome {
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c2a0bb;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background-color: rgba(194, 160, 187, 0.2);
+}
