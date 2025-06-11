@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import usuarioService from "./services/usuarioService";
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
     authDomain: "fir-3mod25.firebaseapp.com",
@@ -20,7 +19,7 @@ export const myGetToken =  (setTokenFound) => {
         console.log('current token for client: ', currentToken);
         setTokenFound(true);
         
-        usuarioService.updateUsuarioToken('fdef7e68-6f74-456f-b3ee-51e61bd87d66',{token:  currentToken}).then(r => console.log(r))
+        //usuarioService.updateUsuarioToken('fdef7e68-6f74-456f-b3ee-51e61bd87d66',{token:  currentToken}).then(r => console.log(r))
         // Track the token -> client mapping, by sending to backend server
         // show on the UI that permission is secured
       } else {
