@@ -1,0 +1,404 @@
+:root {
+    --roxo-principal: #75518c;
+    --roxo-claro: #d7bce8;
+    --rosa-claro: #f3e7f9;
+    --cinza-escuro: #333;
+    --branco: #fff;
+  }
+
+  body {
+    background-color: var(--rosa-claro);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .meu-perfil-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--rosa-claro);
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--roxo-principal);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .perfil-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .perfil-header button {
+    background-color: var(--roxo-principal);
+    color: var(--branco);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .perfil-header button:hover {
+    background-color: #5e3b71;
+  }
+
+  .foto-perfil {
+    width: 120px;
+    height: 120px;
+    background-color: #c5a0db;
+    border-radius: 50%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: var(--branco);
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+
+  .secao {
+    background-color: var(--branco);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 10px rgba(117, 81, 140, 0.1);
+  }
+
+  .secao h3 {
+    color: var(--roxo-principal);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .info-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+  }
+
+  .info-linha span {
+    color: var(--cinza-escuro);
+  }
+
+  .info-linha button {
+    background-color: var(--roxo-claro);
+    color: var(--cinza-escuro);
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .info-linha button:hover {
+    background-color: #caa0e4;
+  }
+
+/* Estilo para o NOVO botão de editar perfil */
+.editar-perfil-btn {
+  background-color: #28a745; /* Verde para editar */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 20px; /* Espaçamento do nome/foto */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.editar-perfil-btn:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+.editar-perfil-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* --- Formulário de Edição de Perfil (NOVO) --- */
+.formulario-edicao-perfil {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  text-align: left; /* Alinha o texto do formulário à esquerda */
+}
+
+.formulario-edicao-perfil h3 {
+  color: #007bff;
+  margin-bottom: 20px;
+  font-size: 1.6em;
+  text-align: center;
+}
+
+.formulario-edicao-perfil h4 {
+  color: #555;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.formulario-edicao-perfil .small-text {
+  font-size: 0.85em;
+  color: #777;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.formulario-edicao-perfil .form-group {
+  margin-bottom: 15px;
+}
+
+.formulario-edicao-perfil label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #444;
+}
+
+.formulario-edicao-perfil input[type="text"],
+.formulario-edicao-perfil input[type="password"] {
+  width: calc(100% - 20px); /* Ajuste para padding */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box; /* Garante que padding não aumente a largura total */
+}
+
+.formulario-edicao-perfil input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.salvar-perfil-btn,
+.cancelar-perfil-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+  width: auto; /* Permite que o botão se ajuste ao conteúdo */
+}
+
+.salvar-perfil-btn {
+  background-color: #007bff; /* Azul principal */
+  color: white;
+  margin-right: 10px;
+}
+
+.salvar-perfil-btn:hover {
+  background-color: #0056b3;
+}
+
+.cancelar-perfil-btn {
+  background-color: #dc3545; /* Vermelho para cancelar */
+  color: white;
+}
+
+.cancelar-perfil-btn:hover {
+  background-color: #c82333;
+}
+
+.salvar-perfil-btn:disabled,
+.cancelar-perfil-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+
+/* --- Seção de Upload de Foto de Perfil --- */
+.upload-foto-perfil-container {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.upload-foto-perfil-container h3 {
+  color: #007bff;
+  margin-bottom: 20px;
+  font-size: 1.6em;
+  text-align: center;
+}
+
+.upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px; /* Espaço entre os elementos */
+  margin-top: 15px;
+}
+
+.selecionar-foto-btn {
+  display: inline-block;
+  background-color: #17a2b8; /* Azul claro para selecionar */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.selecionar-foto-btn:hover {
+  background-color: #138496;
+}
+
+.selecionar-foto-btn[style*="opacity: 0.6"] { /* Estilo para quando está desabilitado */
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+
+.upload-area p {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.enviar-foto-btn {
+  background-color: #ffc107; /* Amarelo para enviar */
+  color: #333;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.enviar-foto-btn:hover {
+  background-color: #e0a800;
+}
+
+.enviar-foto-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+
+.alterar-senha-container {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.alterar-senha-container h3 {
+  color: #007bff;
+  margin-bottom: 20px;
+  font-size: 1.6em;
+  text-align: center;
+}
+
+.alterar-senha-container .form-group {
+  margin-bottom: 15px;
+}
+
+.alterar-senha-container label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #444;
+}
+
+.alterar-senha-container input[type="password"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.alterar-senha-container input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.alterar-senha-btn {
+  background-color: #ff4500;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.alterar-senha-btn:hover {
+  background-color: #cc3700;
+}
+
+.alterar-senha-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+  .logout-btn,
+  .alterar-senha-btn {
+    display: block;
+    width: fit-content;
+    margin: 1rem auto;
+    background-color: var(--roxo-principal);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .logout-btn:hover,
+  .alterar-senha-btn:hover {
+    background-color: #5e3b71;
+  }
+
+
+
+  /* Responsivo */
+  @media (max-width: 700px) {
+    .info-linha {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .info-linha button {
+      margin-top: 5px;
+    }
+
+    .perfil-header {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .foto-perfil {
+      width: 100px;
+      height: 100px;
+    }
+  }
