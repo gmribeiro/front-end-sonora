@@ -5,9 +5,8 @@ import tailwindcss from '@tailwindcss/vite'
 
 
  // Load app-level env vars to node-level env vars.
- process.env = {...process.env, ...loadEnv(mode, process.cwd())};
 
- const baseUrl = import.meta.env.VITE_BACKEND_URL;
+ 
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -15,57 +14,57 @@ export default defineConfig({
   server: {
     proxy: {
       '/auth': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/genres': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/places': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/eventos': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/reservas': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/avaliacoes': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/musicos': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/notifications': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/contratos': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/users': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       },
       '/escalas': {
-        target: baseUrl,
+        target: import.meta.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false
       }
