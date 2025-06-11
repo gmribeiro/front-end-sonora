@@ -4,6 +4,9 @@ import tailwindcss from '@tailwindcss/vite'
 
 const baseUrl = process.env.REACT_APP_BACKEND_URL
 
+ // Load app-level env vars to node-level env vars.
+ process.env = {...process.env, ...loadEnv(mode, process.cwd())};
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
