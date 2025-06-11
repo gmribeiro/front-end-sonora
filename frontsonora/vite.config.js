@@ -40,7 +40,7 @@ export default defineConfig({
         secure: false
       },
       '/musicos': {
-        target: baseUrl',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
@@ -50,7 +50,7 @@ export default defineConfig({
         secure: false
       },
       '/contratos': {
-        target: baseUrl',
+        target: baseUrl,
         changeOrigin: true,
         secure: false
       },
