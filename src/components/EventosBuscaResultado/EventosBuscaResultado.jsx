@@ -10,8 +10,8 @@ import { IoMdMusicalNotes } from 'react-icons/io';
 import { FaMagnifyingGlass } from "react-icons/fa6";
 
 // Componentes reutilizados
-import Header from '../Header/Header';
-import Footer from '../Footer/Footer';
+import Header from '../header/header.jsx';
+import Footer from '../Footer/footer.jsx';
 import Carrossel from '../Carrossel/carrossel';
 
 const EventosBuscaResultados = () => {
