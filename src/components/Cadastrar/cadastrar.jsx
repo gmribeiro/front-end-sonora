@@ -72,7 +72,7 @@ const Cadastrar = () => {
 
     try {
       const { confirmarSenha, ...payload } = formData;
-      const response = await api.post('http://localhost:8080/auth/register', payload);
+      const response = await api.post('/auth/register', payload);
       if (response.status >= 200 && response.status < 300) {
         setCadastroConcluido(true);
       }
