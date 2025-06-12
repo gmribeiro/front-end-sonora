@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 const firebaseConfig = {
-    apiKey: process.env.VITE_FIREBASE_API_KEY,
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: "fir-3mod25.firebaseapp.com",
     projectId: "fir-3mod25",
     storageBucket: "fir-3mod25.firebasestorage.app",
