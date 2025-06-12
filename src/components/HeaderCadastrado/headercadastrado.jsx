@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch, FaBell } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 import './headercadastrado.css';
 
 function HeaderCadastrado() {
@@ -15,7 +15,7 @@ function HeaderCadastrado() {
             return;
         }
         try {
-            const response = await axios.get('/auth/user/me/profile-image', {
+            const response = await api.get('/auth/user/me/profile-image', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

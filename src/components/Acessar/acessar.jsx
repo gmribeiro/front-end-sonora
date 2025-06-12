@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
+import api from '../../api/index.js';
 import SelectorRole from "../../pages/select-roles/Selector-Role.jsx";
 
 const Acessar = () => {
@@ -19,7 +19,7 @@ const Acessar = () => {
     const checkAuthStatus = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('/auth/user/me', {
+            const response = await api.get('/auth/user/me', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (response.data.role && response.data.role !== 'CLIENT') {
@@ -39,16 +39,16 @@ const Acessar = () => {
         e.preventDefault();
         setStatus({ loading: true, message: '', success: false });
         try {
-            const { data: token } = await axios.post('/auth/login', formData);
+            const { data: token } = await api.post('/auth/login', formData);
             if (!token || typeof token !== 'string') throw new Error('Token inválido');
             localStorage.setItem('token', token);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setStatus({ loading: false, message: 'Login realizado com sucesso!', success: true });
             setTimeout(() => navigate('/perfil'), 1000);
         } catch (error) {
             console.error('Erro no login:', error);
             localStorage.removeItem('token');
-            delete axios.defaults.headers.common['Authorization'];
+            delete api.defaults.headers.common['Authorization'];
             setStatus({
                 loading: false,
                 message: error.response?.status === 401 ? 'Email ou senha incorretos' : 'Erro no servidor',
@@ -60,9 +60,9 @@ const Acessar = () => {
     const handleGoogleLoginSuccess = async (credentialResponse) => {
         setStatus({ loading: true, message: '', success: false });
         try {
-            const authResponse = await axios.post('/auth/google', { token: credentialResponse.credential });
+            const authResponse = await api.post('/auth/google', { token: credentialResponse.credential });
             localStorage.setItem('token', authResponse.data.token);
-            const userResponse = await axios.get('/auth/user/me', {
+            const userResponse = await api.get('/auth/user/me', {
                 headers: { 'Authorization': `Bearer ${authResponse.data.token}` }
             });
             const userData = userResponse.data;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./notificacao.css";
-import axios from "axios";
+import api from "../../api";
 
 const Notificacao = () => {
   const [notificacoes, setNotificacoes] = useState([]);
@@ -16,7 +16,7 @@ const Notificacao = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('/auth/user/me', {
+          const response = await api.get('/auth/user/me', {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           setUsuarioLogado(response.data);
@@ -42,7 +42,7 @@ const Notificacao = () => {
         setError(null);
         const token = localStorage.getItem('token');
         try {
-          const response = await axios.get(`/notifications/user/${usuarioLogado.id}`, { 
+          const response = await api.get(`/notifications/user/${usuarioLogado.id}`, { 
             headers: { Authorization: `Bearer ${token}` },
           });
           setNotificacoes(response.data);
@@ -73,7 +73,7 @@ const Notificacao = () => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        await axios.put(
+        await api.put(
             `/notifications/${idNotificacao}/read`,
             {
               lida: true,

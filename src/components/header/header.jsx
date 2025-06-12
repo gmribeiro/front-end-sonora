@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 
 const Header = () => {
   const [nomeUsuario, setNomeUsuario] = useState('');
@@ -22,7 +22,7 @@ const Header = () => {
     }
 
     try {
-      const response = await axios.get('/auth/user/me/profile-image', {
+      const response = await api.get('/auth/user/me/profile-image', {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob',
       });
@@ -57,7 +57,7 @@ const Header = () => {
       }
 
       try {
-        const userResponse = await axios.get('/auth/user/me', {
+        const userResponse = await api.get('/auth/user/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         const { nome, role } = userResponse.data;

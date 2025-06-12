@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { IoIosStar } from "react-icons/io";
+import api from "../../api";
 
 const COLORS = {
   primary: '#3f3864',
@@ -83,7 +84,7 @@ const Avaliacoes = () => {
       }
 
       try {
-        const response = await axios.get('/auth/user/me', {
+        const response = await api.get('/auth/user/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserRole(response.data?.role);
@@ -106,7 +107,7 @@ const Avaliacoes = () => {
       if (!usuarioId || !token) return;
 
       try {
-        const responseReservas = await axios.get(`/reservas/user/${usuarioId}/confirmed/past`, {
+        const responseReservas = await api.get(`/reservas/user/${usuarioId}/confirmed/past`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -138,7 +139,7 @@ const Avaliacoes = () => {
         }
 
         try {
-          const eventoResponse = await axios.get(`/eventos/${eventoSelecionadoId}`, {
+          const eventoResponse = await api.get(`/eventos/${eventoSelecionadoId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const hostId = eventoResponse.data?.host?.id;
@@ -177,7 +178,7 @@ const Avaliacoes = () => {
     }
 
     try {
-      await axios.post(
+      await api.post(
           "/avaliacoes",
           {
             nota,
@@ -196,7 +197,7 @@ const Avaliacoes = () => {
       let hostId = null;
       let nomeEvento = '';
       try {
-        const eventoResponse = await axios.get(`/eventos/${eventoSelecionadoId}`, {
+        const eventoResponse = await api.get(`/eventos/${eventoSelecionadoId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         hostId = eventoResponse.data?.host?.id;
@@ -216,7 +217,7 @@ const Avaliacoes = () => {
         try {
           // NOVO: Mensagem da notificação inclui o nome do usuário avaliador
           const notificationMessage = `${userName || 'Um usuário'} avaliou seu evento "${nomeEvento}" com ${nota} estrelas!`;
-          await axios.post(
+          await api.post(
               `/notifications/user/${hostId}`,
               {
                 usuarioId: hostId,

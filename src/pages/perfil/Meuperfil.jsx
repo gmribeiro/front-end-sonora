@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 
 function MeuPerfil() {
   // State for user data
@@ -40,7 +40,7 @@ function MeuPerfil() {
    */
   const fetchProfileImage = useCallback(async (token) => {
     try {
-      const response = await axios.get('/auth/user/me/profile-image', {
+      const response = await api.get('/auth/user/me/profile-image', {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob', // Expecting a binary response for the image
       });
@@ -61,7 +61,7 @@ function MeuPerfil() {
         return;
       }
       try {
-        const res = await axios.get('/auth/user/me', {
+        const res = await api.get('/auth/user/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setNomeUsuario(res.data.nome);
@@ -96,7 +96,7 @@ function MeuPerfil() {
 
     const token = localStorage.getItem('token');
     try {
-      await axios.post('/auth/user/me/upload', formData, {
+      await api.post('/auth/user/me/upload', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data', // Important for file uploads
@@ -121,7 +121,7 @@ function MeuPerfil() {
     const token = localStorage.getItem('token');
     try {
       // Send both name and bio in the update request
-      await axios.put(`/users/${userId}`, { name: novoNome, bio: novaBio }, {
+      await api.put(`/users/${userId}`, { name: novoNome, bio: novaBio }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       showSuccess('Perfil atualizado com sucesso!');
@@ -157,7 +157,7 @@ function MeuPerfil() {
 
     const token = localStorage.getItem('token');
     try {
-      await axios.post('/auth/change-password', {
+      await api.post('/auth/change-password', {
         currentPassword: senhaAtual,
         newPassword: novaSenha,
       }, { headers: { Authorization: `Bearer ${token}` } });

@@ -18,7 +18,7 @@ function EmailRecoveryForm() {
         setIsLoading(true);
 
         try {
-            const response = await axios.get(`/auth/check-email?email=${email}`);
+            const response = await api.get(`/auth/check-email?email=${email}`);
             if (response.status === 200) {
                 showFeedback(`Email para redefinição de senha enviado para o endereço: ${email}. Por favor, verifique sua caixa de entrada.`, 'sucesso');
                 setEmail('');

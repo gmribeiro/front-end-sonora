@@ -12,7 +12,7 @@ import { TbHorseToy } from "react-icons/tb";
 import { CgMusicSpeaker } from "react-icons/cg";
 import { PiMicrophoneStageDuotone } from "react-icons/pi";
 import { LuGuitar } from "react-icons/lu";
-import axios from "axios";
+import api from "../../api";
 import PropTypes from "prop-types";
 
 const Carrossel = ({ onGeneroSelecionado }) => {
@@ -42,7 +42,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
   useEffect(() => {
     const fetchGeneros = async () => {
       try {
-        const response = await axios.get("/genres");
+        const response = await api.get("/genres");
         const generosRaw = response.data;
         const generosMapeados = generosRaw.map((genero) => ({
           id: genero.idGeneroMusical,

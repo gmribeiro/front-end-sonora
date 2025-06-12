@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useTitle from '../../hooks/useTitle.js';
-import axios from 'axios';
+import api from '../../api/index.js';
 
 function EsqueciSenha() {
     useTitle('Definir nova senha - Sonora');
@@ -23,7 +23,7 @@ function EsqueciSenha() {
         setIsLoading(true);
 
         try {
-            const response = await axios.get(`/auth/validate-email?email=${email}`);
+            const response = await api.get(`/auth/validate-email?email=${email}`);
             if (response.status === 200) {
                 setEmailVerificado(true);
                 showFeedback('Email verificado com sucesso! Agora, por favor, insira sua nova senha.', 'sucesso');
@@ -60,7 +60,7 @@ function EsqueciSenha() {
         }
 
         try {
-            const response = await axios.post('/auth/reset-password', {
+            const response = await api.post('/auth/reset-password', {
                 email: email,
                 newPassword: novaSenha,
             });

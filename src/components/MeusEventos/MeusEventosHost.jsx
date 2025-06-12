@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { Link } from 'react-router-dom';
 
 // Definição das cores
@@ -39,7 +39,7 @@ function MeusEventos() {
 
         const promises = eventosParaBuscarReservas.map(async (evento) => {
             try {
-                const reservasResponse = await axios.get(`/reservas/evento/${evento.idEvento}`, {
+                const reservasResponse = await api.get(`/reservas/evento/${evento.idEvento}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -109,7 +109,7 @@ function MeusEventos() {
         }
 
         try {
-            const response = await axios.delete(`/eventos/${eventId}`, {
+            const response = await api.delete(`/eventos/${eventId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -159,21 +159,21 @@ function MeusEventos() {
                     return;
                 }
 
-                const userResponse = await axios.get('/auth/user/me', {
+                const userResponse = await api.get('/auth/user/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
                 const hostId = userResponse.data.id;
 
-                const futurosResponse = await axios.get(`/eventos/host/${hostId}/future`, {
+                const futurosResponse = await api.get(`/eventos/host/${hostId}/future`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
                 setEventosFuturos(futurosResponse.data);
 
-                const passadosResponse = await axios.get(`/eventos/host/${hostId}/past`, {
+                const passadosResponse = await api.get(`/eventos/host/${hostId}/past`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },

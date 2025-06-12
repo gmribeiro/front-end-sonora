@@ -1,7 +1,7 @@
 // src/components/EventosBuscaResultados/EventosBuscaResultados.jsx
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api/index.js';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useTitle from '../../hooks/useTitle';
 import { FaCalendarAlt } from 'react-icons/fa';
@@ -39,7 +39,7 @@ const EventosBuscaResultados = () => {
       }
 
       try {
-        const response = await axios.get(
+        const response = await api.get(
           `/eventos/search?nomeEvento=${encodeURIComponent(nomeEvento)}`
         );
         setEventos(response.data);

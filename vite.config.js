@@ -1,73 +1,75 @@
 import { defineConfig, loadEnv  } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import dotenv from 'dotenv'
 
 
 
  // Load app-level env vars to node-level env vars.
 
- 
+ dotenv.config();
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd());
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  console.log(process.env)
+  //const env.VITE_BACKEND_URL || "http://localhost:8080" = process.env.VITE_BACKEND_URL || "http://localhost:8080";
 return {
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
       '/auth': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/genres': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/places': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/eventos': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/reservas': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/avaliacoes': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/musicos': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/notifications': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/contratos': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/users': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       },
       '/escalas': {
-        target: backendUrl,
+        target: env.VITE_BACKEND_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false
       }

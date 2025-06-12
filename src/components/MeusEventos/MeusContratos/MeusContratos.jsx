@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../../../api';
 import { Link } from 'react-router-dom';
 
 function MeusContratos() {
@@ -15,7 +15,7 @@ function MeusContratos() {
         setLoading(true);
         setError("");
         try {
-            const response = await axios.get(`/contratos/musico/${artistaId}`, {
+            const response = await api.get(`/contratos/musico/${artistaId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setMeusContratosArtista(response.data);
@@ -43,8 +43,8 @@ function MeusContratos() {
                 }
 
                 const [userResponse, musicosResponse] = await Promise.all([
-                    axios.get('/auth/user/me', { headers: { 'Authorization': `Bearer ${token}` } }),
-                    axios.get('/musicos', { headers: { 'Authorization': `Bearer ${token}` } })
+                    api.get('/auth/user/me', { headers: { 'Authorization': `Bearer ${token}` } }),
+                    api.get('/musicos', { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
 
                 const musicoLogado = musicosResponse.data.find(musico => musico.usuario && musico.usuario.id === userResponse.data.id);
@@ -68,7 +68,7 @@ function MeusContratos() {
 
     const enviarNotificacao = async (idHost, mensagem, token) => {
         try {
-            await axios.post(`/notifications/user/${idHost}`, {
+            await api.post(`/notifications/user/${idHost}`, {
                 mensagem: mensagem
             }, {
                 headers: {
@@ -102,7 +102,7 @@ function MeusContratos() {
             let musicosExistenteNaEscala = [];
             try {
                 // Tenta buscar a escala existente para este evento e gênero
-                const escalaResponse = await axios.get(`/escalas/event/${idEvento}`, {
+                const escalaResponse = await api.get(`/escalas/event/${idEvento}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 // Assumindo que a resposta da escala existente tem uma lista de músicos
@@ -116,7 +116,7 @@ function MeusContratos() {
             } catch (getError) {
                 // Se a escala não existir (404), não há problema, ela será criada.
                 // Qualquer outro erro é propagado.
-                if (axios.isAxiosError(getError) && getError.response && getError.response.status === 404) {
+                if (api.isAxiosError(getError) && getError.response && getError.response.status === 404) {
                     console.log("Nenhuma escala existente encontrada para este evento/gênero. Criando uma nova.");
                     musicosExistenteNaEscala = []; // Garante que comece vazia se não encontrou
                 } else {
@@ -140,7 +140,7 @@ function MeusContratos() {
             // ou PUT (se ela é atualizada se já existe).
             // Seu backend @PostMapping indica criação, mas o cenário de adicionar a um array existente
             // pode exigir um @PutMapping ou lógica mais inteligente no @PostMapping.
-            await axios.post('/escalas', escalaData, {
+            await api.post('/escalas', escalaData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -148,7 +148,7 @@ function MeusContratos() {
             });
             console.log('Entrada na escala criada/atualizada com sucesso!');
 
-            await axios.put(`/contratos/${idEvento}/${idMusicoQueEstaAceitando}/activate`, {}, {
+            await api.put(`/contratos/${idEvento}/${idMusicoQueEstaAceitando}/activate`, {}, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -163,7 +163,7 @@ function MeusContratos() {
                 )
             );
 
-            const hostResponse = await axios.get(`/eventos/${idEvento}/host-id`, {
+            const hostResponse = await api.get(`/eventos/${idEvento}/host-id`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const idHost = hostResponse.data?.id || hostResponse.data;
@@ -178,7 +178,7 @@ function MeusContratos() {
             console.error('Erro ao aceitar contrato ou criar/atualizar escala:', error);
             let errorMessage = 'Ocorreu um erro ao processar sua aceitação do contrato.';
 
-            if (axios.isAxiosError(error) && error.response) {
+            if (api.isAxiosError(error) && error.response) {
                 const { status, data } = error.response;
 
                 if (status === 401) {
@@ -226,12 +226,12 @@ function MeusContratos() {
                 return;
             }
 
-            const hostResponse = await axios.get(`/eventos/${idEvento}/host-id`, {
+            const hostResponse = await api.get(`/eventos/${idEvento}/host-id`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const idHost = hostResponse.data?.id || hostResponse.data;
 
-            await axios.delete(`/contratos/${idEvento}/${idMusico}`, {
+            await api.delete(`/contratos/${idEvento}/${idMusico}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -254,7 +254,7 @@ function MeusContratos() {
             console.error('Erro ao recusar contrato:', error);
             let errorMessage = 'Ocorreu um erro ao recusar o contrato.';
 
-            if (axios.isAxiosError(error) && error.response) {
+            if (api.isAxiosError(error) && error.response) {
                 const { status, data } = error.response;
 
                 if (status === 401) {
