@@ -1,5 +1,9 @@
 Este documento é o front end do tcc sonora
-desenvolvido em react
+desenvolvido em React e vite utilizando:
+Javascript
+CSS
+Tailwind CSS
+JSX
 
 Tem que entrar na pasta frontendsonora para dar build
 
