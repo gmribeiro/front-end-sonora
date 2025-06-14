@@ -5,7 +5,7 @@ import './css/global.css';
 import { useState, useEffect } from 'react';
 import useTitle from '../hooks/useTitle';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/index.js';
 import Header from '../components/header/header.jsx';
 
 import Eventos from '../components/Eventos/eventos.jsx';
@@ -24,7 +24,7 @@ function Home() {
   useEffect(() => {
     const fetchEventos = async () => {
       try {
-        const response = await axios.get('/eventos');
+        const response = await api.get('/eventos');
         const eventosRaw = response.data;
 
         const eventosMapeados = eventosRaw.map(evento => {

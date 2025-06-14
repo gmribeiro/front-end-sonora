@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import PropTypes from 'prop-types';
 
 const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadastrado }) => {
@@ -34,7 +34,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            axios.get('/auth/user/me', {
+            api.get('/auth/user/me', {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
                 .then(response => {
@@ -43,7 +43,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 })
                 .catch(error => console.error('Erro ao carregar usuário:', error));
 
-            axios.get('/genres')
+            api.get('/genres')
                 .then(response => {
                     setGeneros(response.data);
                 })
@@ -78,7 +78,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
             return;
         }
         try {
-            const response = await axios.post('/reservas', {
+            const response = await api.post('/reservas', {
                 usuario: {
                     id: usuarioLogado.id
                 },
@@ -155,7 +155,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 const [hours, minutes] = horaEncerramento.split(':');
                 formattedHoraEncerramento = `${hours}:${minutes}:00`;
             }
-            const placeResponse = await axios.post('/places', {
+            const placeResponse = await api.post('/places', {
                 local: localEventoNome,
                 cep: cep,
                 numero: numero
@@ -189,7 +189,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 host: { id: userId }
             };
 
-            const eventResponse = await axios.post('/eventos', eventData, {
+            const eventResponse = await api.post('/eventos', eventData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -202,7 +202,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 const formData = new FormData();
                 formData.append('foto', eventImageFile);
 
-                const uploadResponse = await axios.post(`/eventos/${novoEventoDoBackend.idEvento}/upload`, formData, {
+                const uploadResponse = await api.post(`/eventos/${novoEventoDoBackend.idEvento}/upload`, formData, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data'
@@ -245,7 +245,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
             }
 
             const notificationMessage = `Novo evento ${novoEventoParaHome.titulo} postado pelo anfitrião ${usuarioLogado.nome}.`;
-            await axios.post('/notifications/broadcast', {
+            await api.post('/notifications/broadcast', {
                 usuarioId: userId,
                 mensagem: notificationMessage
             }, {

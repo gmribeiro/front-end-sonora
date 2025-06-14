@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { Link } from 'react-router-dom';
 
 const Artistas = () => {
@@ -33,7 +33,7 @@ const Artistas = () => {
         if (!userId) return;
 
         try {
-            const response = await axios.get(`/auth/users/${userId}/profile-image`, {
+            const response = await api.get(`/auth/users/${userId}/profile-image`, {
                 responseType: 'arraybuffer'
             });
 
@@ -55,7 +55,7 @@ const Artistas = () => {
         const buscarArtistas = async () => {
             setIsLoadingArtistas(true);
             try {
-                const res = await axios.get('/musicos');
+                const res = await api.get('/musicos');
                 if (Array.isArray(res.data)) {
                     setArtistas(res.data);
                     res.data.forEach(a => {
@@ -77,7 +77,7 @@ const Artistas = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const res = await axios.get('/auth/user/me', {
+                    const res = await api.get('/auth/user/me', {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     setUsuarioLogado(res.data);
@@ -98,7 +98,7 @@ const Artistas = () => {
             const token = localStorage.getItem('token');
             if (token && usuarioLogado?.role === 'HOST' && usuarioLogado?.id) {
                 try {
-                    const res = await axios.get(`/eventos/host/${usuarioLogado.id}`, {
+                    const res = await api.get(`/eventos/host/${usuarioLogado.id}`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     setEventosHost(Array.isArray(res.data) ? res.data : []);
@@ -173,7 +173,7 @@ const Artistas = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.post('/contratos', {
+            await api.post('/contratos', {
                 idContrato: {
                     evento: { idEvento: parsedEventoId },
                     musico: { idMusico: artistaId },

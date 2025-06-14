@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { useNavigate } from 'react-router-dom';
 import { FaGuitar } from "react-icons/fa6";
 import { TbBuildingCircus } from "react-icons/tb";
@@ -91,7 +91,7 @@ const RoleSelector = () => {
                 return;
             }
 
-            const response = await axios.put(
+            const response = await api.put(
                 `/users/${userId}`,
                 userUpdateDTO,
                 {
@@ -140,7 +140,7 @@ const RoleSelector = () => {
                 profileCompleted: true
             };
 
-            const response = await axios.put(
+            const response = await api.put(
                 `/users/${userId}`,
                 userUpdateDTO,
                 {

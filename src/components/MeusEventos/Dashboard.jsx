@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api/index.js';
 import MeusEventos from './MeusEventosHost.jsx';
 import MinhasReservas from './MinhasReservas/MinhasReservas.jsx';
 import MeusContratos from './MeusContratos/MeusContratos.jsx';
@@ -24,7 +24,7 @@ function Dashboard() {
                     setLoading(false);
                     return;
                 }
-                const userResponse = await axios.get('/auth/user/me', {
+                const userResponse = await api.get('/auth/user/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },

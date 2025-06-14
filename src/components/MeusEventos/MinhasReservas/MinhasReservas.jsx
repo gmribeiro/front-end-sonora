@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../../../api';
 import { Link } from 'react-router-dom';
 
 // Definição das novas cores
@@ -76,7 +76,7 @@ function MinhasReservas() {
     // Funções de busca de dados
     const fetchMinhasReservas = useCallback(async (userId, token) => {
         try {
-            const response = await axios.get(`/reservas/usuario/${userId}`, {
+            const response = await api.get(`/reservas/usuario/${userId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setMinhasReservas(response.data);
@@ -88,7 +88,7 @@ function MinhasReservas() {
 
     const fetchMinhasReservasConfirmadas = useCallback(async (userId, token) => {
         try {
-            const response = await axios.get(`/reservas/usuario/${userId}/confirmadas`, {
+            const response = await api.get(`/reservas/usuario/${userId}/confirmadas`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setMinhasReservasConfirmadas(response.data);
@@ -102,7 +102,7 @@ function MinhasReservas() {
 
     const fetchHistoricoReservas = useCallback(async (userId, token) => {
         try {
-            const response = await axios.get(`/reservas/user/${userId}/confirmed/past`, {
+            const response = await api.get(`/reservas/user/${userId}/confirmed/past`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setHistoricoReservas(response.data);
@@ -126,7 +126,7 @@ function MinhasReservas() {
                     return;
                 }
 
-                const userResponse = await axios.get('/auth/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                const userResponse = await api.get('/auth/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
                 const userId = userResponse.data.id;
                 setUsuarioLogadoId(userId);
 
@@ -164,7 +164,7 @@ function MinhasReservas() {
         const token = getAuthToken();
 
         try {
-            const response = await axios.put(`/reservas/${reservaId}`, {
+            const response = await api.put(`/reservas/${reservaId}`, {
                 confirmado: true,
                 usuario: { id: usuarioLogadoId },
                 evento: { idEvento: reservaEventoId }
@@ -213,7 +213,7 @@ function MinhasReservas() {
         const token = getAuthToken();
 
         try {
-            const response = await axios.delete(`/reservas/${reservationToCancel.idReserva}`, {
+            const response = await api.delete(`/reservas/${reservationToCancel.idReserva}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 

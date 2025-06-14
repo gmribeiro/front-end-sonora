@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 import { IoMdCheckmarkCircle } from "react-icons/io";
 
 const Cadastrar = () => {
@@ -72,7 +72,7 @@ const Cadastrar = () => {
 
     try {
       const { confirmarSenha, ...payload } = formData;
-      const response = await axios.post('http://localhost:8080/auth/register', payload);
+      const response = await api.post('/auth/register', payload);
       if (response.status >= 200 && response.status < 300) {
         setCadastroConcluido(true);
       }

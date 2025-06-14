@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdPlace } from "react-icons/md";
@@ -34,7 +34,7 @@ const EventoDetalhes = () => {
 
                 const token = localStorage.getItem('token');
 
-                const eventoResponse = await axios.get(`/eventos/${id}`);
+                const eventoResponse = await api.get(`/eventos/${id}`);
                 const eventoData = eventoResponse.data;
                 setEvento(eventoData);
 
@@ -45,7 +45,7 @@ const EventoDetalhes = () => {
 
                     // Verificar se usuário já reservou este evento
                     if (loggedInUser?.id && eventoData?.idEvento) {
-                        const reservasResponse = await axios.get(`/reservas/usuario/${loggedInUser.id}/evento/${eventoData.idEvento}`, {
+                        const reservasResponse = await api.get(`/reservas/usuario/${loggedInUser.id}/evento/${eventoData.idEvento}`, {
                             headers: { 'Authorization': `Bearer ${token}` }
                         });
                         setJaReservado(reservasResponse.data.length > 0);
@@ -54,7 +54,7 @@ const EventoDetalhes = () => {
 
                 if (eventoData && eventoData.idEvento) {
                     try {
-                        const imageResponse = await axios.get(`/eventos/${eventoData.idEvento}/image`, {
+                        const imageResponse = await api.get(`/eventos/${eventoData.idEvento}/image`, {
                             responseType: 'blob'
                         });
                         setEventImageUrl(URL.createObjectURL(imageResponse.data));
@@ -77,7 +77,7 @@ const EventoDetalhes = () => {
         const verificarUsuarioLogado = async (token) => {
             if (!token) return null;
             try {
-                const response = await axios.get('/auth/user/me', {
+                const response = await api.get('/auth/user/me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 return response.data;
@@ -96,7 +96,7 @@ const EventoDetalhes = () => {
             setCarregandoEscalas(true);
             setErroEscalas(null);
             try {
-                const response = await axios.get(`/escalas/event/${id}`);
+                const response = await api.get(`/escalas/event/${id}`);
 
                 if (response.status === 204) {
                     setEscalasDoEvento([]);
@@ -146,7 +146,7 @@ const EventoDetalhes = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const userResponse = await axios.get('/auth/user/me', {
+                    const userResponse = await api.get('/auth/user/me', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     setUsuarioLogado(userResponse.data);
@@ -180,7 +180,7 @@ const EventoDetalhes = () => {
                 evento: { idEvento: evento.idEvento },
                 confirmado: false
             };
-            await axios.post('/reservas', reservaData, {
+            await api.post('/reservas', reservaData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
