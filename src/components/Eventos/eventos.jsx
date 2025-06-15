@@ -1,371 +1,541 @@
-<<<<<<< HEAD
-import React from 'react';
-=======
-import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
->>>>>>> integracao
-import './eventos.css';
-import axios from 'axios'; // Importe o axios
+import { useState, useEffect } from 'react';
+import api from '../../api';
+import PropTypes from 'prop-types';
 
-const Eventos = () => {
+const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadastrado }) => {
     const navigate = useNavigate();
-    const [eventos, setEventos] = useState([
-        { id: 1, titulo: "Indaiatuba Festival", local: "Indaiatuba", hora: "19:00:00", data: "15/11/2023", imagem: "../images/evento1.png", genero: "Rock" },
-        { id: 2, titulo: "Boom Bap Fest", local: "Campinas", hora: "20:00:00", data: "20/11/2023", imagem: "../images/evento2.png", genero: "Hip Hop" },
-        { id: 3, titulo: "Show Rock na Praça", local: "Campinas", hora: "14:30:00", data: "25/11/2023", imagem: "../images/evento3.png", genero: "Rock" },
-        { id: 4, titulo: "Sunset Eletrônico", local: "Indaiatuba", hora: "12:00:00", data: "30/11/2023", imagem: "../images/evento4.png", genero: "Eletrônica" },
-        { id: 5, titulo: "Festival Indie", local: "Jundiaí", hora: "17:00:00", data: "05/12/2023", imagem: "../images/evento5.png", genero: "Indie" },
-        { id: 6, titulo: "Techno Waves", local: "Itupeva", hora: "23:00:00", data: "10/12/2023", imagem: "../images/evento6.png", genero: "Techno" },
-    ]);
-
-    // States for booking system
-    const [reservando, setReservando] = useState(null);
-    const [mensagensReserva, setMensagensReserva] = useState({});
     const [usuarioLogado, setUsuarioLogado] = useState(null);
-
-    // States for event creation form
-    const [showEventForm, setShowEventForm] = useState(false);
-    const [eventoForm, setEventoForm] = useState({
-        nomeEvento: '',
-        dataHora: '',
-        descricao: '',
-        genero: '',
-        local: ''
-    });
+    const [userId, setUserId] = useState(null);
+    const [reservandoId, setReservandoId] = useState(null);
+    const [mensagemReserva, setMensagemReserva] = useState('');
+    const [showCadastro, setShowCadastro] = useState(false);
+    const [nomeEvento, setNomeEvento] = useState('');
+    const [dataHora, setDataHora] = useState('');
+    const [horaEncerramento, setHoraEncerramento] = useState('');
+    const [descricao, setDescricao] = useState('');
+    const [classificacao, setClassificacao] = useState('');
+    const [selectedGeneroId, setSelectedGeneroId] = useState('');
+    const [localEventoNome, setLocalEventoNome] = useState('');
+    const [cep, setCep] = useState('');
+    const [numero, setNumero] = useState('');
     const [formMessage, setFormMessage] = useState('');
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [generos, setGeneros] = useState([]);
+    const [eventImageFile, setEventImageFile] = useState(null);
+
+
+    const eventosPorPagina = 6;
+    const totalPaginas = Math.ceil(eventosFiltrados.length / eventosPorPagina);
+    const indiceInicial = (currentPage - 1) * eventosPorPagina;
+    const indiceFinal = indiceInicial + eventosPorPagina;
+    const eventosPaginaAtual = eventosFiltrados.slice(indiceInicial, indiceFinal);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            api.get('/auth/user/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then(response => {
+                    setUsuarioLogado(response.data);
+                    setUserId(response.data.id);
+                })
+                .catch(error => console.error('Erro ao carregar usuário:', error));
+
+            api.get('/genres')
+                .then(response => {
+                    setGeneros(response.data);
+                })
+                .catch(error => console.error('Erro ao carregar gêneros:', error));
+        }
+    }, []);
+
+    const formatDateTime = (dateTimeString) => {
+        if (!dateTimeString) return '';
+        const date = new Date(dateTimeString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
 
     const handleEventoClick = (eventoId) => {
         navigate(`/detalhes/${eventoId}`);
     };
 
-    const formatDateTime = (dateStr, timeStr) => {
-        const [day, month, year] = dateStr.split('/');
-        const [hours, minutes, seconds] = timeStr.split(':');
-
-        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-    };
-
-    useEffect(() => {
+    const handleReservar = async (eventoId) => {
+        setReservandoId(eventoId);
+        setMensagemReserva('');
         const token = localStorage.getItem('token');
-        if (token) {
-            axios.get('/auth/user/me', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-                .then(response => {
-                    setUsuarioLogado(response.data);
-                })
-                .catch(error => console.error('Error loading user:', error));
+
+        if (!usuarioLogado || usuarioLogado.role !== 'CLIENT') {
+            setMensagemReserva('Apenas clientes podem reservar eventos.');
+            setReservandoId(null);
+            return;
         }
-    }, []);
-
-    const handleReservar = async (evento) => {
-        setReservando(evento.id);
-        setMensagensReserva(prev => ({ ...prev, [evento.id]: '' }));
-
         try {
-            const token = localStorage.getItem('token');
-
-            if (!usuarioLogado || !token) {
-                throw new Error('You need to be logged in to make reservations');
-            }
-
-            if (!usuarioLogado.id) {
-                throw new Error('User ID not found');
-            }
-
-            const dataHoraFormatada = formatDateTime(evento.data, evento.hora);
-
-            const reservaData = {
+            const response = await api.post('/reservas', {
                 usuario: {
                     id: usuarioLogado.id
                 },
                 evento: {
-                    idEvento: evento.id
+                    idEvento: eventoId
                 },
                 confirmado: false
-            };
-
-            const response = await axios.post('http://localhost:8080/reservas', reservaData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            setMensagensReserva(prev => ({
-                ...prev,
-                [evento.id]: response.status === 201
-                    ? `Reservation for "${evento.titulo}" successful!`
-                    : `Error reserving "${evento.titulo}". Try again.`
-            }));
-
-        } catch (error) {
-            setMensagensReserva(prev => ({
-                ...prev,
-                [evento.id]: `Error: ${error.response?.data?.message || error.message}`
-            }));
-        } finally {
-            setReservando(null);
-        }
-    };
-
-    // Handle genre creation
-    const createGenre = async (genreName) => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) throw new Error('Not authenticated');
-
-            const response = await axios.post('/genres', {
-                nomeGenero: genreName,
-                // Adicione outros campos obrigatórios se necessário
             }, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-            return response.data;
-        } catch (error) {
-            console.error('Error creating genre:', error);
-            if (error.response?.status === 409) {
-                const existingGenre = await axios.get(`/genres?nomeGenero=${encodeURIComponent(genreName)}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                return existingGenre.data;
+            if (response.status === 201) {
+                setMensagemReserva(`Reserva para o evento ${eventosFiltrados.find(e => e.id === eventoId)?.titulo} realizada com sucesso!`);
+                setTimeout(() => {
+                    navigate('/meusconvites');
+                }, 1500);
+            } else {
+                setMensagemReserva(`Erro ao reservar o evento.`);
             }
-            throw error;
+        } catch (error) {
+            console.error('Erro ao reservar evento:', error);
+            setMensagemReserva(`Erro ao reservar o evento: ${error.response?.data?.message || error.message}`);
         }
     };
 
-    // Handle place creation
-    const createPlace = async (placeName) => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) throw new Error('Not authenticated');
-
-            const response = await axios.post('/places', { local: placeName }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error creating place:', error);
-            if (error.response?.status === 409) {
-                return { local: placeName };
-            }
-            throw error;
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        if (name === 'local') {
+            setLocalEventoNome(value);
+        } else if (name === 'dataHora') {
+            setDataHora(value);
+        } else if ( name === 'horaEncerramento') {
+            setHoraEncerramento(value);
+        } else if (name === 'nomeEvento') {
+            setNomeEvento(value);
+        } else if (name === 'descricao') {
+            setDescricao(value);
+        } else if (name === 'classificacao') {
+            setClassificacao(value);
+        } else if (name === 'generoMusical') {
+            setSelectedGeneroId(value);
+        } else if (name === 'cep') {
+            setCep(value);
+        } else if (name === 'numero') {
+            setNumero(value);
         }
     };
+
+    const handleImageChange = (e) => {
+        setEventImageFile(e.target.files[0]);
+    };
+
     const handleCadastrarEvento = async (e) => {
         e.preventDefault();
         setFormMessage('');
+        const token = localStorage.getItem('token');
+
+        if (!token || usuarioLogado?.role !== 'HOST' || !userId || !selectedGeneroId || !localEventoNome || !cep || !numero || !eventImageFile || !classificacao.trim()) {
+            setFormMessage('Por favor, preencha todos os campos obrigatórios para cadastrar o evento, incluindo a classificação e a imagem.');
+            return;
+        }
+
+        if (!classificacao.trim()) {
+            setFormMessage('Por favor, selecione uma classificação para o evento.');
+            return;
+        }
 
         try {
-            const token = localStorage.getItem('token');
-            if (!token) throw new Error('Not authenticated');
+            const formattedDataHora = formatDateTime(dataHora);
+            let formattedHoraEncerramento = '00:00:00';
+            if (horaEncerramento) {
+                const [hours, minutes] = horaEncerramento.split(':');
+                formattedHoraEncerramento = `${hours}:${minutes}:00`;
+            }
+            const placeResponse = await api.post('/places', {
+                local: localEventoNome,
+                cep: cep,
+                numero: numero
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const placeData = placeResponse.data;
 
-            const genre = await createGenre(eventoForm.genero);
-            const place = await createPlace(eventoForm.local);
+            console.log('Dados do evento (JSON):', JSON.stringify({
+                nomeEvento,
+                dataHora: formattedDataHora,
+                horaEncerramento: formattedHoraEncerramento,
+                descricao,
+                classificacao,
+                generoMusical: { idGeneroMusical: selectedGeneroId },
+                localEvento: { idLocalEvento: placeData.idLocalEvento },
+                host: { id: userId }
+            }, null, 2));
 
-            const date = new Date(eventoForm.dataHora);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            const seconds = String(date.getSeconds()).padStart(2, '0');
-
-            const dataHoraFormatada = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-
-            const eventoData = {
-                nomeEvento: eventoForm.nomeEvento,
-                dataHora: dataHoraFormatada,
-                descricao: eventoForm.descricao,
-                generoMusical: genre,
-                localEvento: place
+            const eventData = {
+                nomeEvento,
+                dataHora: formattedDataHora,
+                horaEncerramento: formattedHoraEncerramento,
+                descricao: descricao,
+                classificacao: classificacao,
+                generoMusical: { idGeneroMusical: selectedGeneroId },
+                localEvento: { idLocalEvento: placeData.idLocalEvento },
+                host: { id: userId }
             };
 
-            const response = await axios.post('/eventos', eventoData, {
+            const eventResponse = await api.post('/eventos', eventData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
 
-            const novoEvento = {
-                id: response.data.id,
-                titulo: eventoForm.nomeEvento,
-                local: place.local || place.nome || eventoForm.local,
-                hora: `${hours}:${minutes}:${seconds}`,
-                data: `${day}/${month}/${year}`,
-                imagem: "../images/evento-default.png",
-                genero: genre.nomeGenero || eventoForm.genero
+            const novoEventoDoBackend = eventResponse.data;
+
+            if (eventImageFile && novoEventoDoBackend.idEvento) {
+                const formData = new FormData();
+                formData.append('foto', eventImageFile);
+
+                const uploadResponse = await api.post(`/eventos/${novoEventoDoBackend.idEvento}/upload`, formData, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                if (uploadResponse.status !== 200) {
+                    console.warn('Upload de imagem falhou, mas o evento foi criado.', uploadResponse.data);
+                    setFormMessage('Evento cadastrado, mas o upload da imagem falhou. Tente novamente mais tarde.');
+                } else {
+                    console.log('Imagem do evento carregada com sucesso!', uploadResponse.data);
+                    setFormMessage('Evento cadastrado com sucesso e imagem enviada!');
+                }
+            } else {
+                setFormMessage('Evento cadastrado, mas nenhuma imagem foi selecionada ou o ID do evento não foi retornado.');
+            }
+
+            setNomeEvento('');
+            setDataHora('');
+            setHoraEncerramento('');
+            setDescricao('');
+            setClassificacao('');
+            setSelectedGeneroId('');
+            setLocalEventoNome('');
+            setCep('');
+            setNumero('');
+            setEventImageFile(null);
+
+            const novoEventoParaHome = {
+                id: novoEventoDoBackend.idEvento,
+                titulo: nomeEvento,
+                local: localEventoNome,
+                hora: formatDateTime(dataHora).split(' ')[1],
+                imagem: novoEventoDoBackend.foto ? `/uploads/event-images/${novoEventoDoBackend.foto}` : null,
+                genero: generos.find(g => g.idGeneroMusical === selectedGeneroId)?.nomeGenero || 'Outro'
             };
 
-            setEventos([...eventos, novoEvento]);
+            if (onEventoCadastrado) {
+                onEventoCadastrado(novoEventoParaHome);
+            }
 
-            setFormMessage('Event created successfully!');
-            setEventoForm({
-                nomeEvento: '',
-                dataHora: '',
-                descricao: '',
-                genero: '',
-                local: ''
+            const notificationMessage = `Novo evento ${novoEventoParaHome.titulo} postado pelo anfitrião ${usuarioLogado.nome}.`;
+            await api.post('/notifications/broadcast', {
+                usuarioId: userId,
+                mensagem: notificationMessage
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
+            console.log('Notificação de novo evento enviada.');
 
-            setTimeout(() => setShowEventForm(false), 1500);
+            setTimeout(() => {
+                setShowCadastro(false);
+                setFormMessage('');
+            }, 2000);
 
         } catch (error) {
-            setFormMessage(`Error: ${error.response?.data?.message || error.message}`);
+            console.error('Erro ao cadastrar evento ou fazer upload da imagem:', error);
+            setFormMessage(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
         }
     };
 
-    const handleReservar = (evento) => {
-        // Informações do usuário anônimo ou removidas
-        const reservaData = {
-            // Remova ou comente a linha do usuário se o backend não exigir
-            // usuario: { id: null, nome: "Anônimo" },
-            evento: { id: evento.id, titulo: evento.titulo },
-            confirmado: false
-        };
+    const mudarPagina = (novaPagina) => {
+        if (novaPagina < 1 || novaPagina > totalPaginas || isAnimating) return;
 
-        axios.post('/reservas', reservaData, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                console.log('Reserva criada com sucesso:', response.data);
-                alert(`Reserva para "${evento.titulo}" realizada!`);
-            })
-            .catch(error => {
-                console.error('Erro ao criar reserva:', error);
-                alert(`Erro ao reservar "${evento.titulo}". Tente novamente.`);
-            });
+        setIsAnimating(true);
+        setTimeout(() => {
+            setCurrentPage(novaPagina);
+            setIsAnimating(false);
+        }, 300);
     };
 
     return (
-        <div className='espaco-eventos'>
+        <div className="bg-[#EDE6F2] px-4 py-8 min-h-[70vh] mb-20">
             {usuarioLogado?.role === 'HOST' && (
-                <div className="host-actions">
+                <div className="max-w-6xl mx-auto mb-6">
                     <button
-                        onClick={() => setShowEventForm(!showEventForm)}
-                        className="btn-cadastrar-evento"
+                        onClick={() => setShowCadastro(!showCadastro)}
+                        className="!text-[#EDE6F2] bg-gradient-to-b from-[#342e5a] via-[#5A4E75] to-[#7d6588] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] lg:h-[25px] lg:mb-15 mx-auto"
                     >
-                        {showEventForm ? 'Cancelar' : 'Cadastrar Evento'}
+                        {showCadastro ? 'Cancelar Cadastro' : 'Cadastrar Novo Evento'}
                     </button>
 
-                    {showEventForm && (
-                        <div className="evento-form-container">
-                            <h3>Cadastrar Novo Evento</h3>
-                            <form onSubmit={handleCadastrarEvento}>
-                                <div className="form-group">
-                                    <label htmlFor="nomeEvento">Nome do Evento:</label>
+                    {showCadastro && (
+                        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mt-4 max-w-3xl mx-auto">
+                            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center !text-white">Cadastrar Novo Evento</h3>
+                            <form onSubmit={handleCadastrarEvento} className="space-y-3 sm:space-y-4">
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="nomeEvento" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Nome do Evento:</label>
                                     <input
                                         type="text"
                                         id="nomeEvento"
-                                        value={eventoForm.nomeEvento}
-                                        onChange={(e) => setEventoForm({ ...eventoForm, nomeEvento: e.target.value })}
+                                        name="nomeEvento"
+                                        value={nomeEvento}
+                                        onChange={handleInputChange}
                                         required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     />
                                 </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="dataHora">Data e Hora:</label>
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="dataHora" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Data e Hora:</label>
                                     <input
                                         type="datetime-local"
                                         id="dataHora"
-                                        value={eventoForm.dataHora}
-                                        onChange={(e) => setEventoForm({ ...eventoForm, dataHora: e.target.value })}
+                                        name="dataHora"
+                                        value={dataHora}
+                                        onChange={handleInputChange}
                                         required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     />
                                 </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="descricao">Descrição:</label>
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="horaEncerramento" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Hora de Encerramento:</label>
+                                    <input
+                                        type="time"
+                                        id="horaEncerramento"
+                                        name="horaEncerramento"
+                                        value={horaEncerramento}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    />
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="descricao" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Descrição:</label>
                                     <textarea
                                         id="descricao"
-                                        value={eventoForm.descricao}
-                                        onChange={(e) => setEventoForm({ ...eventoForm, descricao: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="genero">Gênero Musical:</label>
-                                    <input
-                                        type="text"
-                                        id="genero"
-                                        value={eventoForm.genero}
-                                        onChange={(e) => setEventoForm({ ...eventoForm, genero: e.target.value })}
+                                        name="descricao"
+                                        value={descricao}
+                                        onChange={handleInputChange}
                                         required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588] min-h-[80px] sm:min-h-[100px]"
                                     />
                                 </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="local">Local:</label>
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="classificacao" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Classificação:</label>
+                                    <select
+                                        id="classificacao"
+                                        name="classificacao"
+                                        value={classificacao}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    >
+                                        <option value="">Selecione uma classificação</option>
+                                        <option value="Livre">Livre</option>
+                                        <option value="10+">10+</option>
+                                        <option value="12+">12+</option>
+                                        <option value="14+">14+</option>
+                                        <option value="16+">16+</option>
+                                        <option value="18+">18+</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="generoMusical" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Gênero Musical:</label>
+                                    <select
+                                        id="generoMusical"
+                                        name="generoMusical"
+                                        value={selectedGeneroId}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    >
+                                        <option value="">Selecione um gênero</option>
+                                        {generos.map(genero => (
+                                            <option key={genero.idGeneroMusical} value={genero.idGeneroMusical}>
+                                                {genero.nomeGenero}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="local" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Local:</label>
                                     <input
                                         type="text"
                                         id="local"
-                                        value={eventoForm.local}
-                                        onChange={(e) => setEventoForm({ ...eventoForm, local: e.target.value })}
+                                        name="local"
+                                        value={localEventoNome}
+                                        onChange={handleInputChange}
                                         required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
                                     />
                                 </div>
 
-                                <div className="form-buttons">
-                                    <button type="submit" className="btn-cadastrar">Cadastrar</button>
-                                    <button type="button" className="btn-cancelar" onClick={() => setShowEventForm(false)}>Cancelar</button>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div className="space-y-1 sm:space-y-2">
+                                        <label htmlFor="cep" className="block text-[#5A4E75] text-sm sm:text-base font-medium">CEP do Local:</label>
+                                        <input
+                                            type="text"
+                                            id="cep"
+                                            name="cep"
+                                            value={cep}
+                                            onChange={handleInputChange}
+                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1 sm:space-y-2">
+                                        <label htmlFor="numero" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Número do Local:</label>
+                                        <input
+                                            type="text"
+                                            id="numero"
+                                            name="numero"
+                                            value={numero}
+                                            onChange={handleInputChange}
+                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                        />
+                                    </div>
                                 </div>
-                                {formMessage && <p className={`form-message ${formMessage.startsWith('Error') ? 'error' : 'success'}`}>{formMessage}</p>}
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="eventImage" className="block text-[#5A4E75] text-sm sm:text-base font-medium">Foto do Evento:</label>
+                                    <input
+                                        type="file"
+                                        id="eventImage"
+                                        name="eventImage"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    />
+                                </div>
+
+                                <div className="flex flex-wrap gap-2 sm:gap-3 pt-1 sm:pt-2">
+                                    <button
+                                        type="submit"
+                                        className="bg-[#5A4E75] hover:bg-[#7d6588] text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
+                                    >
+                                        Cadastrar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCadastro(false)}
+                                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+
+                                {formMessage && (
+                                    <p className={`mt-2 text-sm sm:text-base font-medium ${formMessage.startsWith('Erro') ? 'text-red-600' : 'text-green-600'}`}>
+                                        {formMessage}
+                                    </p>
+                                )}
                             </form>
                         </div>
                     )}
                 </div>
             )}
 
-            {/* Events listing */}
-            <div className="container-eventos">
-                {eventos.map(evento => (
-<<<<<<< HEAD
-                    <div key={evento.id} className="evento">
-                        <img src={evento.imagem} alt={evento.titulo}/>
-                        <h3>{evento.titulo}</h3>
-                        <p>{evento.local} - {evento.hora}</p>
-                        <button className="btn-reservar" onClick={() => handleReservar(evento)}>Reservar</button>
-=======
-                    <div
-                        key={evento.id}
-                        className="evento"
-                        onClick={() => handleEventoClick(evento.id)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <img src={evento.imagem} alt={evento.titulo} />
-                        <h3>{evento.titulo}</h3>
-                        <p>{evento.local} - {formatDateTime(evento.data, evento.hora)} ({evento.genero})</p>
-                        <button
-                            className="btn-reservar"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleReservar(evento);
-                            }}
-                            disabled={reservando === evento.id}
-                        >
-                            {reservando === evento.id ? 'Processing...' : 'Reserve'}
-                        </button>
-                        {mensagensReserva[evento.id] && (
-                            <p className="mensagem-reserva">{mensagensReserva[evento.id]}</p>
-                        )}
->>>>>>> integracao
-                    </div>
-                ))}
+            <div className={`max-w-7xl mx-auto ${isAnimating ? 'opacity-0 translate-y-5' : 'opacity-100 translate-y-0'} transition-all duration-300`}>
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 justify-items-center max-w-7xl mx-auto px-4">
+  {eventosPaginaAtual.map(evento => (
+    <div
+      key={evento.id}
+      onClick={() => handleEventoClick(evento.id)}
+      className="bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] mx-auto"
+    >
+      <div className="relative w-full h-[216px] sm:h-[288px] md:h-[400px] lg:h-[400px] overflow-hidden">
+        <img
+          src={evento.imagem || '/images/evento_padrao.png'}
+          alt={evento.titulo}
+          className="absolute top-0 left-0 w-full h-full object-cover"
+        />
+      </div>
+      <div className="p-5 sm:p-6 flex-grow flex flex-col">
+        <h3 className="text-[#564A72] text-sm sm:text-base font-semibold truncate mb-1 sm:mb-2">{evento.titulo}</h3>
+        <p className="!text-[#564A72] text-xs sm:text-sm mb-2 sm:mb-3">{evento.local} - {evento.hora}</p>
+                                {usuarioLogado?.role === 'CLIENT' && (
+                                    <div className="mt-auto">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleReservar(evento.id);
+                                            }}
+                                            disabled={reservandoId === evento.id}
+                                            className="w-full bg-[#5A4E75] hover:bg-[#2E284E] text-white py-2 px-4 sm:py-3 sm:px-5 text-sm sm:text-base rounded-md transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+                                        >
+                                            {reservandoId === evento.id ? 'Reservando...' : 'Reservar'}
+                                        </button>
+                                    </div>
+                                )}
+                                {mensagemReserva && reservandoId === evento.id && (
+                                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-center text-white">{mensagemReserva}</p>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
+
+            {totalPaginas > 1 && (
+                <div className="flex justify-center items-center gap-3 sm:gap-4 md:gap-6 mt-8 sm:mt-10 md:mt-12">
+                    <button
+                        onClick={() => mudarPagina(currentPage - 1)}
+                        disabled={currentPage === 1 || isAnimating}
+                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
+                    >
+                        &lt;
+                    </button>
+
+                    <span className="text-[#2E284E] font-bold text-sm sm:text-base">Página {currentPage} de {totalPaginas}</span>
+
+                    <button
+                        onClick={() => mudarPagina(currentPage + 1)}
+                        disabled={currentPage === totalPaginas || isAnimating}
+                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
+                    >
+                        &gt;
+                    </button>
+                </div>
+            )}
         </div>
     );
+}
+
+Eventos.propTypes = {
+    eventosFiltrados: PropTypes.array.isRequired,
+    currentPage: PropTypes.number.isRequired,
+    setCurrentPage: PropTypes.func.isRequired,
+    onEventoCadastrado: PropTypes.func
+};
+
+Eventos.defaultProps = {
+    onEventoCadastrado: () => {}
 };
 
 export default Eventos;

@@ -146,12 +146,6 @@ body, html {
     background-color: #1F1536;
     transform: scale(1.02); /* Suavizei o efeito de hover */
   }
-
-.google-login-container {
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-}
   
   /* Responsividade para Tablets (768px a 1024px) */
   @media (min-width: 768px) and (max-width: 1024px) {

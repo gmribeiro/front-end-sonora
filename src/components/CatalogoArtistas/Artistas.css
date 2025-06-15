@@ -1,0 +1,284 @@
+.artistas-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+}
+
+h2 {
+    color: #4a4a4a;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #dcdce6;
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.selecao-evento {
+    background-color: #fff;
+    border: 1px solid #dcdce6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.selecao-evento label {
+    font-weight: bold;
+    color: #333;
+}
+
+.selecao-evento select {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+    color: #555;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+.selecao-evento select:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
+}
+
+.artistas-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+.artista-card {
+    background-color: #fff;
+    border: 1px solid #dcdce6;
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+}
+
+.artista-card h3 {
+    color: #555;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.artista-card p {
+    color: #777;
+    margin-bottom: 8px;
+}
+
+.artista-card a {
+    color: #6c63ff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.artista-card a:hover {
+    color: #5649d8;
+    text-decoration: underline;
+}
+
+.btn-contratar {
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-contratar:hover {
+    background-color: #5649d8;
+}
+
+.btn-contratar:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.contratacao-status {
+    margin-top: 20px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.contratacao-status.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.contratacao-status.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.contratacao-status.loading {
+    background-color: #fff3cd;
+    color: #85640a;
+    border: 1px solid #ffeeba;
+}
+
+.error-message {
+    color: #dc3545;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+p {
+    color: #555;
+}
+
+.profile-image-container {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 10px;
+    border: 2px solid #6c63ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.profile-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    color: #888;
+    font-size: 3em;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+}
+.contratar-form {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contratar-form h4 {
+    color: #4a4a4a;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.contratar-form label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.contratar-form input[type="number"],
+.contratar-form textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+    resize: vertical;
+}
+
+.contratar-form button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    margin-top: 5px;
+}
+
+.contratar-form button:first-of-type {
+    background-color: #28a745;
+    color: white;
+}
+
+.contratar-form button:first-of-type:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.contratar-form .btn-cancelar {
+    background-color: #dc3545;
+    color: white;
+}
+
+.contratar-form .btn-cancelar:hover {
+    background-color: #c82333;
+}
+
+.contratar-form input[type="datetime-local"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    color: #555;
+    background-color: #f9f9f9;
+}
+
+.contratar-form input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
+}
+
+.contratar-form input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.contratar-form input[type="datetime-local"]::-webkit-inner-spin-button,
+.contratar-form input[type="datetime-local"]::-webkit-clear-button {
+    color: #6c63ff;
+    opacity: 1;
+    cursor: pointer;
+}
+
+.contratar-form input[type="datetime-local"] {
+    -moz-appearance: textfield;
+}
+
+@media (max-width: 768px) {
+    .artistas-container {
+        margin: 10px;
+        padding: 15px;
+    }
+    .artistas-lista {
+        grid-template-columns: 1fr;
+    }
+    .selecao-evento, .artista-card, .contratar-form {
+        padding: 12px;
+    }
+    .btn-contratar {
+        align-self: stretch;
+    }
+}
