@@ -10,7 +10,7 @@ import {
 } from "react-icons/gi";
 import { TbHorseToy } from "react-icons/tb";
 import { CgMusicSpeaker } from "react-icons/cg";
-import { PiMicrophoneStageDuotone } from "react-icons/pi";
+import { PiMicrophoneStageDuotone, PiHoodie, } from "react-icons/pi";
 import { LuGuitar } from "react-icons/lu";
 import api from "../../api";
 import PropTypes from "prop-types";
@@ -36,7 +36,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
     "Funk": <GiCigar />,
     "Reggae": <GiTumbleweed />,
     "Clássica": <GiGrandPiano />,
-    "Hip-Hop": <GiGrandPiano />,
+    "Hip-Hop": <PiHoodie />,
   };
 
   useEffect(() => {
