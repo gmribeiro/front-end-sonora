@@ -47,7 +47,7 @@ function EmailRecoveryForm() {
     return (
         <div className="relative flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 bg-white overflow-hidden z-[5]">
             <button
-                className="absolute top-2 left-2 sm:top-4 sm:left-4 text-white bg-[#1F1536] px-6 py-2 sm:px-6 sm:py-3 rounded hover:bg-[#564a72] transition-colors duration-300 z-[10] text-sm sm:text-base"
+                className="absolute top-2 left-2 sm:top-4 sm:left-4 text-[#EDE6F2] !bg-[#1F1536] px-6 py-2 sm:px-6 sm:py-3 rounded hover:!bg-[#564a72] transition-colors duration-300 z-[10] text-sm sm:text-base"
                 onClick={() => window.location.href = '/Acesso'}
             >
                 Voltar
@@ -87,12 +87,12 @@ function EmailRecoveryForm() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         disabled={isLoading}
-                        className="p-3 mb-6 border border-[#1F1536] text-sm sm:text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
+                        className="p-3 mb-6 border !border-[#1F1536] text-sm sm:text-base text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
                     />
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="bg-[#1F1536] text-white px-4 py-3 rounded text-sm sm:text-lg transition-colors duration-300 hover:bg-[#564a72]"
+                        className="!bg-[#1F1536] text-[#EDE6F2] px-4 py-3 rounded text-sm sm:text-lg transition-colors duration-300 hover:!bg-[#564a72]"
                     >
                         {isLoading ? 'Enviando...' : 'Enviar email de recuperação'}
                     </button>

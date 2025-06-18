@@ -26,7 +26,7 @@ function Termos() {
 
       <button
         aria-label="Voltar para a página inicial"
-        className="absolute bottom-4 right-4 bg-[#564A72] text-white px-6 py-3 sm:px-6 sm:py-3 hover:bg-[#ab8feb] focus:outline-none focus:ring-2 focus:ring-[#ab8feb] transition-all duration-200"
+        className="absolute bottom-4 right-4 !bg-[#564A72] text-[#EDE6F2] px-6 py-3 sm:px-6 sm:py-3 hover:!bg-[#c2a0bb] focus:outline-none focus:ring-2 focus:ring-[#ab8feb] transition-all duration-200"
         onClick={() => window.location.href = '/'}
       >
         Voltar

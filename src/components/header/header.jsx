@@ -152,7 +152,7 @@ const Header = () => {
 
             <button
               onClick={() => handleProtectedRoute('/meusconvites')}
-              className="relative group text-[#c2a0bb] font-semibold no-underline transition-transform duration-200 hover:scale-105 bg-transparent"
+              className="relative group text-[#c2a0bb] font-semibold no-underline transition-transform duration-200 hover:scale-105 !bg-transparent"
             >
               <span className="transition-opacity duration-300 group-hover:opacity-80">
                 {roleUsuario === 'HOST'
@@ -166,7 +166,7 @@ const Header = () => {
 
             <button
               onClick={() => handleProtectedRoute('/artistas')}
-              className="relative group text-[#c2a0bb] font-semibold no-underline transition-transform duration-200 hover:scale-105 bg-transparent"
+              className="relative group text-[#c2a0bb] font-semibold no-underline transition-transform duration-200 hover:scale-105 !bg-transparent"
             >
               <span className="transition-opacity duration-300 group-hover:opacity-80">
               {roleUsuario === 'HOST'
@@ -199,7 +199,7 @@ const Header = () => {
           ) : (
             <Link
               to="/acesso"
-              className="bg-white text-[#564A72] font-bold text-lg px-2 py-1 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-80"
+              className="bg-[#EDE6F2] text-[#564A72] font-bold text-lg px-2 py-1 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-80"
             >
               Entrar
             </Link>

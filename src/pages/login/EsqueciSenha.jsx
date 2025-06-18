@@ -88,9 +88,9 @@ function EsqueciSenha() {
     };
 
     return (
-        <div className="relative flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 bg-white overflow-hidden z-[5]">
+        <div className="relative flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8 overflow-hidden z-[5]">
             <button
-                className="absolute top-2 left-2 sm:top-4 sm:left-4 text-white bg-[#1F1536] px-6 py-2 sm:px-6 sm:py-3 rounded hover:bg-[#564a72] transition-colors duration-300 z-[10] text-sm sm:text-base"
+                className="absolute top-2 left-2 sm:top-4 sm:left-4 text-white !bg-[#1F1536] px-6 py-2 sm:px-6 sm:py-3 rounded hover:!bg-[#564a72] transition-colors duration-300 z-[10] text-sm sm:text-base"
                 onClick={() => window.location.href = '/Acesso'}
             >
                 Voltar

@@ -109,7 +109,7 @@ const Acessar = () => {
             <div className="relative w-screen h-screen flex justify-center items-center overflow-hidden">
                 <button
                     onClick={() => navigate('/')}
-                    className="absolute bottom-5 right-15 bg-[#A48BB3] text-white py-3 px-8 rounded-lg text-sm md:text-base lg:text-base transition transform duration-200 ease-in-out hover:bg-[#1F1536] hover:scale-105 z-10"
+                    className="absolute bottom-5 right-15 !bg-[#A48BB3] text-white py-3 px-8 rounded-lg text-sm md:text-base lg:text-base transition transform duration-200 ease-in-out hover:!bg-[#1F1536] hover:scale-105 z-10"
                 >   
                     Voltar
                 </button>
@@ -118,7 +118,7 @@ const Acessar = () => {
                     alt="Fundo"
                     className="absolute top-0 left-0 w-full h-full object-cover z-0"
                 />
-                <div className="bg-[#EDE6F2] w-[90vw] sm:w-[85vw] md:w-[65vw] lg:w-[30vw] max-w-md flex flex-col justify-center items-center p-3 sm:p-4 md:p-6 lg:p-10 rounded-none shadow-md shadow-[#A48BB355] z-10">
+                <div className="bg-[#EDE6F2] w-[90vw] sm:w-[85vw] md:w-[65vw] lg:w-[30vw] max-w-md flex flex-col justify-center items-center p-3 sm:p-4 md:p-6 lg:p-10 rounded-none shadow-md !shadow-[#A48BB355] z-10">
                     <h1 className="!text-[#1F1536] text-center mb-2 text-lg sm:text-xl md:text-2xl lg:text-3xl">Bem-vindo de volta!</h1>
 
                     {status.message && (
@@ -137,7 +137,7 @@ const Acessar = () => {
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            className="w-full p-1.5 sm:p-2 rounded md:p-3 border border-[#1F1536] text-base mb-4 text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
+                            className="w-full p-1.5 sm:p-2 rounded md:p-3 border !border-[#1F1536] text-base mb-4 !text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
                         />
 
                         <label htmlFor="senha" className="font-bold mb-1 text-[#1F1536] text-base sm:text-lg">Senha</label>
@@ -149,13 +149,13 @@ const Acessar = () => {
                             value={formData.senha}
                             onChange={handleChange}
                             required
-                            className="w-full p-1.5 sm:p-2 rounded md:p-3 border border-[#1F1536] text-base mb-4 text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
+                            className="w-full p-1.5 sm:p-2 rounded md:p-3 border !border-[#1F1536] text-base mb-4 !text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] transition-all duration-300"
                         />
 
                         <button
                             type="submit"
                             disabled={status.loading}
-                            className="bg-[#1F1536] text-white py-2 w-[85%] sm:w-4/5 mt-3 text-sm sm:text-base transition transform duration-300 rounded ease-in-out hover:bg-[#A48BB3] hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="!bg-[#1F1536] text-[#EDE6F2] py-2 w-[85%] sm:w-4/5 mt-3 text-sm sm:text-base transition transform duration-300 rounded ease-in-out hover:!bg-[#A48BB3] hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {status.loading ? 'Carregando...' : 'Entrar'}
                         </button>
@@ -171,11 +171,11 @@ const Acessar = () => {
 
                     <div className="mt-6 text-[#1F1536] text-center text-base sm:text-lg">
                         Não tem uma conta?
-                        <Link to="/cadastro" className="text-[#A48BB3] ml-1 hover:text-[#1F1536] hover:underline">Cadastrar</Link>
+                        <Link to="/cadastro" className="text-[#A48BB3] ml-1 hover:!text-[#1F1536] hover:underline">Cadastrar</Link>
                     </div>
 
                     <div className="mt-2 text-[#1F1536] text-center text-base sm:text-lg">
-                        <Link to="/check-email" className="text-[#A48BB3] hover:text-[#1F1536] hover:underline">Esqueci a senha</Link>
+                        <Link to="/check-email" className="text-[#A48BB3] hover:!text-[#1F1536] hover:underline">Esqueci a senha</Link>
                     </div>
                 </div>
             </div>
