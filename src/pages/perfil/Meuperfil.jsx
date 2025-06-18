@@ -203,13 +203,13 @@ function MeuPerfil() {
               )}
               <button
                 onClick={handleEditProfileClick}
-                className="bg-[#342e5a] hover:bg-[#564A72] text-white px-7 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75 font-semibold text-base"
+                className="!bg-[#342e5a] hover:!bg-[#564A72] text-white px-7 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75 font-semibold text-base"
               >
                 Editar Perfil
               </button>
               <button
                 onClick={() => setShowSenhaModal(true)}
-                className="bg-[#c2a0bb] hover:bg-[#A48BB3] text-white px-7 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#c2a0bb] focus:ring-opacity-75 font-semibold text-base mt-2"
+                className="!bg-[#c2a0bb] hover:!bg-[#A48BB3] text-white px-7 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#c2a0bb] focus:ring-opacity-75 font-semibold text-base mt-2"
               >
                 Alterar Senha
               </button>
