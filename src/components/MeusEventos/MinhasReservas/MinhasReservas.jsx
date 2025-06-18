@@ -21,17 +21,17 @@ function MinhasReservas() {
     const [minhasReservasConfirmadas, setMinhasReservasConfirmadas] = useState([]); // Corresponde a confirmedReservations
     const [historicoReservas, setHistoricoReservas] = useState([]); // Corresponde a pastEvents
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(''); // Corresponde a errorMessage
+    const [error, setError] = useState(""); // Corresponde a errorMessage
     const [confirmandoId, setConfirmandoId] = useState(null); // Corresponde a confirmingId
-    const [mensagemConfirmacao, setMensagemConfirmacao] = useState(''); // Corresponde a confirmMessage
+    const [mensagemConfirmacao, setMensagemConfirmacao] = useState(""); // Corresponde a confirmMessage
     const [cancelandoId, setCancelandoId] = useState(null); // Corresponde a cancellingId
-    const [mensagemCancelamento, setMensagemCancelamento] = useState(''); // Corresponde a cancelMessage
+    const [mensagemCancelamento, setMensagemCancelamento] = useState(""); // Corresponde a cancelMessage
     const [usuarioLogadoId, setUsuarioLogadoId] = useState(null); // Corresponde a loggedInUserId
     const [showCancelModal, setShowCancelModal] = useState(false); // Mantido para o modal
     const [reservationToCancel, setReservationToCancel] = useState(null); // Mantido para o modal
-    // NOVO ESTADO: Para armazenar IDs de reservas confirmadas para checagem rápida
-    const [confirmedReservationIds, setConfirmedReservationIds] = useState(new Set());
 
+    // Para armazenar IDs de reservas confirmadas para checagem rápida
+    const [confirmedReservationIds, setConfirmedReservationIds] = useState(new Set());
 
     /**
      * Formata uma string de data e hora para o formato "DD/MM/AAAA HH:MM".
@@ -41,11 +41,14 @@ function MinhasReservas() {
      */
     const formatDateTime = (dateTimeString) => {
         if (!dateTimeString) return 'Não disponível';
+
         try {
             const [datePart, timePart] = dateTimeString.split(' ');
             const [day, month, year] = datePart.split('/');
+
             // Ajuste para criar um objeto Date com fuso horário local e evitar problemas de offset
-            const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(timePart.split(':')[0]), parseInt(timePart.split(':')[1]));
+            const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day),
+                parseInt(timePart.split(':')[0]), parseInt(timePart.split(':')[1]));
 
             if (isNaN(date.getTime())) {
                 throw new Error('Data de entrada inválida');
@@ -61,6 +64,7 @@ function MinhasReservas() {
             };
 
             return new Intl.DateTimeFormat('pt-BR', options).format(date);
+
         } catch (error) {
             console.error('Erro ao formatar data:', error);
             return 'Data/Hora inválida';
@@ -91,9 +95,13 @@ function MinhasReservas() {
             const response = await api.get(`/reservas/usuario/${userId}/confirmadas`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            setMinhasReservasConfirmadas(response.data);
-            // NOVO: Atualiza o Set de IDs confirmados
-            setConfirmedReservationIds(new Set(response.data.map(res => res.idReserva)));
+
+            // CORREÇÃO APLICADA AQUI: Garante que response.data seja um array
+            setMinhasReservasConfirmadas(Array.isArray(response.data) ? response.data : []);
+
+            // Atualiza o Set de IDs confirmados, garantindo que response.data seja um array
+            setConfirmedReservationIds(new Set(Array.isArray(response.data) ? response.data.map(res => res.idReserva) : []));
+
         } catch (err) {
             console.error('Erro ao carregar minhas reservas confirmadas:', err);
             setError('Erro ao carregar suas reservas confirmadas.');
@@ -116,7 +124,7 @@ function MinhasReservas() {
     useEffect(() => {
         const carregarReservasCliente = async () => {
             setLoading(true);
-            setError('');
+            setError("");
 
             try {
                 const token = getAuthToken();
@@ -152,17 +160,17 @@ function MinhasReservas() {
      * @param {string} reservaEventoId - O ID do evento associado à reserva.
      */
     const handleConfirmarPresenca = async (reservaId, reservaEventoId) => {
-        // NOVO: Checa se a reserva já está confirmada antes de tentar confirmar
+        // Checa se a reserva já está confirmada antes de tentar confirmar
         if (confirmedReservationIds.has(reservaId)) {
             setMensagemConfirmacao('Esta reserva já está confirmada.');
-            setTimeout(() => setMensagemConfirmacao(''), 3000);
+            setTimeout(() => setMensagemConfirmacao(""), 3000);
             return;
         }
 
         setConfirmandoId(reservaId);
-        setMensagemConfirmacao('');
-        const token = getAuthToken();
+        setMensagemConfirmacao("");
 
+        const token = getAuthToken();
         try {
             const response = await api.put(`/reservas/${reservaId}`, {
                 confirmado: true,
@@ -187,7 +195,7 @@ function MinhasReservas() {
         } finally {
             setTimeout(() => {
                 setConfirmandoId(null);
-                setMensagemConfirmacao('');
+                setMensagemConfirmacao("");
             }, 3000);
         }
     };
@@ -208,10 +216,10 @@ function MinhasReservas() {
         if (!reservationToCancel) return;
 
         setCancelandoId(reservationToCancel.idReserva);
-        setMensagemCancelamento('');
+        setMensagemCancelamento("");
         setShowCancelModal(false); // Fechar o modal
-        const token = getAuthToken();
 
+        const token = getAuthToken();
         try {
             const response = await api.delete(`/reservas/${reservationToCancel.idReserva}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
@@ -221,12 +229,14 @@ function MinhasReservas() {
                 // Remove a reserva das listas de pendentes e confirmadas
                 setMinhasReservas(prevReservas => prevReservas.filter(r => r.idReserva !== reservationToCancel.idReserva));
                 setMinhasReservasConfirmadas(prevReservas => prevReservas.filter(r => r.idReserva !== reservationToCancel.idReserva));
-                // NOVO: Remove o ID da reserva do Set de IDs confirmados
+
+                // Remove o ID da reserva do Set de IDs confirmados
                 setConfirmedReservationIds(prev => {
                     const newSet = new Set(prev);
                     newSet.delete(reservationToCancel.idReserva);
                     return newSet;
                 });
+
                 setMensagemCancelamento('Reserva cancelada com sucesso!');
             } else {
                 setMensagemCancelamento('Erro ao cancelar reserva.');
@@ -237,7 +247,7 @@ function MinhasReservas() {
         } finally {
             setTimeout(() => {
                 setCancelandoId(null);
-                setMensagemCancelamento('');
+                setMensagemCancelamento("");
                 setReservationToCancel(null);
             }, 3000);
         }
@@ -259,7 +269,9 @@ function MinhasReservas() {
                 style={{ backgroundImage: "url('/images/fundocatalogo.png')" }}
             >
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2" style={{ borderColor: COLORS.primary, borderBottomColor: COLORS.secondary }} ></div>
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2" style={{
+                        borderColor: COLORS.primary, borderBottomColor: COLORS.secondary
+                    }}></div>
                     <p className="text-lg mt-4" style={{ color: COLORS.textMedium }}>Carregando suas reservas...</p>
                 </div>
             </div>
@@ -294,17 +306,20 @@ function MinhasReservas() {
 
                 {/* Seção de Reservas Pendentes */}
                 <section className="mb-10">
-                    <h3 className="text-2xl sm:text-3xl font-bold mb-6 pb-2 border-b-2" style={{ color: COLORS.primary, borderColor: COLORS.secondary }}>
+                    <h3 className="text-2xl sm:text-3xl font-bold mb-6 pb-2 border-b-2" style={{
+                        color: COLORS.primary, borderColor: COLORS.secondary
+                    }}>
                         Reservas Pendentes de Confirmação
                     </h3>
                     {minhasReservas.length === 0 ? (
-                        <p className="text-base sm:text-lg italic p-4 rounded-lg shadow-inner" style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
+                        <p className="text-base sm:text-lg italic p-4 rounded-lg shadow-inner"
+                            style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
                             Você não possui reservas aguardando confirmação.
                         </p>
                     ) : (
                         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {minhasReservas.map(reserva => {
-                                // NOVO: Checa se a reserva já está confirmada
+                                // Checa se a reserva já está confirmada
                                 const isConfirmed = confirmedReservationIds.has(reserva.idReserva);
                                 return (
                                     <li key={reserva.idReserva || Math.random()} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col border" style={{ borderColor: COLORS.warning }}>
@@ -314,12 +329,14 @@ function MinhasReservas() {
                                                 alt={`Imagem do evento ${reserva.evento.nomeEvento}`}
                                                 className="w-full h-40 object-cover rounded-t-xl"
                                                 onError={(e) => {
-                                                    e.target.onerror = null; e.target.src = 'https://placehold.co/400x200/e0e0e0/808080?text=Imagem+Nao+Disponivel';
+                                                    e.target.onerror = null; e.target.src =
+                                                        'https://placehold.co/400x200/e0e0e0/808080?text=Imagem+Nao+Disponivel';
                                                 }}
                                             />
                                         )}
                                         <div className="p-5 flex-grow">
-                                            <h4 className="text-xl font-semibold mb-2 leading-tight" style={{ color: COLORS.primary }}>
+                                            <h4 className="text-xl font-semibold mb-2 leading-tight"
+                                                style={{ color: COLORS.primary }}>
                                                 {reserva.evento?.nomeEvento || 'Evento Desconhecido'}
                                             </h4>
                                             <p className="text-sm mb-1" style={{ color: COLORS.textMedium }}>
@@ -331,26 +348,28 @@ function MinhasReservas() {
                                                 {reserva.evento?.localEvento?.local || 'Não disponível'}
                                             </p>
                                             <p className="text-sm font-semibold mt-2" style={{ color: COLORS.warning }}>
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: `${COLORS.warning}1A`, color: COLORS.warning }}>
-                                                <svg className="-ml-0.5 mr-1.5 h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
-                                                    <circle cx="4" cy="4" r="3" />
-                                                </svg>
-                                                Pendente
-                                            </span>
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: `${COLORS.warning}1A`, color: COLORS.warning }}>
+                                                    <svg className="-ml-0.5 mr-1.5 h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
+                                                        <circle cx="4" cy="4" r="3" />
+                                                    </svg>
+                                                    Pendente
+                                                </span>
                                             </p>
                                         </div>
-                                        <div className="p-4 border-t flex flex-col space-y-2" style={{ borderColor: COLORS.borderLight, backgroundColor: COLORS.background }}>
+                                        <div className="p-4 border-t flex flex-col space-y-2" style={{
+                                            borderColor: COLORS.borderLight, backgroundColor: COLORS.background
+                                        }}>
                                             <button
                                                 onClick={() => handleConfirmarPresenca(reserva.idReserva, reserva.evento?.idEvento)}
                                                 disabled={confirmandoId === reserva.idReserva || cancelandoId === reserva.idReserva || isConfirmed} // Desabilita se já confirmada
-                                                className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2
-                                            focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                                className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                                 style={{ backgroundColor: COLORS.secondary, color: 'white', borderColor: COLORS.secondary, '--focus-ring-color': COLORS.secondary }}
                                             >
                                                 {confirmandoId === reserva.idReserva ? 'Confirmando...' : (isConfirmed ? 'Já Confirmada' : 'Confirmar Presença')}
                                             </button>
                                             {mensagemConfirmacao && confirmandoId === reserva.idReserva && (
-                                                <p className="text-center mt-2 text-sm animate-fade-in" style={{ color: COLORS.success }}>{mensagemConfirmacao}</p>
+                                                <p className="text-center mt-2 text-sm animate-fade-in"
+                                                    style={{ color: COLORS.success }}>{mensagemConfirmacao}</p>
                                             )}
                                             {isConfirmed && ( // Mensagem extra se já confirmada
                                                 <p className="text-center mt-2 text-sm italic" style={{ color: COLORS.textMedium }}>
@@ -358,26 +377,29 @@ function MinhasReservas() {
                                                 </p>
                                             )}
                                             <Link to={`/detalhes/${reserva.evento?.idEvento}`} className="block mt-2">
-                                                <button className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2
-                                            focus:ring-offset-2 text-sm sm:text-base"
-                                                        style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}>
+                                                <button className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm sm:text-base"
+                                                    style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}>
                                                     Ver Detalhes do Evento
                                                 </button>
                                             </Link>
                                         </div>
                                     </li>
-                                );})}
+                                );
+                            })}
                         </ul>
                     )}
                 </section>
 
                 {/* Seção de Reservas Confirmadas */}
                 <section className="mb-10">
-                    <h3 className="text-2xl sm:text-3xl font-bold mb-6 pb-2 border-b-2" style={{ color: COLORS.primary, borderColor: COLORS.secondary }}>
+                    <h3 className="text-2xl sm:text-3xl font-bold mb-6 pb-2 border-b-2" style={{
+                        color: COLORS.primary, borderColor: COLORS.secondary
+                    }}>
                         Suas Reservas Confirmadas
                     </h3>
                     {minhasReservasConfirmadas.length === 0 ? (
-                        <p className="text-base sm:text-lg italic p-4 rounded-lg shadow-inner" style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
+                        <p className="text-base sm:text-lg italic p-4 rounded-lg shadow-inner"
+                            style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
                             Você ainda não tem reservas confirmadas.
                         </p>
                     ) : (
@@ -390,12 +412,15 @@ function MinhasReservas() {
                                             alt={`Imagem do evento ${reserva.evento.nomeEvento}`}
                                             className="w-full h-40 object-cover rounded-t-xl"
                                             onError={(e) => {
-                                                e.target.onerror = null; e.target.src = 'https://placehold.co/400x200/e0e0e0/808080?text=Imagem+Nao+Disponivel';
+                                                e.target.onerror = null; e.target.src =
+                                                    'https://placehold.co/400x200/e0e0e0/808080?text=Imagem+Nao+Disponivel';
                                             }}
                                         />
                                     )}
                                     <div className="p-5 flex-grow">
-                                        <h4 className="text-xl font-semibold mb-2 leading-tight" style={{ color: COLORS.primary }}>
+                                        <h4 className="text-xl font-semibold mb-2 leading-tight" style={{
+                                            color: COLORS.primary
+                                        }}>
                                             {reserva.evento?.nomeEvento || 'Evento Desconhecido'}
                                         </h4>
                                         <p className="text-sm mb-1" style={{ color: COLORS.textMedium }}>
@@ -415,11 +440,12 @@ function MinhasReservas() {
                                             </span>
                                         </p>
                                     </div>
-                                    <div className="p-4 border-t flex flex-col space-y-2" style={{ borderColor: COLORS.borderLight, backgroundColor: COLORS.background }}>
+                                    <div className="p-4 border-t flex flex-col space-y-2" style={{
+                                        borderColor: COLORS.borderLight, backgroundColor: COLORS.background
+                                    }}>
                                         <button
                                             onClick={() => alert('Funcionalidade de confirmação por e-mail a ser implementada.')} // Alerta para simular a funcionalidade
-                                            className="w-full sm:w-auto flex-1 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2
-                                            focus:ring-offset-2 text-sm sm:text-base"
+                                            className="w-full sm:w-auto flex-1 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm sm:text-base"
                                             style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}
                                         >
                                             Confirmação no Email
@@ -427,15 +453,15 @@ function MinhasReservas() {
                                         <button
                                             onClick={() => handleAbrirModalCancelar(reserva)}
                                             disabled={cancelandoId === reserva.idReserva || confirmandoId === reserva.idReserva}
-                                            className="w-full sm:w-auto flex-1 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none
-                                            focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                            className="w-full sm:w-auto flex-1 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                             style={{ backgroundColor: COLORS.danger, color: 'white', borderColor: COLORS.danger, '--focus-ring-color': COLORS.danger }}
                                         >
                                             {cancelandoId === reserva.idReserva ? 'Cancelando...' : 'Cancelar Reserva'}
                                         </button>
                                     </div>
                                     {mensagemCancelamento && cancelandoId === reserva.idReserva && (
-                                        <p className="text-center mt-2 text-sm animate-fade-in p-2" style={{ color: COLORS.danger }}>{mensagemCancelamento}</p>
+                                        <p className="text-center mt-2 text-sm animate-fade-in p-2"
+                                            style={{ color: COLORS.danger }}>{mensagemCancelamento}</p>
                                     )}
                                 </li>
                             ))}
@@ -445,30 +471,36 @@ function MinhasReservas() {
 
                 {/* Seção de Histórico de Eventos */}
                 <section>
-                    <h3 className="text-2xl sm:text-3xl font-bold mb-6 pb-2 border-b-2" style={{ color: COLORS.primary, borderColor: COLORS.secondary }}>
+                    <h3 className="text-2xl sm:text-3xl font-bold mb-6 pb-2 border-b-2" style={{
+                        color: COLORS.primary, borderColor: COLORS.secondary
+                    }}>
                         Histórico de Eventos Concluídos
                     </h3>
                     {historicoReservas.length === 0 ? (
-                        <p className="text-base sm:text-lg italic p-4 rounded-lg shadow-inner" style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
+                        <p className="text-base sm:text-lg italic p-4 rounded-lg shadow-inner"
+                            style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
                             Você não possui histórico de eventos concluídos.
                         </p>
                     ) : (
                         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {historicoReservas.map(reserva => (
-                                <li key={reserva.idReserva || Math.random()} className="bg-white rounded-xl shadow-md hover:shadow-lg
-                                transition-shadow duration-300 overflow-hidden flex flex-col border" style={{ borderColor: COLORS.borderLight }}>
+                                <li key={reserva.idReserva || Math.random()} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col border"
+                                    style={{ borderColor: COLORS.borderLight }}>
                                     {reserva.evento?.imageUrl && (
                                         <img
                                             src={reserva.evento.imageUrl}
                                             alt={`Imagem do evento ${reserva.evento.nomeEvento}`}
                                             className="w-full h-40 object-cover rounded-t-xl"
                                             onError={(e) => {
-                                                e.target.onerror = null; e.target.src = 'https://placehold.co/400x200/e0e0e0/808080?text=Imagem+Nao+Disponivel';
+                                                e.target.onerror = null; e.target.src =
+                                                    'https://placehold.co/400x200/e0e0e0/808080?text=Imagem+Nao+Disponivel';
                                             }}
                                         />
                                     )}
                                     <div className="p-5 flex-grow">
-                                        <h4 className="text-xl font-semibold mb-2 leading-tight" style={{ color: COLORS.primary }}>
+                                        <h4 className="text-xl font-semibold mb-2 leading-tight" style={{
+                                            color: COLORS.primary
+                                        }}>
                                             {reserva.evento?.nomeEvento || 'Evento Desconhecido'}
                                         </h4>
                                         <p className="text-sm mb-1" style={{ color: COLORS.textMedium }}>
@@ -485,11 +517,12 @@ function MinhasReservas() {
                                             </span>
                                         </p>
                                     </div>
-                                    <div className="p-4 border-t" style={{ borderColor: COLORS.borderLight, backgroundColor: COLORS.background }}>
+                                    <div className="p-4 border-t" style={{
+                                        borderColor: COLORS.borderLight, backgroundColor: COLORS.background
+                                    }}>
                                         <Link to="/avaliacoes" state={{ eventoId: reserva.evento?.idEvento }}>
-                                            <button className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2
-                                            focus:ring-offset-2 text-sm sm:text-base"
-                                                    style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}>
+                                            <button className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm sm:text-base"
+                                                style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}>
                                                 Avaliar Evento
                                             </button>
                                         </Link>
