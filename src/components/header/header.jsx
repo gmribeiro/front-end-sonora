@@ -144,9 +144,9 @@ const Header = () => {
           <nav className="flex flex-wrap justify-center gap-6 whitespace-nowrap text-center">
             <Link
               to="/"
-              className="relative group text-[#c2a0bb] font-semibold no-underline transition-transform duration-200 hover:scale-105"
+              className="relative group text-[#c2a0bb] font-semibold no-underline transition-transform duration-200 hover:scale-105 hover:!text-[#c2a0bb]"
             >
-              <span className="transition-opacity duration-300 group-hover:opacity-80">Home</span>
+              <span className="transition-opacity duration-300 group-hover:opacity-80 hover:!text-[#c2a0bb]">Home</span>
               <span className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-[#c2a0bb] transition-all duration-300 group-hover:w-full group-hover:left-0" />
             </Link>
 
@@ -199,7 +199,7 @@ const Header = () => {
           ) : (
             <Link
               to="/acesso"
-              className="bg-[#EDE6F2] text-[#564A72] font-bold text-lg px-2 py-1 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-80"
+              className="bg-[#EDE6F2] text-[#564A72] font-bold text-lg px-2 py-1 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-90"
             >
               Entrar
             </Link>
