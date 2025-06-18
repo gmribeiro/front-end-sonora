@@ -199,7 +199,7 @@ const Header = () => {
           ) : (
             <Link
               to="/acesso"
-              className="bg-[#EDE6F2] text-[#564A72] font-bold text-lg px-2 py-1 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-90 hover:!text-[#c2a0bb]"
+              className="bg-[#EDE6F2] text-[#564A72] font-bold text-lg px-2 py-1 no-underline whitespace-nowrap shadow-sm transition-all hover:brightness-90"
             >
               Entrar
             </Link>
