@@ -112,9 +112,8 @@ const Header = () => {
     }
   };
 
-  // Nova função para ir para notificações
   const handleNotificationsClick = () => {
-    navigate('/notificacoes');
+    navigate('/notificacao');
   };
 
   return (
