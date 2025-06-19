@@ -10,7 +10,7 @@ import {
 } from "react-icons/gi";
 import { TbHorseToy } from "react-icons/tb";
 import { CgMusicSpeaker } from "react-icons/cg";
-import { PiMicrophoneStageDuotone } from "react-icons/pi";
+import { PiMicrophoneStageDuotone, PiHoodie, } from "react-icons/pi";
 import { LuGuitar } from "react-icons/lu";
 import api from "../../api";
 import PropTypes from "prop-types";
@@ -36,7 +36,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
     "Funk": <GiCigar />,
     "Reggae": <GiTumbleweed />,
     "Clássica": <GiGrandPiano />,
-    "Hip-Hop": <GiGrandPiano />,
+    "Hip-Hop": <PiHoodie />,
   };
 
   useEffect(() => {
@@ -127,7 +127,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
       <div className="flex items-center max-w-[1050px] mx-auto px-5 sm:px-10 relative overflow-visible">
 
         <button
-          className={`bg-[#564a72] text-[#EDE6F2] rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:bg-[#C5B6D2]
+          className={`!bg-[#564a72] text-[#EDE6F2] rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:!bg-[#C5B6D2]
             ${startIndex === 0 ? "opacity-50 cursor-not-allowed" : ""}
           `}
           onClick={scrollLeft}
@@ -206,7 +206,7 @@ const Carrossel = ({ onGeneroSelecionado }) => {
         </div>
 
         <button
-          className={`bg-[#564a72] text-[#EDE6F2] rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:bg-[#C5B6D2]
+          className={`!bg-[#564a72] text-[#EDE6F2] rounded-full w-10 h-10 flex items-center justify-center absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-300 shadow-md hover:scale-110 hover:!bg-[#C5B6D2]
             ${
               startIndex === generosBackend.length - visibleItems ||
               generosBackend.length <= visibleItems

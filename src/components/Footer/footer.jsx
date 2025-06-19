@@ -17,12 +17,12 @@ const Footer = () => {
             <Link
               key={to}
               to={to}
-              className="relative group text-[#c2a0bb] font-medium no-underline transition-transform duration-200 hover:scale-105"
+              className="relative group text-[#c2a0bb] font-medium no-underline transition-transform duration-200 hover:scale-105 hover:!text-[#c2a0bb]"
             >
               <span className="transition-opacity duration-300 group-hover:opacity-80">
                 {label}
               </span>
-              <span className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-[#c2a0bb] transition-all duration-300 group-hover:w-full group-hover:left-0" />
+              <span className=" hover:!text-[#c2a0bb] absolute bottom-0 left-1/2 w-0 h-[2px] bg-[#c2a0bb] transition-all duration-300 group-hover:w-full group-hover:left-0" />
             </Link>
           ))}
 
@@ -35,7 +35,7 @@ const Footer = () => {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative group text-[#c2a0bb] font-medium no-underline transition-transform duration-200 hover:scale-105"
+              className="relative group text-[#c2a0bb] hover:!text-[#c2a0bb] font-medium no-underline transition-transform duration-200 hover:scale-105"
             >
               <span className="transition-opacity duration-300 group-hover:opacity-80">
                 {label}

@@ -1,27 +1,23 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 
 function MeuPerfil() {
-  // State for user data
   const [nomeUsuario, setNomeUsuario] = useState('');
   const [userId, setUserId] = useState(null);
   const [novoNome, setNovoNome] = useState('');
   const [accountCreationDate, setAccountCreationDate] = useState('');
-  const [bio, setBio] = useState(''); // Novo estado para a biografia
-  const [novaBio, setNovaBio] = useState(''); // Novo estado para a edição da biografia
+  const [bio, setBio] = useState('');
+  const [novaBio, setNovaBio] = useState('');
 
-  // State for profile image management
   const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
 
-  // State for UI control
   const [exibirFormulario, setExibirFormulario] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showSenhaModal, setShowSenhaModal] = useState(false);
 
-  // State for password change
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmaSenha, setConfirmaSenha] = useState('');
@@ -30,28 +26,24 @@ function MeuPerfil() {
 
   const navigate = useNavigate();
 
-  // Utility functions for alerts
+  const editProfileRef = useRef(null);
+
   const showError = (msg) => alert(msg);
   const showSuccess = (msg) => alert(msg);
 
-  /**
-   * Fetches the user's profile image from the backend.
-   * @param {string} token - The authentication token.
-   */
   const fetchProfileImage = useCallback(async (token) => {
     try {
       const response = await api.get('/auth/user/me/profile-image', {
         headers: { Authorization: `Bearer ${token}` },
-        responseType: 'blob', // Expecting a binary response for the image
+        responseType: 'blob',
       });
       setProfileImageUrl(URL.createObjectURL(response.data));
     } catch (error) {
       console.error('Erro ao buscar imagem de perfil:', error);
-      setProfileImageUrl(null); // Set to null if there's an error fetching the image
+      setProfileImageUrl(null);
     }
   }, []);
 
-  // Effect hook to fetch user data on component mount
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
@@ -65,14 +57,13 @@ function MeuPerfil() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setNomeUsuario(res.data.nome);
-        setNovoNome(res.data.nome); // Initialize new name with current name
+        setNovoNome(res.data.nome);
         setUserId(res.data.id);
-        setUserRole(res.data.role)
-        // Assuming your backend sends a creation date and a bio
+        setUserRole(res.data.role);
         const date = res.data.createdAt ? new Date(res.data.createdAt) : new Date();
         setAccountCreationDate(date.toLocaleDateString('pt-BR'));
-        setBio(res.data.bio || 'Adicione uma breve descrição sobre você.'); // Get bio from backend, or set a placeholder
-        setNovaBio(res.data.bio || ''); // Initialize novaBio for editing
+        setBio(res.data.bio || 'Adicione uma breve descrição sobre você.');
+        setNovaBio(res.data.bio || '');
         fetchProfileImage(token);
       } catch (error) {
         console.error('Erro ao buscar dados do usuário:', error);
@@ -83,23 +74,20 @@ function MeuPerfil() {
     fetchUser();
   }, [navigate, fetchProfileImage]);
 
-  /**
-   * Handles the upload of a new profile image.
-   */
   const handleUpload = async () => {
     if (!selectedFile) {
       return showError('Por favor, selecione um arquivo para enviar.');
     }
 
     const formData = new FormData();
-    formData.append('foto', selectedFile); // 'foto' should match the backend's expected field name
+    formData.append('foto', selectedFile);
 
     const token = localStorage.getItem('token');
     try {
       await api.post('/auth/user/me/upload', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data', // Important for file uploads
+          'Content-Type': 'multipart/form-data',
         },
       });
       showSuccess('Foto de perfil atualizada com sucesso!');
@@ -112,21 +100,16 @@ function MeuPerfil() {
     }
   };
 
-  /**
-   * Handles saving the updated user name and bio.
-   * @param {Event} e - The form submission event.
-   */
   const handleSalvar = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-      // Send both name and bio in the update request
       await api.put(`/users/${userId}`, { name: novoNome, bio: novaBio }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       showSuccess('Perfil atualizado com sucesso!');
       setNomeUsuario(novoNome);
-      setBio(novaBio); // Update the displayed bio
+      setBio(novaBio);
       setExibirFormulario(false);
     } catch (error) {
       console.error('Erro ao atualizar perfil:', error);
@@ -134,18 +117,11 @@ function MeuPerfil() {
     }
   };
 
-  /**
-   * Logs out the user by removing the token and navigating to the access page.
-   */
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/acesso');
   };
 
-  /**
-   * Handles the submission for changing the user's password.
-   * @param {Event} e - The form submission event.
-   */
   const handleSenhaSubmit = async (e) => {
     e.preventDefault();
     if (!senhaAtual || !novaSenha || !confirmaSenha) {
@@ -172,11 +148,6 @@ function MeuPerfil() {
     }
   };
 
-  /**
-   * Handles the file input change for profile image.
-   * Creates a preview URL for the selected image.
-   * @param {Event} e - The file input change event.
-   */
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -188,255 +159,256 @@ function MeuPerfil() {
     }
   };
 
+  const handleEditProfileClick = () => {
+    setExibirFormulario(true);
+    setTimeout(() => {
+      editProfileRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   return (
-    <div
-      className="min-h-screen w-full bg-cover bg-fixed bg-center p-6 bg-no-repeat font-['Poppins',_sans-serif] text-gray-800"
-      style={{ backgroundImage: "url('./images/meuperfil.png')" }}
-    >
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-10 md:mb-16">
-        <h1 className="text-5xl font-extrabold text-[#55286B] tracking-tight md:text-6xl drop-shadow-md">Meu Perfil</h1>
-        <Link
-          to="/"
-          className="bg-gradient-to-r from-[#8B44A9] to-[#8B44A9] hover:from-[#8B44A9] hover:to-[#55286B] text-white px-7 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#8B44A9] focus:ring-opacity-75 font-semibold text-xl"
-        >
-          ← Voltar para Home
-        </Link>
-      </div>
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-      {/* Main Content Area */}
-      <div className="flex flex-col gap-10 lg:gap-12 max-w-6xl mx-auto">
-        {/* Profile Card */}
-        <div className="bg-white rounded-none shadow-2xl p-8 transform transition-transform duration-300 hover:scale-[1.005] border border-gray-100 backdrop-blur-sm bg-opacity-90">
-          <h2 className="text-4xl font-bold text-[#55286B] mb-6 pb-3 border-b border-[#eee] leading-tight">Bem-vindo(a), {nomeUsuario}</h2>
-          <div className="flex flex-col items-center gap-8">
-            {profileImageUrl ? (
-              <img
-                src={profileImageUrl}
-                alt="Perfil"
-                className="w-48 h-48 rounded-full border-5 border-[#55286B] object-cover shadow-xl transform transition-transform duration-300 hover:scale-105 ring-4 ring-offset-2 ring-[#8B44A9]"
-              />
-            ) : (
-              <div className="w-48 h-48 rounded-full bg-gradient-to-br from-[#8B44A9] to-[#55286B] flex items-center justify-center text-3xl font-bold shadow-xl ring-4 ring-offset-2 ring-[#8B44A9]">
-                Sem foto
-              </div>
-            )}
-            <button
-              onClick={() => setExibirFormulario(true)}
-              className="bg-gradient-to-r from-[#8B44A9] to-[#55286B] hover:from-[#8B44A9] hover:to-[#55286B] text-white px-9 py-4.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#8B44A9] focus:ring-opacity-75 font-semibold text-xl"
-            >
-              Editar Perfil
-            </button>
-            <button
-              onClick={() => setShowSenhaModal(true)}
-              className="bg-gradient-to-r from-[#55286B] to-[#55286B] hover:from-[#55286B] hover:to-[#8B44A9] text-white px-9 py-4.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#55286B] focus:ring-opacity-75 font-semibold text-xl mt-4"
-            >
-              Alterar Senha
-            </button>
-          </div>
-
-          {/* User Bio Section */}
-          <div className="bg-gray-50 rounded-2xl shadow-inner p-6 my-10 border border-gray-100">
-            <h3 className="text-2xl font-bold text-[#55286B] mb-4">Sobre mim</h3> {/* Changed heading */}
-            <p className="text-lg text-gray-700 whitespace-pre-line">{bio}</p> {/* Display bio, preserves line breaks */}
-          </div>
-
-          {/* Additional Account Information */}
-          <div className="bg-gray-50 rounded-2xl shadow-inner p-6 my-10 border border-gray-100">
-            <h3 className="text-2xl font-bold text-[#55286B] mb-4">Informações da Conta</h3>
-            <p className="text-lg text-gray-700 mb-3">
-              <strong>Tipo de usuário:</strong> <span className="font-medium text-gray-800">{role}</span>
-            </p>
-            <p className="text-lg text-gray-700">
-              <strong>Data de Criação da Conta:</strong> <span className="font-medium text-gray-800">{accountCreationDate}</span>
-            </p>
-          </div>
+      <div
+        className="min-h-screen w-full bg-cover bg-fixed bg-center p-6 bg-no-repeat font-['Inter',_system-ui,_Avenir,_Helvetica,_Arial,_sans-serif] text-gray-800"
+        style={{ backgroundImage: "url('./images/meuperfil.png')" }}
+      >
+        <div className="flex justify-between items-center mb-8 md:mb-12">
+          <h1 className="text-4xl font-extrabold text-[#342e5a] tracking-tight md:text-5xl drop-shadow-md">Meu Perfil</h1>
+          <Link
+            to="/"
+            className="bg-[#342e5a] hover:bg-[#564A72] text-white px-5 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75 font-semibold text-base"
+          >
+            ← Voltar para Home
+          </Link>
         </div>
 
-        {/* Edit Profile Form - Conditionally Rendered Below */}
-        {exibirFormulario && (
-          <div className="bg-white rounded-none shadow-2xl p-8 animate-fade-in transform transition-transform duration-300 hover:scale-[1.005] border border-gray-100 backdrop-blur-sm bg-opacity-90">
-            <h3 className="text-3xl font-bold text-[#55286B] mb-6 pb-3 border-b border-[#eee] leading-tight">Editar Perfil</h3>
-            <form onSubmit={handleSalvar} className="space-y-6">
-              <div>
-                <label htmlFor="novoNomeInput" className="block text-lg font-semibold mb-2 text-[#55286B]">
-                  Novo Nome:
-                </label>
-                <input
-                  id="novoNomeInput"
-                  type="text"
-                  value={novoNome}
-                  onChange={(e) => setNovoNome(e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-[#8B44A9] focus:border-[#8B44A9] outline-none transition-all duration-200 text-lg placeholder-gray-400 shadow-sm focus:shadow-md"
-                  required
+        <div className="flex flex-col gap-8 lg:gap-10 max-w-6xl mx-auto">
+          <div className="bg-white rounded-lg shadow-2xl p-6 transform transition-transform duration-300 hover:scale-[1.005] border border-gray-100 backdrop-blur-sm bg-opacity-90">
+            <h2 className="text-3xl font-bold text-[#342e5a] mb-5 pb-2 border-b border-[#eee] leading-tight">Bem-vindo(a), {nomeUsuario}</h2>
+            <div className="flex flex-col items-center gap-5">
+              {profileImageUrl ? (
+                <img
+                  src={profileImageUrl}
+                  alt="Perfil"
+                  className="w-44 h-44 rounded-full border-4 border-[#342e5a] object-cover shadow-xl transform transition-transform duration-300 hover:scale-105 ring-4 ring-offset-2 ring-[#c2a0bb]"
                 />
-              </div>
-              {/* New Bio Textarea */}
-              <div>
-                <label htmlFor="novaBioInput" className="block text-lg font-semibold mb-2 text-[#55286B]">
-                  Sua Biografia:
-                </label>
-                <textarea
-                  id="novaBioInput"
-                  value={novaBio}
-                  onChange={(e) => setNovaBio(e.target.value)}
-                  rows="4" // Define number of rows
-                  className="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-[#8B44A9] focus:border-[#8B44A9] outline-none transition-all duration-200 text-lg placeholder-gray-400 shadow-sm focus:shadow-md resize-y" // Add resize-y
-                  placeholder="Conte um pouco sobre você..."
-                ></textarea>
-              </div>
+              ) : (
+                <div className="w-44 h-44 rounded-full bg-gradient-to-br from-[#342e5a] via-[#5A4E75] to-[#7d6588] flex items-center justify-center text-3xl font-bold text-white shadow-xl ring-4 ring-offset-2 ring-[#c2a0bb]">
+                  Sem foto
+                </div>
+              )}
+              <button
+                onClick={handleEditProfileClick}
+                className="!bg-[#342e5a] hover:!bg-[#564A72] text-white px-7 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75 font-semibold text-base"
+              >
+                Editar Perfil
+              </button>
+              <button
+                onClick={() => setShowSenhaModal(true)}
+                className="!bg-[#c2a0bb] hover:!bg-[#A48BB3] text-white px-7 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#c2a0bb] focus:ring-opacity-75 font-semibold text-base mt-2"
+              >
+                Alterar Senha
+              </button>
+            </div>
 
-              <div>
-                <h4 className="text-2xl font-bold mb-4 text-[#55286B]">Atualizar Foto</h4>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                  <label
-                    htmlFor="profileImageInput"
-                    className="cursor-pointer bg-gradient-to-r from-[#8B44A9] to-[#55286B] hover:from-[#8B44A9] hover:to-[#55286B] text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-lg"
-                  >
-                    Selecionar Foto
+            <div className="bg-[#EDE6F2] rounded-2xl shadow-inner p-5 my-8 border border-gray-100">
+              <h3 className="text-xl font-bold text-[#342e5a] mb-3">Sobre mim</h3>
+              <p className="text-base text-gray-700 whitespace-pre-line">{bio}</p>
+            </div>
+
+            <div className="bg-[#EDE6F2] rounded-2xl shadow-inner p-5 my-8 border border-gray-100">
+              <h3 className="text-xl font-bold text-[#342e5a] mb-3">Informações da Conta</h3>
+              <p className="text-base text-gray-700 mb-2">
+                <strong>Tipo de usuário:</strong> <span className="font-medium text-gray-800">{role}</span>
+              </p>
+              <p className="text-base text-gray-700">
+                <strong>Data de Criação da Conta:</strong> <span className="font-medium text-gray-800">{accountCreationDate}</span>
+              </p>
+            </div>
+          </div>
+
+          {exibirFormulario && (
+            <div ref={editProfileRef} className="bg-white rounded-lg shadow-2xl p-6 animate-fade-in transform transition-transform duration-300 hover:scale-[1.005] border border-gray-100 backdrop-blur-sm bg-opacity-90">
+              <h3 className="text-2xl font-bold text-[#342e5a] mb-5 pb-2 border-b border-[#eee] leading-tight">Editar Perfil</h3>
+              <form onSubmit={handleSalvar} className="space-y-5">
+                <div>
+                  <label htmlFor="novoNomeInput" className="block text-base font-semibold mb-2 text-[#342e5a]">
+                    Novo Nome:
                   </label>
                   <input
-                    id="profileImageInput"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
+                    id="novoNomeInput"
+                    type="text"
+                    value={novoNome}
+                    onChange={(e) => setNovoNome(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#c2a0bb] focus:border-[#c2a0bb] outline-none transition-all duration-200 text-base placeholder-gray-400 shadow-sm focus:shadow-md"
+                    required
                   />
+                </div>
+                <div>
+                  <label htmlFor="novaBioInput" className="block text-base font-semibold mb-2 text-[#342e5a]">
+                    Sua Biografia:
+                  </label>
+                  <textarea
+                    id="novaBioInput"
+                    value={novaBio}
+                    onChange={(e) => setNovaBio(e.target.value)}
+                    rows="3"
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#c2a0bb] focus:border-[#c2a0bb] outline-none transition-all duration-200 text-base placeholder-gray-400 shadow-sm focus:shadow-md resize-y"
+                    placeholder="Conte um pouco sobre você..."
+                  ></textarea>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-bold mb-3 text-[#342e5a]">Atualizar Foto</h4>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                    <label
+                      htmlFor="profileImageInput"
+                      className="cursor-pointer bg-[#342e5a] hover:bg-[#564A72] text-white px-7 py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-base"
+                    >
+                      Selecionar Foto
+                    </label>
+                    <input
+                      id="profileImageInput"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleUpload}
+                      disabled={!selectedFile}
+                      className={`${
+                        selectedFile
+                          ? 'bg-[#c2a0bb] hover:bg-[#A48BB3]'
+                          : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                      } text-white px-7 py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-base`}
+                    >
+                      Enviar Foto
+                    </button>
+                  </div>
+                  {previewImage && (
+                    <div className="mt-4 flex items-center gap-4 p-3 border border-gray-200 rounded-lg bg-[#EDE6F2] shadow-md">
+                      <img
+                        src={previewImage}
+                        alt="Prévia da imagem selecionada"
+                        className="w-24 h-24 rounded-full object-cover border-3 border-[#342e5a] shadow-lg"
+                      />
+                      <p className="text-sm text-gray-700 truncate max-w-[calc(100%-7rem)]">Arquivo selecionado: <span className="font-semibold text-gray-900">{selectedFile?.name}</span></p>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col md:flex-row gap-3 pt-3">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-[#342e5a] hover:bg-[#564A72] text-white px-7 py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75"
+                  >
+                    Salvar Alterações
+                  </button>
                   <button
                     type="button"
-                    onClick={handleUpload}
-                    disabled={!selectedFile}
-                    className={`${
-                      selectedFile
-                        ? 'bg-gradient-to-r from-[#55286B] to-[#55286B] hover:from-[#55286B] hover:to-[#8B44A9]'
-                        : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                    } text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-lg`}
+                    onClick={() => {
+                      setExibirFormulario(false);
+                      setSelectedFile(null);
+                      setPreviewImage(null);
+                      setNovoNome(nomeUsuario);
+                      setNovaBio(bio);
+                    }}
+                    className="flex-1 bg-[#B00020] hover:bg-red-700 text-white px-7 py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#B00020] focus:ring-opacity-75"
                   >
-                    Enviar Foto
+                    Cancelar
                   </button>
                 </div>
-                {previewImage && (
-                  <div className="mt-5 flex items-center gap-5 p-4 border border-gray-200 rounded-xl bg-gray-50 shadow-md">
-                    <img
-                      src={previewImage}
-                      alt="Prévia da imagem selecionada"
-                      className="w-28 h-28 rounded-full object-cover border-4 border-[#55286B] shadow-lg"
-                    />
-                    <p className="text-base text-gray-700 truncate max-w-[calc(100%-8rem)]">Arquivo selecionado: <span className="font-semibold text-gray-900">{selectedFile?.name}</span></p>
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-col md:flex-row gap-4 pt-4">
+              </form>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end mt-12 md:mt-16">
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="bg-[#B00020] hover:bg-red-700 text-white px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-xl transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#B00020] focus:ring-opacity-75"
+          >
+            Sair
+          </button>
+        </div>
+
+        {showLogoutModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4 backdrop-blur-md">
+            <div className="bg-white rounded-xl p-8 shadow-3xl w-full max-w-md animate-scale-in text-center border border-gray-100">
+              <h2 className="text-2xl font-bold text-[#342e5a] mb-6 leading-snug">Deseja sair da sua conta?</h2>
+              <div className="flex flex-col sm:flex-row gap-4">
                 <button
-                  type="submit"
-                  className="flex-1 bg-gradient-to-r from-[#55286B] to-[#55286B] hover:from-[#55286B] hover:to-[#8B44A9] text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-xl transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#55286B] focus:ring-opacity-75"
+                  onClick={handleLogout}
+                  className="flex-1 bg-[#B00020] hover:bg-red-700 text-white px-7 py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-[#B00020] focus:ring-opacity-75"
                 >
-                  Salvar Alterações
+                  Sim, sair
                 </button>
                 <button
-                  type="button"
-                  onClick={() => {
-                    setExibirFormulario(false);
-                    setSelectedFile(null);
-                    setPreviewImage(null);
-                    setNovoNome(nomeUsuario);
-                    setNovaBio(bio); // Reset novaBio to current bio
-                  }}
-                  className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-xl transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75"
+                  onClick={() => setShowLogoutModal(false)}
+                  className="flex-1 bg-[#EDE6F2] hover:bg-gray-300 text-[#342e5a] px-7 py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
                 >
                   Cancelar
                 </button>
               </div>
-            </form>
+            </div>
+          </div>
+        )}
+
+        {showSenhaModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4 backdrop-blur-md">
+            <div className="bg-white rounded-xl p-8 shadow-3xl w-full max-w-md animate-scale-in text-center border border-gray-100">
+              <h2 className="text-2xl font-bold text-[#342e5a] mb-6 leading-snug">Alterar Senha</h2>
+              <form onSubmit={handleSenhaSubmit} className="space-y-5">
+                <input
+                  type="password"
+                  placeholder="Senha atual"
+                  value={senhaAtual}
+                  onChange={(e) => setSenhaAtual(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#c2a0bb] focus:border-[#c2a0bb] outline-none transition-all duration-200 text-base placeholder-gray-400 shadow-sm focus:shadow-md"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Nova senha"
+                  value={novaSenha}
+                  onChange={(e) => setNovaSenha(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#c2a0bb] focus:border-[#c2a0bb] outline-none transition-all duration-200 text-base placeholder-gray-400 shadow-sm focus:shadow-md"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Confirmar nova senha"
+                  value={confirmaSenha}
+                  onChange={(e) => setConfirmaSenha(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#c2a0bb] focus:border-[#c2a0bb] outline-none transition-all duration-200 text-base placeholder-gray-400 shadow-sm focus:shadow-md"
+                  required
+                />
+                <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-[#342e5a] hover:bg-[#564A72] text-white px-7 py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75"
+                  >
+                    Salvar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowSenhaModal(false)}
+                    className="flex-1 bg-[#EDE6F2] hover:bg-gray-300 text-[#342e5a] px-7 py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>
-
-      {/* Logout Button */}
-      <div className="flex justify-end mt-16 md:mt-20">
-        <button
-          onClick={() => setShowLogoutModal(true)}
-          className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-10 py-5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-2xl transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75"
-        >
-          Sair
-        </button>
-      </div>
-
-      {/* Modals */}
-
-      {/* Logout Confirmation Modal */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4 backdrop-blur-md">
-          <div className="bg-white rounded-3xl p-10 shadow-3xl w-full max-w-md animate-scale-in text-center border border-gray-100">
-            <h2 className="text-3xl font-bold text-[#55286B] mb-8 leading-snug">Deseja sair da sua conta?</h2>
-            <div className="flex flex-col sm:flex-row gap-5">
-              <button
-                onClick={handleLogout}
-                className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75"
-              >
-                Sim, sair
-              </button>
-              <button
-                onClick={() => setShowLogoutModal(false)}
-                className="flex-1 bg-gray-200 hover:bg-gray-300 text-[#55286B] px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-xl focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Change Password Modal */}
-      {showSenhaModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4 backdrop-blur-md">
-          <div className="bg-white rounded-3xl p-10 shadow-3xl w-full max-w-md animate-scale-in text-center border border-gray-100">
-            <h2 className="text-3xl font-bold text-[#55286B] mb-8 leading-snug">Alterar Senha</h2>
-            <form onSubmit={handleSenhaSubmit} className="space-y-6">
-              <input
-                type="password"
-                placeholder="Senha atual"
-                value={senhaAtual}
-                onChange={(e) => setSenhaAtual(e.target.value)}
-                className="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-[#8B44A9] focus:border-[#8B44A9] outline-none transition-all duration-200 text-lg placeholder-gray-400 shadow-sm focus:shadow-md"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Nova senha"
-                value={novaSenha}
-                onChange={(e) => setNovaSenha(e.target.value)}
-                className="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-[#8B44A9] focus:border-[#8B44A9] outline-none transition-all duration-200 text-lg placeholder-gray-400 shadow-sm focus:shadow-md"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Confirmar nova senha"
-                value={confirmaSenha}
-                onChange={(e) => setConfirmaSenha(e.target.value)}
-                className="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-[#8B44A9] focus:border-[#8B44A9] outline-none transition-all duration-200 text-lg placeholder-gray-400 shadow-sm focus:shadow-md"
-                required
-              />
-              <div className="flex flex-col sm:flex-row gap-5 mt-8">
-                <button
-                  type="submit"
-                  className="flex-1 bg-gradient-to-r from-[#55286B] to-[#55286B] hover:from-[#55286B] hover:to-[#8B44A9] text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-xl focus:outline-none focus:ring-2 focus:ring-[#55286B] focus:ring-opacity-75"
-                >
-                  Salvar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowSenhaModal(false)}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-[#55286B] px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-xl focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 }
 

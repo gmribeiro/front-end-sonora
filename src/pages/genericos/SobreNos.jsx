@@ -44,7 +44,7 @@ const SobreNos = () => {
 
         <div className="flex justify-end">
           <button
-            className="mt-8 px-6 py-3 bg-[#564A72] text-white hover:bg-[#ab8feb] transition"
+            className="mt-8 px-6 py-3 !bg-[#564A72] text-[#EDE6F2] hover:!bg-[#c2a0bb] transition"
             onClick={() => window.location.href = '/'}
           >
             Voltar
