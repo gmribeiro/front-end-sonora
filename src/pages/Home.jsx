@@ -2,12 +2,11 @@ import Carrossel from '../components/Carrossel/carrossel.jsx';
 import './css/global.css';
 import { useState, useEffect } from 'react';
 import useTitle from '../hooks/useTitle';
-import { Routes, Route, useNavigate } from 'react-router-dom';
 import api from '../api/index.js';
 import Header from '../components/header/header.jsx';
 import Eventos from '../components/Eventos/eventos.jsx';
-import InfoEvento from '../components/InfoEvento/InfoEvento.jsx';
 import Footer from '../components/Footer/footer.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
   useTitle('Início - Sonora');
@@ -78,23 +77,13 @@ function Home() {
       <Header />
       <Carrossel onGeneroSelecionado={handleGeneroSelecionado} />
 
-      <Routes>
-        <Route path="/" element={
-          <Eventos
-            eventosFiltrados={eventosFiltrados}
-            eventosCompletos={eventosCompletos}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            onEventoCadastrado={handleNovoEventoCadastrado}
-          />
-        } />
-        <Route path="/detalhes/:id" element={
-          <InfoEvento
-            eventos={eventosCompletos}
-            onVoltar={() => navigate('/')}
-          />
-        } />
-      </Routes>
+      <Eventos
+        eventosFiltrados={eventosFiltrados}
+        eventosCompletos={eventosCompletos}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        onEventoCadastrado={handleNovoEventoCadastrado}
+      />
 
       <Footer />
     </main>
