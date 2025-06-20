@@ -1,17 +1,13 @@
-
 import Carrossel from '../components/Carrossel/carrossel.jsx';
-
 import './css/global.css';
 import { useState, useEffect } from 'react';
 import useTitle from '../hooks/useTitle';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import api from '../api/index.js';
 import Header from '../components/header/header.jsx';
-
 import Eventos from '../components/Eventos/eventos.jsx';
 import InfoEvento from '../components/InfoEvento/InfoEvento.jsx';
 import Footer from '../components/Footer/footer.jsx';
-
 
 function Home() {
   useTitle('Início - Sonora');
@@ -29,7 +25,9 @@ function Home() {
 
         const eventosMapeados = eventosRaw.map(evento => {
           const dataHoraCompleta = evento.dataHora;
-          const hora = dataHoraCompleta ? dataHoraCompleta.split(' ')[1].substring(0, 5) : 'N/A';
+          const hora = dataHoraCompleta
+            ? new Date(dataHoraCompleta).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            : 'N/A';
 
           return {
             id: evento.idEvento,
@@ -71,30 +69,28 @@ function Home() {
   }, [generoSelecionado, eventosCompletos]);
 
   return (
-      <main className='body'>
-        <Header />
-        <Carrossel onGeneroSelecionado={handleGeneroSelecionado} />
-
-        <Routes>
-          <Route path="/" element={
-            <Eventos
-                eventosFiltrados={eventosFiltrados}
-                eventosCompletos={eventosCompletos}
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-                onEventoCadastrado={handleNovoEventoCadastrado}
-            />
-          } />
-          <Route path="/detalhes/:id" element={
-            <InfoEvento 
-                eventos={eventosCompletos}
-                onVoltar={() => navigate('/')}
-            />
-          } />
-        </Routes>
-
-        <Footer />
-      </main>
+    <main className="body">
+      <Header />
+      <Carrossel onGeneroSelecionado={handleGeneroSelecionado} />
+      <Routes>
+        <Route path="/" element={
+          <Eventos
+            eventosFiltrados={eventosFiltrados}
+            eventosCompletos={eventosCompletos}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            onEventoCadastrado={handleNovoEventoCadastrado}
+          />
+        } />
+        <Route path="/detalhes/:id" element={
+          <InfoEvento
+            eventos={eventosCompletos}
+            onVoltar={() => navigate('/')}
+          />
+        } />
+      </Routes>
+      <Footer />
+    </main>
   );
 }
 
