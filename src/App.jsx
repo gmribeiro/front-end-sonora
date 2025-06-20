@@ -17,27 +17,25 @@ import Artista from "./pages/artistas/Artista.jsx";
 import DetalhesEvento from "./pages/detalhes-evento/DetalhesEvento.jsx";
 import EventosBuscaResultados from './components/EventosBuscaResultado/EventosBuscaResultado.jsx';
 import EmailRecoveryForm from "./pages/login/EmailRecoveryForm.jsx";
-import { myGetToken, onMessageListener } from './firebase';
-
+import { myGetToken } from './firebase';
 
 function App() {
-
   const [show, setShow] = useState(false);
-  const [notification, setNotification] = useState({title: '', body: ''});
+  const [notification, setNotification] = useState({ title: '', body: '' });
   const [isTokenFound, setTokenFound] = useState(false);
   myGetToken(setTokenFound);
 
-  return(
+  return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/detalhes/:id" element={<DetalhesEvento />} />
         <Route path="/meusconvites" element={<Meusconvites />} />
         <Route path="/acesso" element={<Acesso />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/perfil" element={<Meuperfil />} />
-        <Route path="/avaliacoes" element={<Avaliacoes/>} />
-        <Route path="/artistas" element={<Artista/>} />
-        <Route path="/detalhes/:id" element={<DetalhesEvento/>} />
+        <Route path="/avaliacoes" element={<Avaliacoes />} />
+        <Route path="/artistas" element={<Artista />} />
         <Route path="/esquecisenha" element={<EsqueciSenha />} />
         <Route path="/notificacao" element={<Notificacao />} />
         <Route path="/sobrenos" element={<SobreNos />} />
@@ -48,9 +46,7 @@ function App() {
         <Route path="/check-email" element={<EmailRecoveryForm />} />
       </Routes>
     </Router>
-    )
-
-
+  );
 }
 
 export default App;
