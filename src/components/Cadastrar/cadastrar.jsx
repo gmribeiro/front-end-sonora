@@ -10,7 +10,6 @@ const Cadastrar = () => {
     senha: '',
     confirmarSenha: '',
     telefone: '',
-    cpf: '',
     genero: '',
     role: 'CLIENT',
     nomeArtistico: '',
@@ -18,6 +17,7 @@ const Cadastrar = () => {
     bio: ''
   });
 
+  const [errors, setErrors] = useState({});
   const [mensagem, setMensagem] = useState('');
   const [cadastroConcluido, setCadastroConcluido] = useState(false);
   const [fadeInTitulo, setFadeInTitulo] = useState(false);
@@ -37,6 +37,17 @@ const Cadastrar = () => {
       };
     }
   }, [cadastroConcluido, navigate]);
+
+  // Limpa erros e mensagens depois de 15 segundos
+  useEffect(() => {
+    if (mensagem || Object.keys(errors).length > 0) {
+      const timer = setTimeout(() => {
+        setMensagem('');
+        setErrors({});
+      }, 15000);
+      return () => clearTimeout(timer);
+    }
+  }, [mensagem, errors]);
 
   const formatTelefone = (value) => {
     const cleaned = value.replace(/\D/g, '').slice(0, 13);
@@ -60,13 +71,75 @@ const Cadastrar = () => {
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+    setErrors(prev => ({ ...prev, [name]: '' }));
+    setMensagem('');
+  };
+
+  const validarEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const validarTelefone = (telefone) => {
+    const numeros = telefone.replace(/\D/g, '');
+    return numeros.length === 10 || numeros.length === 11;
+  };
+
+  const validarCamposArtista = () => {
+    const novosErros = {};
+    if (formData.role === 'ARTISTA') {
+      if (!formData.nomeArtistico || formData.nomeArtistico.trim().length < 3) {
+        novosErros.nomeArtistico = 'Nome artístico deve ter pelo menos 3 caracteres.';
+      }
+      if (!formData.bio || formData.bio.trim().length < 10) {
+        novosErros.bio = 'A bio deve conter pelo menos 10 caracteres.';
+      }
+    }
+    return novosErros;
+  };
+
+  const validarFormulario = () => {
+    const novosErros = {};
+
+    if (!formData.name || formData.name.trim().length < 3) {
+      novosErros.name = 'Nome deve ter pelo menos 3 caracteres.';
+    } else if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(formData.name)) {
+      novosErros.name = 'Nome deve conter apenas letras e espaços.';
+    }
+
+    if (!formData.email || !validarEmail(formData.email)) {
+      novosErros.email = 'Digite um e-mail válido.';
+    }
+
+    if (!formData.senha || formData.senha.length < 6) {
+      novosErros.senha = 'Senha deve ter no mínimo 6 caracteres.';
+    }
+
+    if (formData.senha !== formData.confirmarSenha) {
+      novosErros.confirmarSenha = 'As senhas não coincidem.';
+    }
+
+    if (formData.role === 'HOST') {
+      if (!formData.telefone) {
+        novosErros.telefone = 'Telefone é obrigatório para Anfitrião.';
+      } else if (!validarTelefone(formData.telefone)) {
+        novosErros.telefone = 'Telefone inválido. Use formato +55 (XX) XXXXX-XXXX.';
+      }
+    }
+
+    const errosArtista = validarCamposArtista();
+    Object.assign(novosErros, errosArtista);
+
+    setErrors(novosErros);
+
+    return Object.keys(novosErros).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.senha !== formData.confirmarSenha) {
-      setMensagem('As senhas não coincidem.');
+    if (!validarFormulario()) {
+      setMensagem('Por favor, corrija os erros antes de enviar.');
       return;
     }
 
@@ -81,6 +154,20 @@ const Cadastrar = () => {
     }
   };
 
+  const inputClass = (field) => {
+    const base =
+      "mb-3 sm:mb-4 px-3 py-2 border rounded text-[#1F1536] focus:outline-none focus:ring-2 placeholder:text-[#564a72]";
+    const erro = errors[field] ? 'border-[#B00020] focus:ring-[#B00020]' : 'border-[#A48BB3] focus:ring-[#A48BB3]';
+    return `${base} ${erro}`;
+  };
+
+  const inputClassTextarea = (field) => {
+    const base =
+      "mb-3 sm:mb-4 px-3 py-1 border rounded text-[#1F1536] resize-y focus:outline-none focus:ring-2 placeholder:text-[#564a72]";
+    const erro = errors[field] ? 'border-[#B00020] focus:ring-[#B00020]' : 'border-[#A48BB3] focus:ring-[#A48BB3]';
+    return `${base} ${erro}`;
+  };
+
   return (
     <div className="relative w-screen min-h-screen font-sans bg-[#EDE6F2] overflow-x-hidden">
       <div
@@ -88,7 +175,6 @@ const Cadastrar = () => {
         style={{ backgroundImage: "url('images/fundocadastro.png')" }}
       ></div>
 
-      {/* Botão voltar - TELAS GRANDES e TABLET (FORA DO CONTAINER) */}
       <button
         className="hidden md:block absolute bottom-4 right-6 !bg-[#A48BB3] text-[#EDE6F2] py-2 px-6 text-sm md:text-base rounded transition duration-300 hover:!bg-[#1F1536] hover:scale-105 z-10"
         onClick={() => navigate('/')}
@@ -98,7 +184,6 @@ const Cadastrar = () => {
 
       <div className="relative z-10 top-0 left-0 w-full md:w-3/5 xl:w-1/2 min-w-[350px] min-h-screen bg-[#EDE6F2] shadow-[5px_0_10px_rgba(0,0,0,0.2)] flex flex-col justify-center items-center p-6 sm:p-8 md:p-10 lg:p-12">
 
-        {/* Botão voltar - TELAS PEQUENAS (DENTRO DO CONTAINER) */}
         <button
           className="block md:hidden self-end mb-8 !bg-[#A48BB3] text-[#EDE6F2] py-2 px-6 text-sm sm:text-base rounded transition duration-300 hover:!bg-[#1F1536] hover:scale-105"
           onClick={() => navigate('/')}
@@ -122,13 +207,12 @@ const Cadastrar = () => {
               <h2 className="!text-[#564a72] text-lg sm:text-xl lg:text-2xl mb-4 sm:mb-4">Escolha seu tipo de cadastro</h2>
 
               {mensagem && (
-                <div className={`w-full sm:w-4/5 p-3 sm:p-4 mb-6 rounded font-bold text-center text-sm sm:text-base ${mensagem.toLowerCase().includes('sucesso') ? 'bg-[#EDE6F2] border-2 border-[#A48BB3] text-[#1F1536]' : 'bg-[#FFEBEE] border-2 border-[#B00020] text-[#B00020]'}`}>
+                <div className="w-full sm:w-4/5 p-2 mb-6 font-bold text-center text-sm sm:text-base text-[#B00020]">
                   {mensagem}
                 </div>
               )}
 
               <form className="flex flex-col w-full sm:w-4/5" onSubmit={handleSubmit}>
-                {/* Inputs mantidos iguais ao original para telas grandes */}
                 <label htmlFor="name" className="font-bold mb-1 text-[#564a72] text-sm sm:text-base">Nome</label>
                 <input
                   type="text"
@@ -137,9 +221,10 @@ const Cadastrar = () => {
                   placeholder="Digite seu nome"
                   value={formData.name}
                   onChange={handleChange}
+                  className={inputClass('name')}
                   required
-                  className="mb-3 sm:mb-4 px-3 py-2 border !border-[#A48BB3] rounded text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] placeholder:text-[#564a72]"
                 />
+                {errors.name && <p className="text-[#B00020] text-xs sm:text-sm mt-0.25 mb-4">{errors.name}</p>}
 
                 <label htmlFor="email" className="font-bold mb-1 text-[#564a72] text-sm sm:text-base">E-mail</label>
                 <input
@@ -149,9 +234,10 @@ const Cadastrar = () => {
                   placeholder="seu@email.com"
                   value={formData.email}
                   onChange={handleChange}
+                  className={inputClass('email')}
                   required
-                  className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] placeholder:text-[#564a72]"
                 />
+                {errors.email && <p className="text-[#B00020] text-xs sm:text-sm mt-0.25 mb-4">{errors.email}</p>}
 
                 <label htmlFor="senha" className="font-bold mb-1 text-[#564a72] text-sm sm:text-base">Senha</label>
                 <input
@@ -161,9 +247,10 @@ const Cadastrar = () => {
                   placeholder="Sua senha"
                   value={formData.senha}
                   onChange={handleChange}
+                  className={inputClass('senha')}
                   required
-                  className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] placeholder:text-[#564a72]"
                 />
+                {errors.senha && <p className="text-[#B00020] text-xs sm:text-sm mt-0.25 mb-4">{errors.senha}</p>}
 
                 <label htmlFor="confirmarSenha" className="font-bold mb-1 text-[#564a72] text-sm sm:text-base">Confirmar Senha</label>
                 <input
@@ -173,9 +260,10 @@ const Cadastrar = () => {
                   placeholder="Digite a senha novamente"
                   value={formData.confirmarSenha}
                   onChange={handleChange}
+                  className={inputClass('confirmarSenha')}
                   required
-                  className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] placeholder:text-[#564a72]"
                 />
+                {errors.confirmarSenha && <p className="text-[#B00020] text-xs sm:text-sm mt-0.25 mb-4">{errors.confirmarSenha}</p>}
 
                 <label htmlFor="role" className="font-bold mb-1 text-[#564a72] text-sm sm:text-base">Tipo de Usuário</label>
                 <select
@@ -183,15 +271,14 @@ const Cadastrar = () => {
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
+                  className={inputClass('role')}
                   required
-                  className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] placeholder:text-[#564a72]"
                 >
                   <option value="CLIENT">Cliente (Padrão)</option>
                   <option value="HOST">Anfitrião</option>
                   <option value="ARTISTA">Músico</option>
                 </select>
 
-                {/* Campos específicos ARTISTA ou HOST mantêm comportamento original */}
                 {formData.role === 'ARTISTA' && (
                   <>
                     <label htmlFor="nomeArtistico" className="font-bold mb-1 text-[#564a72] text-sm sm:text-base">Nome Artístico</label>
@@ -202,9 +289,10 @@ const Cadastrar = () => {
                       placeholder="Nome do Artista"
                       value={formData.nomeArtistico}
                       onChange={handleChange}
+                      className={inputClass('nomeArtistico')}
                       required
-                      className="mb-3 sm:mb-4 px-3 py-1 border border-[#A48BB3] rounded text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] placeholder:text-[#564a72]"
                     />
+                    {errors.nomeArtistico && <p className="text-[#B00020] text-xs sm:text-sm mt-0.25 mb-4">{errors.nomeArtistico}</p>}
 
                     <label htmlFor="bio" className="font-bold mb-1 text-[#564a72] text-sm sm:text-base">Bio</label>
                     <textarea
@@ -214,10 +302,13 @@ const Cadastrar = () => {
                       value={formData.bio}
                       onChange={handleChange}
                       rows="4"
-                      className="mb-3 sm:mb-4 px-3 py-1 border border-[#A48BB3] rounded text-[#1F1536] resize-y focus:outline-none focus:ring-2 focus:ring-[#A48BB3] placeholder:text-[#564a72]"
+                      className={inputClassTextarea('bio')}
                     ></textarea>
+                    {errors.bio && <p className="text-[#B00020] text-xs sm:text-sm mt-0.25 mb-4">{errors.bio}</p>}
 
-                    <label htmlFor="redesSociais" className="font-bold mb-1 text-[#564a72] text-sm sm:text-base">Redes Sociais</label>
+                    <label htmlFor="redesSociais" className="font-bold mb-1 text-[#564a72] text-sm sm:text-base">
+                      Redes Sociais (Opcional)
+                    </label>
                     <input
                       type="text"
                       id="redesSociais"
@@ -240,10 +331,11 @@ const Cadastrar = () => {
                       placeholder="+55 (11) 91234-5678"
                       value={formData.telefone}
                       onChange={handleChange}
-                      required
                       maxLength={20}
-                      className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] focus:outline-none focus:ring-2 focus:ring-[#A48BB3] placeholder:text-[#564a72]"
+                      className={inputClass('telefone')}
+                      required
                     />
+                    {errors.telefone && <p className="text-[#B00020] text-xs sm:text-sm mt-0.25 mb-4">{errors.telefone}</p>}
 
                     <label htmlFor="bio" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Bio</label>
                     <textarea
@@ -253,7 +345,7 @@ const Cadastrar = () => {
                       value={formData.bio}
                       onChange={handleChange}
                       rows="4"
-                      className="mb-3 sm:mb-4 px-3 py-2 border border-[#A48BB3] rounded text-[#1F1536] resize-y focus:outline-none focus:ring-2 focus:ring-[#A48BB3] placeholder:text-[#564a72]"
+                      className={inputClassTextarea('bio')}
                     ></textarea>
                   </>
                 )}
