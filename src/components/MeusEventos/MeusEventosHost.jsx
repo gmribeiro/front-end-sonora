@@ -53,7 +53,6 @@ function MeusEventos() {
 
     const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-    // Estado para armazenar o ID do usuário logado (HOST) para usar no objeto host ao fazer PUT
     const [loggedInHostId, setLoggedInHostId] = useState(null);
 
     const fetchReservasPorEvento = useCallback(async (eventosParaBuscarReservas) => {
@@ -83,10 +82,10 @@ function MeusEventos() {
 
     const calcularDadosDashboard = useCallback(() => {
         let totalReservasUnicas = 0;
-        const todosOsEventosDoHost = [...eventosFuturos, ...eventosPassados]; // CORREÇÃO: Variável usada corretamente
+        const todosOsEventosDoHost = [...eventosFuturos, ...eventosPassados];
         let reservasCount = 0;
 
-        todosOsEventosDoHost.forEach(evento => { // Usando a variável correta
+        todosOsEventosDoHost.forEach(evento => {
             if (reservasPorEvento[evento.idEvento]) {
                 reservasCount += reservasPorEvento[evento.idEvento].length;
             }
@@ -94,7 +93,7 @@ function MeusEventos() {
 
         totalReservasUnicas = reservasCount;
 
-        const totalEventos = todosOsEventosDoHost.length; // Usando a variável correta
+        const totalEventos = todosOsEventosDoHost.length;
         const mediaReservas = totalEventos > 0 ? reservasCount / totalEventos : 0;
 
         setDashboardData({
@@ -140,6 +139,31 @@ function MeusEventos() {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
 
+    // Função para formatar data/hora do backend (DD/MM/YYYY HH:MM:SS) para exibição do usuário (DD/MM/AAAA hh:MM)
+    const formatDateTimeForUserDisplay = (dateTimeString) => {
+        if (typeof dateTimeString !== 'string' || !dateTimeString) {
+            return 'Data e hora não informadas';
+        }
+
+        const parts = dateTimeString.split(' '); // Expected "DD/MM/YYYY HH:MM:SS"
+        if (parts.length !== 2) {
+            console.warn(`[formatDateTimeForUserDisplay] Formato inesperado: ${dateTimeString}`);
+            return 'Formato de data inválido';
+        }
+
+        const [datePart, timePart] = parts;
+        const [day, month, year] = datePart.split('/');
+        const [hours, minutes] = timePart.split(':');
+
+        if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
+            console.warn(`[formatDateTimeForUserDisplay] Componentes numéricos inválidos: ${dateTimeString}`);
+            return 'Data e hora inválidas';
+        }
+
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    };
+
+
     const handleCancelarEvento = async (eventId) => {
         const hasReservas = reservasPorEvento[eventId] && reservasPorEvento[eventId].length > 0;
 
@@ -153,8 +177,6 @@ function MeusEventos() {
             return;
         }
 
-        // Usar um modal personalizado em vez de window.confirm
-        // POR FAVOR, SUBSTITUA window.confirm POR UM MODAL CUSTOMIZADO CONFORME AS INSTRUÇÕES.
         const confirmDelete = window.confirm("Tem certeza que deseja cancelar este evento? Esta ação é irreversível.");
         if (!confirmDelete) {
             return;
@@ -214,9 +236,11 @@ function MeusEventos() {
 
     // --- FUNÇÕES DE EDIÇÃO ---
     const handleEditClick = (evento) => {
+        // LOG crucial para depuração do objeto 'evento' que será editado
         console.log("[handleEditClick] Evento selecionado para edição:", evento);
 
         setEventoEmEdicao(evento);
+        // Preenche o formulário de edição de forma defensiva
         setEditForm({
             idEvento: evento.idEvento,
             nomeEvento: evento.nomeEvento,
@@ -224,16 +248,16 @@ function MeusEventos() {
             horaEncerramento: formatTimeForInput(evento.horaEncerramento),
             descricao: evento.descricao,
             classificacao: evento.classificacao,
-            idGeneroMusical: evento.generoMusical?.idGeneroMusical || '',
+            idGeneroMusical: evento.generoMusical?.idGeneroMusical || '', // Optional chaining para generoMusical
             localEvento: {
-                idLocalEvento: evento.localEvento?.idLocalEvento || null,
-                local: evento.localEvento?.local || '',
-                cep: evento.localEvento?.cep || '',
-                numero: evento.localEvento?.numero || ''
+                idLocalEvento: evento.localEvento?.idLocalEvento || null, // Optional chaining para idLocalEvento
+                local: evento.localEvento?.local || '', // Optional chaining para local
+                cep: evento.localEvento?.cep || '',     // Optional chaining para cep
+                numero: evento.localEvento?.numero || '' // Optional chaining para numero
             }
         });
         setShowEditModal(true);
-        setEditMessage({ text: '', type: '' }); // Limpa mensagens anteriores
+        setEditMessage({ text: '', type: '' });
         setSavingEdit(false);
     };
 
@@ -316,7 +340,7 @@ function MeusEventos() {
                             'Authorization': `Bearer ${token}`,
                         },
                     });
-                    updatedLocalEventoId = newPlaceResponse.data.idLocalEvento; // Usa o ID do novo local
+                    updatedLocalEventoId = newPlaceResponse.data.idLocalEvento;
                 }
             } else {
                 // Se não tem ID de local, cria um novo
@@ -342,10 +366,9 @@ function MeusEventos() {
                 classificacao: editForm.classificacao,
                 generoMusical: { idGeneroMusical: editForm.idGeneroMusical },
                 localEvento: { idLocalEvento: updatedLocalEventoId },
-                // Correção: Usar loggedInHostId que foi obtido no useEffect
                 host: { id: loggedInHostId },
-                foto: eventoEmEdicao.foto, // A foto não é editada neste formulário, mantém a existente
-                eventPictureContentType: eventoEmEdicao.eventPictureContentType // Manter tipo de conteúdo da imagem
+                foto: eventoEmEdicao.foto,
+                eventPictureContentType: eventoEmEdicao.eventPictureContentType
             };
 
             console.log("Dados enviados para o PUT de evento:", JSON.stringify(updatedEventData, null, 2));
@@ -359,11 +382,10 @@ function MeusEventos() {
 
             if (response.status === 200) {
                 setEditMessage({ text: 'Evento atualizado com sucesso!', type: 'success' });
-                // Atualizar o estado local dos eventos para refletir a mudança
                 setEventosFuturos(prevEvents => prevEvents.map(e =>
                     e.idEvento === editForm.idEvento ? response.data : e
                 ));
-                setShowEditModal(false); // Fecha o modal
+                setShowEditModal(false);
             } else {
                 setEditMessage({ text: 'Erro ao atualizar evento. Tente novamente.', type: 'error' });
             }
@@ -378,7 +400,6 @@ function MeusEventos() {
             }
         }
     };
-    // --- FIM FUNÇÕES DE EDIÇÃO ---
 
     useEffect(() => {
         const fetchMeusEventos = async () => {
@@ -398,13 +419,15 @@ function MeusEventos() {
                     },
                 });
                 const hostId = userResponse.data.id;
-                setLoggedInHostId(hostId); // Guarda o ID do HOST logado
+                setLoggedInHostId(hostId);
 
                 const futurosResponse = await api.get(`/eventos/host/${hostId}/future`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
+                // LOG: Inspeciona a estrutura completa dos eventos futuros, incluindo localEvento
+                console.log("[fetchMeusEventos] Eventos Futuros Recebidos (com localEvento):", futurosResponse.data);
                 setEventosFuturos(futurosResponse.data);
 
                 const passadosResponse = await api.get(`/eventos/host/${hostId}/past`, {
@@ -412,12 +435,13 @@ function MeusEventos() {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
+                // LOG: Inspeciona a estrutura completa dos eventos passados, incluindo localEvento
+                console.log("[fetchMeusEventos] Eventos Passados Recebidos (com localEvento):", passadosResponse.data);
                 setEventosPassados(passadosResponse.data);
 
                 const todosOsEventosDoHost = [...futurosResponse.data, ...passadosResponse.data];
                 await fetchReservasPorEvento(todosOsEventosDoHost);
 
-                // Fetch genres for the edit form
                 const genresResponse = await api.get('/genres');
                 setGeneros(genresResponse.data);
 
@@ -537,6 +561,14 @@ function MeusEventos() {
                                             {mensagemExclusaoEvento.message}
                                         </p>
                                     )}
+                                    {/* Exibindo a data e hora formatadas para o usuário */}
+                                    <p className="text-sm mt-2" style={{ color: COLORS.textMedium }}>
+                                        Data: {formatDateTimeForUserDisplay(evento.dataHora)}
+                                    </p>
+                                    {/* Exibindo o local do evento diretamente na lista de próximos eventos com optional chaining */}
+                                    <p className="text-sm mt-2" style={{ color: COLORS.textMedium }}>
+                                        Local: {evento.localEvento?.local || 'Local não informado'}
+                                    </p>
                                     {reservasPorEvento[evento.idEvento] && reservasPorEvento[evento.idEvento].length > 0 ? (
                                         <div className="mt-4">
                                             <p className="font-medium mb-2" style={{ color: COLORS.textDark }}>Reservas ({reservasPorEvento[evento.idEvento].length}):</p>
@@ -563,7 +595,7 @@ function MeusEventos() {
                     )}
                 </section>
 
-                {/* Seção de Eventos Passados (mantida inalterada) */}
+                {/* Seção de Eventos Passados (mantida inalterada, adicionado display de local) */}
                 <section>
                     <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-6 pb-2 border-b-2" style={{ color: COLORS.primary, borderColor: COLORS.secondary }}>
                         Eventos Passados
@@ -577,6 +609,14 @@ function MeusEventos() {
                                             {evento.nomeEvento}
                                         </Link>
                                     </div>
+                                    {/* Exibindo a data e hora formatadas para o usuário */}
+                                    <p className="text-sm mt-2" style={{ color: COLORS.textMedium }}>
+                                        Data: {formatDateTimeForUserDisplay(evento.dataHora)}
+                                    </p>
+                                    {/* Exibindo o local do evento diretamente na lista de eventos passados com optional chaining */}
+                                    <p className="text-sm mt-2" style={{ color: COLORS.textMedium }}>
+                                        Local: {evento.localEvento?.local || 'Local não informado'}
+                                    </p>
                                     {reservasPorEvento[evento.idEvento] && reservasPorEvento[evento.idEvento].length > 0 ? (
                                         <div className="mt-4">
                                             <p className="font-medium mb-2" style={{ color: COLORS.textDark }}>Reservas ({reservasPorEvento[evento.idEvento].length}):</p>
