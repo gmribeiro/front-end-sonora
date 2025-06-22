@@ -204,51 +204,56 @@ const EventoDetalhes = () => {
         }
     };
 
-    // Função corrigida para formatar data/hora do formato "YYYY-MM-DD HH:mm:ss.SSSSSS"
     const formatarDataHora = (dataHoraStr, horaEncerramentoStr) => {
         if (!dataHoraStr) return 'Data e hora não informadas';
 
+        let data = 'Data não informada';
+        let horaInicio = 'Hora não informada';
+        let horaFim = 'Hora de encerramento não informada';
+
         try {
-            // Função para criar Date a partir de string "YYYY-MM-DD HH:mm:ss.SSSSSS"
-            const parseDateTime = (dtStr) => {
+            const parseDateTimeString = (dtStr, isTimeOnly = false) => {
                 if (!dtStr) return null;
-                // Remove os microssegundos para evitar erro no construtor Date
-                const cleaned = dtStr.split('.')[0]; // pega "YYYY-MM-DD HH:mm:ss"
-                // Troca espaço por 'T' para formato ISO
-                const isoString = cleaned.replace(' ', 'T');
-                const date = new Date(isoString);
-                if (isNaN(date.getTime())) return null;
-                return date;
+                if (isTimeOnly) {
+                    const datePart = '2000-01-01';
+                    return new Date(`${datePart}T${dtStr}`);
+                }
+                const [datePart, timePart] = dtStr.split(' ');
+                if (!datePart || !timePart) return null;
+
+                const [day, month, year] = datePart.split('/');
+                const [hour, minute, second] = timePart.split(':');
+
+                if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hour) || isNaN(minute) || isNaN(second)) {
+                    return null;
+                }
+                return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
             };
 
-            const dataInicio = parseDateTime(dataHoraStr);
-            if (!dataInicio) return 'Data e hora de início inválidas';
+            const dataInicio = parseDateTimeString(dataHoraStr);
 
-            const dataFormatada = dataInicio.toLocaleDateString('pt-BR');
-            const horaInicio = dataInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            if (dataInicio && !isNaN(dataInicio.getTime())) {
+                data = dataInicio.toLocaleDateString('pt-BR');
+                horaInicio = dataInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                console.warn(`Não foi possível parsear dataHora (formato esperado DD/MM/YYYY HH:MM:SS): ${dataHoraStr}`);
+                return 'Formato de data e hora de início inválido.';
+            }
+            const dataFim = parseDateTimeString(horaEncerramentoStr, true);
 
-            // Para hora de encerramento, tentamos parsear usando apenas o horário "HH:mm:ss" ou o formato completo
-            let horaFim = 'Hora de encerramento não informada';
-            if (horaEncerramentoStr) {
-                // Se for formato "HH:mm:ss" ou "HH:mm:ss.SSSSSS"
-                // Tentamos criar uma data para mesma data do início com esse horário
-                const timePart = horaEncerramentoStr.split('.')[0]; // Remove microssegundos se existirem
-                const [year, month, day] = [
-                    dataInicio.getFullYear(),
-                    String(dataInicio.getMonth() + 1).padStart(2, '0'),
-                    String(dataInicio.getDate()).padStart(2, '0'),
-                ];
-                const fullDateTimeStr = `${year}-${month}-${day}T${timePart}`;
-                const dataFim = new Date(fullDateTimeStr);
-
-                if (!isNaN(dataFim.getTime())) {
-                    horaFim = dataFim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            if (dataFim && !isNaN(dataFim.getTime())) {
+                horaFim = dataFim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                horaFim = 'Hora de encerramento não informada';
+                if (horaEncerramentoStr) {
+                    console.warn(`Não foi possível parsear horaEncerramento (formato esperado HH:MM:SS): ${horaEncerramentoStr}`);
                 }
             }
 
-            return `${dataFormatada} às ${horaInicio} até ${horaFim}`;
+            return `${data} às ${horaInicio} até ${horaFim}`;
+
         } catch (e) {
-            console.error('Erro ao formatar data/hora:', e);
+            console.error("Erro geral ao formatar data/hora:", e);
             return 'Erro ao processar data/hora.';
         }
     };
@@ -335,22 +340,25 @@ const EventoDetalhes = () => {
 
                 <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto gap-2">
                     <span className="text-lg sm:text-2xl whitespace-nowrap">
-                       Classificação: 
+                       Classificação:
                     </span>
                     <img
                         src={
-                        evento.classificacao === 'Livre' ? '/images/classificacaolivre.png' :
-                        evento.classificacao === '10+' ? '/images/classificacao10.png' :
-                        evento.classificacao === '12+' ? '/images/classificacao12.png' :
-                        evento.classificacao === '14+' ? '/images/classificacao14.png' :
-                        evento.classificacao === '16+' ? '/images/classificacao16.png' :
-                        evento.classificacao === '18+' ? '/images/classificacao18.png' :
-                        undefined
+                            evento.classificacao === 'Livre' ? '/images/classificacaolivre.png' :
+                                evento.classificacao === '10+' ? '/images/classificacao10.png' :
+                                    evento.classificacao === '12+' ? '/images/classificacao12.png' :
+                                        evento.classificacao === '14+' ? '/images/classificacao14.png' :
+                                            evento.classificacao === '16+' ? '/images/classificacao16.png' :
+                                                evento.classificacao === '18+' ? '/images/classificacao18.png' :
+                                                    undefined
                         }
                         alt={`Classificação ${evento.localEvento?.classificacao || 'não informada'}`}
                         className="w-6 h-6 sm:w-8 sm:h-8 mr-2 flex-shrink-0"
-                    />  
+                    />
                 </div>
+
+
+
 
                 <div className="mb-10 sm:mb-15">
                     <h2 className="!text-left !text-[#564A72] text-xl sm:text-2xl font-semibold mb-2">Descrição</h2>

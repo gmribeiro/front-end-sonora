@@ -9,11 +9,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
     const [userId, setUserId] = useState(null);
     const [reservandoId, setReservandoId] = useState(null);
     const [mensagemReserva, setMensagemReserva] = useState('');
-    const [generos, setGeneros] = useState([]);
-    const [formMessage, setFormMessage] = useState('');
     const [showCadastro, setShowCadastro] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
-
     const [nomeEvento, setNomeEvento] = useState('');
     const [dataHora, setDataHora] = useState('');
     const [horaEncerramento, setHoraEncerramento] = useState('');
@@ -23,12 +19,15 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
     const [localEventoNome, setLocalEventoNome] = useState('');
     const [cep, setCep] = useState('');
     const [numero, setNumero] = useState('');
+    const [formMessage, setFormMessage] = useState('');
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [generos, setGeneros] = useState([]);
     const [eventImageFile, setEventImageFile] = useState(null);
-
     const eventosPorPagina = 6;
     const totalPaginas = Math.ceil(eventosFiltrados.length / eventosPorPagina);
     const indiceInicial = (currentPage - 1) * eventosPorPagina;
-    const eventosPaginaAtual = eventosFiltrados.slice(indiceInicial, indiceInicial + eventosPorPagina);
+    const indiceFinal = indiceInicial + eventosPorPagina;
+    const eventosPaginaAtual = eventosFiltrados.slice(indiceInicial, indiceFinal);
 
     const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -36,52 +35,234 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         const token = localStorage.getItem('token');
         if (token) {
             api.get('/auth/user/me', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            }).then(response => {
-                setUsuarioLogado(response.data);
-                setUserId(response.data.id);
-            }).catch(err => console.error(err));
+                headers: {'Authorization': `Bearer ${token}`}
+            })
+                .then(response => {
+                    setUsuarioLogado(response.data);
+                    setUserId(response.data.id);
+                })
+                .catch(error => console.error('Erro ao carregar usuário:', error));
 
             api.get('/genres')
-                .then(response => setGeneros(response.data))
-                .catch(err => console.error(err));
+                .then(response => {
+                    setGeneros(response.data);
+                })
+                .catch(error => console.error('Erro ao carregar gêneros:', error));
         }
     }, []);
 
     const formatDateTime = (dateTimeString) => {
+        if (!dateTimeString) return '';
         const date = new Date(dateTimeString);
-        return date.toLocaleString('pt-BR', {
-            day: '2-digit', month: '2-digit', year: 'numeric',
-            hour: '2-digit', minute: '2-digit'
-        });
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
+
+    const handleEventoClick = (eventoId) => {
+        navigate(`/detalhes/${eventoId}`);
     };
 
     const handleReservar = async (eventoId) => {
+        setReservandoId(eventoId);
+        setMensagemReserva('');
         const token = localStorage.getItem('token');
+
         if (!usuarioLogado || usuarioLogado.role !== 'CLIENT') {
             setMensagemReserva('Apenas clientes podem reservar eventos.');
+            setReservandoId(null);
             return;
         }
-        setReservandoId(eventoId);
         try {
             const response = await api.post('/reservas', {
-                usuario: { id: usuarioLogado.id },
-                evento: { idEvento: eventoId },
+                usuario: {
+                    id: usuarioLogado.id
+                },
+                evento: {
+                    idEvento: eventoId
+                },
                 confirmado: false
             }, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
-            setMensagemReserva(`Reserva realizada com sucesso!`);
-            setTimeout(() => navigate('/meusconvites'), 1500);
+            if (response.status === 201) {
+                setMensagemReserva(`Reserva para o evento ${eventosFiltrados.find(e => e.id === eventoId)?.titulo} realizada com sucesso!`);
+                setTimeout(() => {
+                    navigate('/meusconvites');
+                }, 1500);
+            } else {
+                setMensagemReserva(`Erro ao reservar o evento.`);
+            }
         } catch (error) {
-            setMensagemReserva('Erro ao reservar o evento.');
-        } finally {
-            setReservandoId(null);
+            console.error('Erro ao reservar evento:', error);
+            setMensagemReserva(`Erro ao reservar o evento: ${error.response?.data?.message || error.message}`);
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const {name, value} = e.target;
+        if (name === 'local') {
+            setLocalEventoNome(value);
+        } else if (name === 'dataHora') {
+            setDataHora(value);
+        } else if (name === 'horaEncerramento') {
+            setHoraEncerramento(value);
+        } else if (name === 'nomeEvento') {
+            setNomeEvento(value);
+        } else if (name === 'descricao') {
+            setDescricao(value);
+        } else if (name === 'classificacao') {
+            setClassificacao(value);
+        } else if (name === 'generoMusical') {
+            setSelectedGeneroId(value);
+        } else if (name === 'cep') {
+            setCep(value);
+        } else if (name === 'numero') {
+            setNumero(value);
+        }
+    };
+
+    const handleImageChange = (e) => {
+        setEventImageFile(e.target.files[0]);
+    };
+
+    const handleCadastrarEvento = async (e) => {
+        e.preventDefault();
+        setFormMessage('');
+        const token = localStorage.getItem('token');
+
+        if (!token || usuarioLogado?.role !== 'HOST' || !userId || !selectedGeneroId || !localEventoNome || !cep || !numero || !eventImageFile || !classificacao.trim()) {
+            setFormMessage('Por favor, preencha todos os campos obrigatórios para cadastrar o evento, incluindo a classificação e a imagem.');
+            return;
+        }
+
+        if (!classificacao.trim()) {
+            setFormMessage('Por favor, selecione uma classificação para o evento.');
+            return;
+        }
+
+        try {
+            const formattedDataHora = formatDateTime(dataHora);
+            let formattedHoraEncerramento = '00:00:00';
+            if (horaEncerramento) {
+                const [hours, minutes] = horaEncerramento.split(':');
+                formattedHoraEncerramento = `${hours}:${minutes}:00`;
+            }
+            const placeResponse = await api.post('/places', {
+                local: localEventoNome,
+                cep: cep,
+                numero: numero
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const placeData = placeResponse.data;
+
+            console.log('Dados do evento (JSON):', JSON.stringify({
+                nomeEvento,
+                dataHora: formattedDataHora,
+                horaEncerramento: formattedHoraEncerramento,
+                descricao,
+                classificacao,
+                generoMusical: {idGeneroMusical: selectedGeneroId},
+                localEvento: {idLocalEvento: placeData.idLocalEvento},
+                host: {id: userId}
+
+            }, null, 2));
+
+            const eventData = {
+                nomeEvento,
+                dataHora: formattedDataHora,
+                horaEncerramento: formattedHoraEncerramento,
+                descricao: descricao,
+                classificacao: classificacao,
+                generoMusical: {idGeneroMusical: selectedGeneroId},
+                localEvento: {idLocalEvento: placeData.idLocalEvento},
+                host: {id: userId}
+            };
+
+            const eventResponse = await api.post('/eventos', eventData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const novoEventoDoBackend = eventResponse.data;
+
+            if (eventImageFile && novoEventoDoBackend.idEvento) {
+                const formData = new FormData();
+                formData.append('foto', eventImageFile);
+
+                const uploadResponse = await api.post(`/eventos/${novoEventoDoBackend.idEvento}/upload`, formData, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                if (uploadResponse.status !== 200) {
+                    console.warn('Upload de imagem falhou, mas o evento foi criado.', uploadResponse.data);
+                    setFormMessage('Evento cadastrado, mas o upload da imagem falhou. Tente novamente mais tarde.');
+                } else {
+                    console.log('Imagem do evento carregada com sucesso!', uploadResponse.data);
+                    setFormMessage('Evento cadastrado com sucesso e imagem enviada!');
+                }
+            } else {
+                setFormMessage('Evento cadastrado, mas nenhuma imagem foi selecionada ou o ID do evento não foi retornado.');
+            }
+
+            setNomeEvento('');
+            setDataHora('');
+            setHoraEncerramento('');
+            setDescricao('');
+            setClassificacao('');
+            setSelectedGeneroId('');
+            setLocalEventoNome('');
+            setCep('');
+            setNumero('');
+            setEventImageFile(null);
+
+            const imagemUrlParaHome = novoEventoDoBackend.idEvento
+                ? `${BACKEND_BASE_URL}/eventos/${novoEventoDoBackend.idEvento}/image`
+                : '/images/evento_padrao.png';
+
+            const novoEventoParaHome = {
+                id: novoEventoDoBackend.idEvento,
+                titulo: nomeEvento,
+                local: localEventoNome,
+                hora: formatDateTime(dataHora).split(' ')[1],
+                imagem: imagemUrlParaHome,
+                genero: generos.find(g => g.idGeneroMusical === selectedGeneroId)?.nomeGenero || 'Outro'
+            };
+
+            if (onEventoCadastrado) {
+                onEventoCadastrado(novoEventoParaHome);
+            }
+
+            setTimeout(() => {
+                setShowCadastro(false);
+                setFormMessage('');
+            }, 2000);
+
+        } catch (error) {
+            console.error('Erro ao cadastrar evento ou fazer upload da imagem:', error);
+            setFormMessage(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
         }
     };
 
     const mudarPagina = (novaPagina) => {
         if (novaPagina < 1 || novaPagina > totalPaginas || isAnimating) return;
+
         setIsAnimating(true);
         setTimeout(() => {
             setCurrentPage(novaPagina);
@@ -89,52 +270,283 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         }, 300);
     };
 
+
     return (
         <div className="bg-[#EDE6F2] px-4 py-8 min-h-[70vh] mb-20">
-            <div className={`max-w-7xl mx-auto ${isAnimating ? 'opacity-0 translate-y-5' : 'opacity-100 translate-y-0'} transition-all duration-300`}>
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 justify-items-center">
-                    {eventosPaginaAtual.map(evento => (
-                        <div key={evento.id} onClick={() => navigate(`/detalhes/${evento.id}`)}
-                             className="bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition hover:scale-[1.02] cursor-pointer w-full max-w-[350px]">
-                            <div className="relative w-full h-[216px] sm:h-[288px] md:h-[400px]">
-                                <img src={`${BACKEND_BASE_URL}/eventos/${evento.id}/image`} alt={evento.titulo}
-                                     onError={(e) => { e.target.onerror = null; e.target.src = '/images/evento_padrao.png'; }}
-                                     className="absolute w-full h-full object-cover" />
-                            </div>
-                            <div className="p-5">
-                                <h3 className="text-[#564A72] text-base font-semibold truncate mb-2">{evento.titulo}</h3>
-                                <p className="text-[#564A72] text-sm mb-3">{evento.local} - {evento.hora}</p>
-                                {usuarioLogado?.role === 'CLIENT' && (
-                                    <button onClick={(e) => { e.stopPropagation(); handleReservar(evento.id); }}
-                                            disabled={reservandoId === evento.id}
-                                            className="w-full bg-[#5A4E75] hover:bg-[#2E284E] text-white py-2 px-4 rounded-md">
-                                        {reservandoId === evento.id ? 'Reservando...' : 'Reservar'}
+            {usuarioLogado?.role === 'HOST' && (
+                <div className="max-w-6xl mx-auto mb-6">
+                    <button
+                        onClick={() => setShowCadastro(!showCadastro)}
+                        className="!text-[#EDE6F2] bg-gradient-to-b from-[#342e5a] via-[#5A4E75] to-[#7d6588] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] lg:h-[25px] lg:mb-15 mx-auto"
+                    >
+                        {showCadastro ? 'Cancelar Cadastro' : 'Cadastrar Novo Evento'}
+                    </button>
+
+                    {showCadastro && (
+                        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mt-4 max-w-3xl mx-auto">
+                            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center !text-[#5A4E75]">Cadastrar
+                                Novo Evento</h3>
+                            <form onSubmit={handleCadastrarEvento} className="space-y-3 sm:space-y-4">
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="nomeEvento"
+                                           className="block text-[#5A4E75] text-sm sm:text-base font-medium">Nome do
+                                        Evento:</label>
+                                    <input
+                                        type="text"
+                                        id="nomeEvento"
+                                        name="nomeEvento"
+                                        value={nomeEvento}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    />
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="dataHora"
+                                           className="block text-[#5A4E75] text-sm sm:text-base font-medium">Data e
+                                        Hora:</label>
+                                    <input
+                                        type="datetime-local"
+                                        id="dataHora"
+                                        name="dataHora"
+                                        value={dataHora}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    />
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="horaEncerramento"
+                                           className="block text-[#5A4E75] text-sm sm:text-base font-medium">Hora de
+                                        Encerramento:</label>
+                                    <input
+                                        type="time"
+                                        id="horaEncerramento"
+                                        name="horaEncerramento"
+                                        value={horaEncerramento}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    />
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="descricao"
+                                           className="block text-[#5A4E75] text-sm sm:text-base font-medium">Descrição:</label>
+                                    <textarea
+                                        id="descricao"
+                                        name="descricao"
+                                        value={descricao}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588] min-h-[80px] sm:min-h-[100px]"
+                                    />
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="classificacao"
+                                           className="block text-[#5A4E75] text-sm sm:text-base font-medium">Classificação:</label>
+                                    <select
+                                        id="classificacao"
+                                        name="classificacao"
+                                        value={classificacao}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    >
+                                        <option value="">Selecione uma classificação</option>
+                                        <option value="Livre">Livre</option>
+                                        <option value="10+">10+</option>
+                                        <option value="12+">12+</option>
+                                        <option value="14+">14+</option>
+                                        <option value="16+">16+</option>
+                                        <option value="18+">18+</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="generoMusical"
+                                           className="block text-[#5A4E75] text-sm sm:text-base font-medium">Gênero
+                                        Musical:</label>
+                                    <select
+                                        id="generoMusical"
+                                        name="generoMusical"
+                                        value={selectedGeneroId}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    >
+                                        <option value="">Selecione um gênero</option>
+                                        {generos.map(genero => (
+                                            <option key={genero.idGeneroMusical} value={genero.idGeneroMusical}>
+                                                {genero.nomeGenero}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="local"
+                                           className="block text-[#5A4E75] text-sm sm:text-base font-medium">Local:</label>
+                                    <input
+                                        type="text"
+                                        id="local"
+                                        name="local"
+                                        value={localEventoNome}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div className="space-y-1 sm:space-y-2">
+                                        <label htmlFor="cep"
+                                               className="block text-[#5A4E75] text-sm sm:text-base font-medium">CEP do
+                                            Local:</label>
+                                        <input
+                                            type="text"
+                                            id="cep"
+                                            name="cep"
+                                            value={cep}
+                                            onChange={handleInputChange}
+                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1 sm:space-y-2">
+                                        <label htmlFor="numero"
+                                               className="block text-[#5A4E75] text-sm sm:text-base font-medium">Número
+                                            do Local:</label>
+                                        <input
+                                            type="text"
+                                            id="numero"
+                                            name="numero"
+                                            value={numero}
+                                            onChange={handleInputChange}
+                                            className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1 sm:space-y-2">
+                                    <label htmlFor="eventImage"
+                                           className="block text-[#5A4E75] text-sm sm:text-base font-medium">Foto do
+                                        Evento:</label>
+                                    <input
+                                        type="file"
+                                        id="eventImage"
+                                        name="eventImage"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        required
+                                        className="w-full px-3 py-1 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7d6588]"
+                                    />
+                                </div>
+
+                                <div className="flex flex-wrap gap-2 sm:gap-3 pt-1 sm:pt-2">
+                                    <button
+                                        type="submit"
+                                        className="bg-[#5A4E75] hover:bg-[#7d6588] text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
+                                    >
+                                        Cadastrar
                                     </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCadastro(false)}
+                                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 sm:px-6 sm:py-2 text-sm sm:text-base rounded-md transition-colors duration-300"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+
+                                {formMessage && (
+                                    <p className={`mt-2 text-sm sm:text-base font-medium ${formMessage.startsWith('Erro') ? 'text-red-600' : 'text-green-600'}`}>
+                                        {formMessage}
+                                    </p>
+                                )}
+                            </form>
+                        </div>
+                    )}
+                </div>
+            )
+            }
+
+            <div
+                className={`max-w-7xl mx-auto ${isAnimating ? 'opacity-0 translate-y-5' : 'opacity-100 translate-y-0'} transition-all duration-300`}>
+                <div
+                    className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 justify-items-center max-w-7xl mx-auto px-4">
+                    {eventosPaginaAtual.map(evento => (
+                        <div
+                            key={evento.id}
+                            onClick={() => handleEventoClick(evento.id)}
+                            className="bg-gradient-to-b from-[#2E284E] via-[#5A4E75] to-[#E8DFEC] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] mx-auto"
+                        >
+                            <div
+                                className="relative w-full h-[216px] sm:h-[288px] md:h-[400px] lg:h-[400px] overflow-hidden">
+                                <img
+                                    src={evento.id ? `${BACKEND_BASE_URL}/eventos/${evento.id}/image` : '/images/evento_padrao.png'}
+                                    alt={evento.titulo}
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = '/images/evento_padrao.png';
+                                    }}
+                                    className="absolute top-0 left-0 w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="p-5 sm:p-6 flex-grow flex flex-col">
+                                <h3 className="text-[#564A72] text-sm sm:text-base font-semibold truncate mb-1 sm:mb-2">{evento.titulo}</h3>
+                                <p className="!text-[#564A72] text-xs sm:text-sm mb-2 sm:mb-3">{evento.local} - {evento.hora}</p>
+                                {usuarioLogado?.role === 'CLIENT' && (
+                                    <div className="mt-auto">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleReservar(evento.id);
+                                            }}
+                                            disabled={reservandoId === evento.id}
+                                            className="w-full bg-[#5A4E75] hover:bg-[#2E284E] text-white py-2 px-4 sm:py-3 sm:px-5 text-sm sm:text-base rounded-md transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+                                        >
+                                            {reservandoId === evento.id ? 'Reservando...' : 'Reservar'}
+                                        </button>
+                                    </div>
                                 )}
                                 {mensagemReserva && reservandoId === evento.id && (
-                                    <p className="mt-2 text-xs text-center text-[#5A4E75]">{mensagemReserva}</p>
+                                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-center text-[#5A4E75]">{mensagemReserva}</p>
                                 )}
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
+
             {totalPaginas > 1 && (
-                <div className="flex justify-center gap-4 mt-8">
-                    <button onClick={() => mudarPagina(currentPage - 1)} disabled={currentPage === 1 || isAnimating}
-                            className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 rounded-full disabled:opacity-50">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 md:gap-6 mt-8 sm:mt-10 md:mt-12">
+                    <button
+                        onClick={() => mudarPagina(currentPage - 1)}
+                        disabled={currentPage === 1 || isAnimating}
+                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
+                    >
                         &lt;
                     </button>
-                    <span className="text-[#2E284E] font-bold">Página {currentPage} de {totalPaginas}</span>
-                    <button onClick={() => mudarPagina(currentPage + 1)} disabled={currentPage === totalPaginas || isAnimating}
-                            className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 rounded-full disabled:opacity-50">
+
+                    <span
+                        className="text-[#2E284E] font-bold text-sm sm:text-base">Página {currentPage} de {totalPaginas}</span>
+
+                    <button
+                        onClick={() => mudarPagina(currentPage + 1)}
+                        disabled={currentPage === totalPaginas || isAnimating}
+                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
+                    >
                         &gt;
                     </button>
                 </div>
             )}
         </div>
     );
-};
+}
 
 Eventos.propTypes = {
     eventosFiltrados: PropTypes.array.isRequired,
@@ -142,6 +554,7 @@ Eventos.propTypes = {
     setCurrentPage: PropTypes.func.isRequired,
     onEventoCadastrado: PropTypes.func
 };
+
 
 Eventos.defaultProps = {
     onEventoCadastrado: () => {}
