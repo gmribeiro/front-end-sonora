@@ -255,7 +255,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
             }, 2000);
 
         } catch (error) {
-            console.error('Erro ao cadastrar evento ou fazer upload da imagem:', error);
+            console.error('Erro ao cadastrar evento ou fazer upload da imagem do evento:', error);
             setFormMessage(`Erro ao cadastrar evento: ${error.response?.data?.message || 'Erro desconhecido'}`);
         }
     };
@@ -548,16 +548,16 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
     );
 }
 
-    Eventos.propTypes = {
-        eventosFiltrados: PropTypes.array.isRequired,
-        currentPage: PropTypes.number.isRequired,
-        setCurrentPage: PropTypes.func.isRequired,
-        onEventoCadastrado: PropTypes.func
-    };
+Eventos.propTypes = {
+    eventosFiltrados: PropTypes.array.isRequired,
+    currentPage: PropTypes.number.isRequired,
+    setCurrentPage: PropTypes.func.isRequired,
+    onEventoCadastrado: PropTypes.func
+};
 
 
-    Eventos.defaultProps = {
-        onEventoCadastrado: () => {}
-    };
+Eventos.defaultProps = {
+    onEventoCadastrado: () => {}
+};
 
-    export default Eventos;
+export default Eventos;

@@ -340,21 +340,21 @@ const EventoDetalhes = () => {
 
                 <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto gap-2">
                     <span className="text-lg sm:text-2xl whitespace-nowrap">
-                       Classificação: 
+                       Classificação:
                     </span>
                     <img
                         src={
-                        evento.classificacao === 'Livre' ? '/images/classificacaolivre.png' :
-                        evento.classificacao === '10+' ? '/images/classificacao10.png' :
-                        evento.classificacao === '12+' ? '/images/classificacao12.png' :
-                        evento.classificacao === '14+' ? '/images/classificacao14.png' :
-                        evento.classificacao === '16+' ? '/images/classificacao16.png' :
-                        evento.classificacao === '18+' ? '/images/classificacao18.png' :
-                        undefined
+                            evento.classificacao === 'Livre' ? '/images/classificacaolivre.png' :
+                                evento.classificacao === '10+' ? '/images/classificacao10.png' :
+                                    evento.classificacao === '12+' ? '/images/classificacao12.png' :
+                                        evento.classificacao === '14+' ? '/images/classificacao14.png' :
+                                            evento.classificacao === '16+' ? '/images/classificacao16.png' :
+                                                evento.classificacao === '18+' ? '/images/classificacao18.png' :
+                                                    undefined
                         }
                         alt={`Classificação ${evento.localEvento?.classificacao || 'não informada'}`}
                         className="w-6 h-6 sm:w-8 sm:h-8 mr-2 flex-shrink-0"
-                    />  
+                    />
                 </div>
 
 
