@@ -95,6 +95,31 @@ const Eventos = ({ onEventoCadastrado }) => {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
 
+    const formatDateTimeForUserDisplay = (dateTimeString) => {
+        if (typeof dateTimeString !== 'string' || !dateTimeString) {
+            return 'Data e hora não informadas';
+        }
+
+        const parts = dateTimeString.split(' '); // Expected "DD/MM/YYYY HH:MM:SS"
+        if (parts.length !== 2) {
+            console.warn(`[formatDateTimeForUserDisplay] Formato inesperado: ${dateTimeString}`);
+            return 'Formato de data inválido';
+        }
+
+        const [datePart, timePart] = parts;
+        const [day, month, year] = datePart.split('/');
+        const [hours, minutes] = timePart.split(':');
+
+        // Validação básica para garantir que são números
+        if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
+            console.warn(`[formatDateTimeForUserDisplay] Componentes numéricos inválidos: ${dateTimeString}`);
+            return 'Data e hora inválidas';
+        }
+
+        // Retorna no formato DD/MM/AAAA hh:MM
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    };
+
     const extractTimeForDisplay = (dateTimeString) => {
         if (typeof dateTimeString !== 'string' || !dateTimeString) {
             console.warn("[extractTimeForDisplay] Entrada vazia, nula ou não-string para exibição:", dateTimeString);
@@ -587,7 +612,7 @@ const Eventos = ({ onEventoCadastrado }) => {
                                         alt={evento.nomeEvento || evento.titulo || 'Imagem do Evento'}
                                         onError={(e) => {
                                             e.target.onerror = null;
-                                            e.target.src = '/images/evento_padrao.png'; // Fallback em caso de erro no carregamento da imagem
+                                            e.target.src = '/images/evento_padrao.png';
                                         }}
                                         className="absolute top-0 left-0 w-full h-full object-cover"
                                     />
@@ -595,7 +620,7 @@ const Eventos = ({ onEventoCadastrado }) => {
                                 <div className="p-5 sm:p-6 flex-grow flex flex-col">
                                     <h3 className="text-[#564A72] text-sm sm:text-base font-semibold truncate mb-1 sm:mb-2">{evento.nomeEvento || evento.titulo}</h3>
                                     <p className="!text-[#564A72] text-xs sm:text-sm mb-2 sm:mb-3">
-                                        {evento.localEvento?.local || evento.local || 'Local não informado'} - {extractTimeForDisplay(evento.dataHora)}
+                                        {evento.localEvento?.local || evento.local || 'Local não informado'} - {formatDateTimeForUserDisplay(evento.dataHora)}
                                     </p>
                                     {usuarioLogado?.role === 'CLIENT' && (
                                         <div className="mt-auto">
