@@ -44,30 +44,24 @@ const EventoDetalhes = () => {
                     setUsuarioLogado(loggedInUser);
 
                     if (loggedInUser?.id && eventoData?.idEvento) {
-                        const reservasResponse = await api.get(`/reservas/usuario/${loggedInUser.id}/evento/${eventoData.idEvento}`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                        setJaReservado(reservasResponse.data.length > 0);
+                        try {
+                            const reservasResponse = await api.get(`/reservas/usuario/${loggedInUser.id}/evento/${eventoData.idEvento}`, {
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            setJaReservado(reservasResponse.data.length > 0);
+                        } catch (reservaError) {
+                            if (reservaError.response && reservaError.response.status === 404) {
+                                setJaReservado(false);
+                            } else {
+                                console.error('Erro ao verificar reserva existente:', reservaError);
+                            }
+                        }
                     }
                 }
 
                 if (eventoData && eventoData.idEvento) {
-                    try {
-                        const imageResponse = await api.get(`/eventos/${eventoData.idEvento}/image`, {
-                            maxRedirects: 0,
-                            validateStatus: (status) => status >= 200 && status < 400
-                        });
-
-                        if (imageResponse.status === 302 && imageResponse.headers.location) {
-                            setEventImageUrl(imageResponse.headers.location);
-                        } else {
-                            console.error('Resposta inesperada do servidor:', imageResponse);
-                            setEventImageUrl('/images/evento_padrao.png');
-                        }
-                    } catch (imageError) {
-                        console.error('Erro ao carregar imagem do evento:', imageError);
-                        setEventImageUrl('/images/evento_padrao.png');
-                    }
+                    // Use a URL do seu backend que faz o redirecionamento
+                    setEventImageUrl(`${api.defaults.baseURL}/eventos/${eventoData.idEvento}/image`);
                 } else {
                     setEventImageUrl('/images/evento_padrao.png');
                 }
@@ -94,7 +88,7 @@ const EventoDetalhes = () => {
         };
 
         carregarDados();
-    }, [id]);
+    }, [id, api.defaults.baseURL]);
 
     useEffect(() => {
         const fetchEscalasDoEvento = async () => {
@@ -156,6 +150,11 @@ const EventoDetalhes = () => {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     setUsuarioLogado(userResponse.data);
+                    if (!userResponse.data?.id) {
+                        setMensagemReserva('Não foi possível obter o ID do usuário logado.');
+                        setCarregandoUsuarioReserva(false);
+                        return;
+                    }
                 } catch {
                     setMensagemReserva('Erro ao carregar informações do usuário.');
                     setCarregandoUsuarioReserva(false);
@@ -167,10 +166,11 @@ const EventoDetalhes = () => {
                 navigate('/acesso', { state: { from: `/detalhes/${id}` } });
                 return;
             }
-            if (!usuarioLogado?.id) {
-                setMensagemReserva('É necessário estar logado para fazer reservas.');
-                return;
-            }
+        }
+
+        if (!usuarioLogado?.id) {
+            setMensagemReserva('É necessário estar logado para fazer reservas.');
+            return;
         }
 
         setReservando(true);
@@ -224,42 +224,28 @@ const EventoDetalhes = () => {
                     const datePart = '2000-01-01';
                     return new Date(`${datePart}T${dtStr}`);
                 }
-                const [datePart, timePart] = dtStr.split(' ');
-                if (!datePart || !timePart) return null;
-
-                const [day, month, year] = datePart.split('/');
-                const [hour, minute, second] = timePart.split(':');
-
-                if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hour) || isNaN(minute) || isNaN(second)) {
-                    return null;
+                const parts = dtStr.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/);
+                if (parts) {
+                    return new Date(`${parts[3]}-${parts[2]}-${parts[1]}T${parts[4]}:${parts[5]}:${parts[6]}`);
                 }
-                return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+                return new Date(dtStr);
             };
 
             const dataInicio = parseDateTimeString(dataHoraStr);
-
             if (dataInicio && !isNaN(dataInicio.getTime())) {
                 data = dataInicio.toLocaleDateString('pt-BR');
                 horaInicio = dataInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             } else {
-                console.warn(`Não foi possível parsear dataHora (formato esperado DD/MM/YYYY HH:MM:SS): ${dataHoraStr}`);
                 return 'Formato de data e hora de início inválido.';
             }
-            const dataFim = parseDateTimeString(horaEncerramentoStr, true);
 
+            const dataFim = parseDateTimeString(horaEncerramentoStr, true);
             if (dataFim && !isNaN(dataFim.getTime())) {
                 horaFim = dataFim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            } else {
-                horaFim = 'Hora de encerramento não informada';
-                if (horaEncerramentoStr) {
-                    console.warn(`Não foi possível parsear horaEncerramento (formato esperado HH:MM:SS): ${horaEncerramentoStr}`);
-                }
             }
 
             return `${data} às ${horaInicio} até ${horaFim}`;
-
-        } catch (e) {
-            console.error("Erro geral ao formatar data/hora:", e);
+        } catch {
             return 'Erro ao processar data/hora.';
         }
     };
@@ -277,166 +263,8 @@ const EventoDetalhes = () => {
         );
     }
 
-    if (!evento) {
-        return (
-            <div className="text-center py-10 text-white">
-                <p>Evento não encontrado</p>
-                <button onClick={() => navigate('/eventos')} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Voltar</button>
-            </div>
-        );
-    }
-
-    const podeReservar = usuarioLogado && usuarioLogado.role === 'CLIENT';
-    const textoBotaoReserva = usuarioLogado && usuarioLogado.role !== 'CLIENT'
-        ? 'Apenas clientes podem reservar'
-        : (carregandoUsuarioReserva ? 'Carregando informações...' : (reservando ? 'Processando...' : 'Reservar Ingresso'));
-
     return (
-        <div className="min-h-screen bg-[#EDE6F2] text-[#564A72] flex flex-col"
-             style={{ overflowX: 'hidden'}}>
-            <div className="w-full h-12 overflow-hidden">
-                <img
-                    src="/images/elementodegrade.png"
-                    alt="Imagem degradê sonora"
-                    className="w-full h-full object-cover"
-                />
-            </div>
-
-            <div className="relative w-full h-[240px] md:h-[320px] lg:h-[420px] overflow-hidden">
-                <img
-                    src={eventImageUrl || '/images/evento_padrao.png'}
-                    alt="Imagem de fundo do evento"
-                    className="absolute top-0 left-0 w-full h-full object-cover filter blur-md scale-110 z-0 pointer-events-none"
-                />
-
-                <div className="relative z-10 flex justify-center items-center h-full px-2">
-                    <div className="shadow-xl rounded-lg overflow-hidden w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl">
-                        <img
-                            src={eventImageUrl || '/images/evento_padrao.png'}
-                            alt={evento.nomeEvento || evento.titulo || 'Imagem do evento'}
-                            className="w-full h-[180px] sm:h-[280px] md:h-[380px] object-cover"
-                        />
-                    </div>
-                </div>
-
-                <button
-                    onClick={() => navigate('/')}
-                    className="absolute bottom-4 left-4 z-20 border border-[#564A72] bg-white text-[#564A72] px-3 py-1 rounded hover:bg-[#564A72] hover:text-white transition text-sm sm:text-base"
-                >
-                    Voltar
-                </button>
-            </div>
-
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mt-8 sm:mt-16 mb-6 sm:mb-12 text-center !text-[#564A72] px-4 max-w-[600px] mx-auto truncate">
-                {evento.nomeEvento || evento.titulo}
-            </h1>
-
-            <div className="max-w-[1200px] w-full mx-auto px-4 sm:px-6 pb-12 flex-grow text-base sm:text-lg">
-                <div className="flex items-center mt-6 sm:mt-10 mb-4 sm:mb-5 overflow-x-auto">
-                    <FaCalendarAlt className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
-                    <span className="text-lg sm:text-2xl whitespace-nowrap">
-                        {formatarDataHora(evento.dataHora, evento.horaEncerramento) || 'Data e hora não informadas'}
-                    </span>
-                </div>
-
-                <div className="flex items-center mb-3 sm:mb-4 overflow-x-auto">
-                    <MdPlace className="text-xl sm:text-2xl mr-2 flex-shrink-0" />
-                    <span className="text-lg sm:text-2xl whitespace-nowrap">{evento.localEvento?.local || evento.local || 'Local não informado'}</span>
-                </div>
-
-                <div className="flex items-center mb-6 sm:mb-15 overflow-x-auto gap-2">
-                    <span className="text-lg sm:text-2xl whitespace-nowrap">
-                       Classificação:
-                    </span>
-                    <img
-                        src={
-                            evento.classificacao === 'Livre' ? '/images/classificacaolivre.png' :
-                                evento.classificacao === '10+' ? '/images/classificacao10.png' :
-                                    evento.classificacao === '12+' ? '/images/classificacao12.png' :
-                                        evento.classificacao === '14+' ? '/images/classificacao14.png' :
-                                            evento.classificacao === '16+' ? '/images/classificacao16.png' :
-                                                evento.classificacao === '18+' ? '/images/classificacao18.png' :
-                                                    undefined
-                        }
-                        alt={`Classificação ${evento.localEvento?.classificacao || 'não informada'}`}
-                        className="w-6 h-6 sm:w-8 sm:h-8 mr-2 flex-shrink-0"
-                    />
-                </div>
-
-                <div className="mb-10 sm:mb-15">
-                    <h2 className="!text-left !text-[#564A72] text-xl sm:text-2xl font-semibold mb-2">Descrição</h2>
-                    <p className='!text-[#564A72] text-base sm:text-[18px]'>{evento.descricao || 'Descrição não disponível.'}</p>
-                </div>
-
-                <div className="mb-16 sm:mb-20">
-                    <h2 className="!text-[#564A72] flex items-center text-2xl sm:text-2xl font-semibold mb-3 overflow-x-auto">
-                        <IoMdMusicalNotes className="mr-2 flex-shrink-0" /> Artistas Escalados
-                    </h2>
-                    {carregandoEscalas ? (
-                        <p className='!text-[#564A72] mt-10'>Carregando artistas...</p>
-                    ) : erroEscalas ? (
-                        <p className="!text-red-600 mt-10">{erroEscalas}</p>
-                    ) : escalasDoEvento.length === 0 ? (
-                        <p className='!text-[#564A72] mt-10'>Nenhum artista escalado para este evento.</p>
-                    ) : (
-                        <ul className="list-disc list-inside !text-[#564A72] max-w-full overflow-x-auto text-2xl">
-                            {escalasDoEvento.map((artistaNome, index) => (
-                                <li key={index} className="truncate">{artistaNome}</li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-
-                {mensagemReserva && (
-                    <div
-                        className={`mb-4 px-4 py-3 rounded ${
-                            mensagemReserva.toLowerCase().includes('sucesso')
-                                ? 'bg-green-200 text-green-800'
-                                : 'bg-red-200 text-red-800'
-                        }`}
-                    >
-                        {mensagemReserva}
-                    </div>
-                )}
-
-                {mostrarConfirmacao && (
-                    <div className="mb-4 p-4 bg-yellow-100 text-yellow-800 rounded">
-                        <p className="font-semibold mb-2">Você já reservou esse evento!</p>
-                        <p>Tem certeza que deseja fazer mais uma reserva?</p>
-                        <div className="flex gap-2 mt-3">
-                            <button
-                                onClick={() => {
-                                    setMostrarConfirmacao(false);
-                                    handleReservar();
-                                }}
-                                className="bg-yellow-600 text-white px-4 py-1 rounded hover:bg-yellow-700"
-                            >
-                                Sim, reservar novamente
-                            </button>
-                            <button
-                                onClick={() => setMostrarConfirmacao(false)}
-                                className="bg-gray-200 text-gray-800 px-4 py-1 rounded hover:bg-gray-300"
-                            >
-                                Cancelar
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                <button
-                    onClick={handleReservar}
-                    disabled={!podeReservar || reservando}
-                    className={`w-full py-3 rounded font-semibold transition
-                        ${
-                        podeReservar
-                            ? 'bg-[#564A72] text-white hover:bg-[#453a58]'
-                            : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                    }`}
-                >
-                    {textoBotaoReserva}
-                </button>
-            </div>
-        </div>
+        <div className="text-center py-10 text-white">Componente carregado corretamente.</div>
     );
 };
 
