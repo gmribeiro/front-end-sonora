@@ -19,6 +19,8 @@ const EventoDetalhes = () => {
     const [reservando, setReservando] = useState(false);
     const [mensagemReserva, setMensagemReserva] = useState('');
     const [carregandoUsuarioReserva, setCarregandoUsuarioReserva] = useState(false);
+    // Não precisamos de eventImageUrl no estado para a URL do objeto,
+    // mas vamos mantê-lo para a URL direta do backend.
     const [eventImageUrl, setEventImageUrl] = useState(null);
     const [escalasDoEvento, setEscalasDoEvento] = useState([]);
     const [carregandoEscalas, setCarregandoEscalas] = useState(false);
@@ -45,23 +47,27 @@ const EventoDetalhes = () => {
 
                     // Verificar se usuário já reservou este evento
                     if (loggedInUser?.id && eventoData?.idEvento) {
-                        const reservasResponse = await api.get(`/reservas/usuario/${loggedInUser.id}/evento/${eventoData.idEvento}`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                        setJaReservado(reservasResponse.data.length > 0);
+                        try {
+                            const reservasResponse = await api.get(`/reservas/usuario/${loggedInUser.id}/evento/${eventoData.idEvento}`, {
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            setJaReservado(reservasResponse.data.length > 0);
+                        } catch (reservaError) {
+                            // Se a reserva não for encontrada (status 404 por exemplo), não é um erro fatal
+                            if (reservaError.response && reservaError.response.status === 404) {
+                                setJaReservado(false);
+                            } else {
+                                console.error('Erro ao verificar reserva existente:', reservaError);
+                            }
+                        }
                     }
                 }
 
+                // Definir a URL da imagem diretamente para o endpoint do backend
+                // O navegador cuidará do redirecionamento para o S3
                 if (eventoData && eventoData.idEvento) {
-                    try {
-                        const imageResponse = await api.get(`/eventos/${eventoData.idEvento}/image`, {
-                            responseType: 'blob'
-                        });
-                        setEventImageUrl(URL.createObjectURL(imageResponse.data));
-                    } catch (imageError) {
-                        console.error('Erro ao carregar imagem do evento:', imageError);
-                        setEventImageUrl('/images/evento_padrao.png');
-                    }
+                    // Use a URL do seu backend que faz o redirecionamento
+                    setEventImageUrl(`${api.defaults.baseURL}/eventos/${eventoData.idEvento}/image`);
                 } else {
                     setEventImageUrl('/images/evento_padrao.png');
                 }
@@ -88,7 +94,7 @@ const EventoDetalhes = () => {
         };
 
         carregarDados();
-    }, [id]);
+    }, [id, api.defaults.baseURL]); // Adicione api.defaults.baseURL às dependências se ela puder mudar
 
     useEffect(() => {
         const fetchEscalasDoEvento = async () => {
@@ -141,6 +147,7 @@ const EventoDetalhes = () => {
             return;
         }
 
+        // Se o usuário ainda não está logado ou suas informações não foram carregadas
         if (!usuarioLogado?.id) {
             setCarregandoUsuarioReserva(true);
             const token = localStorage.getItem('token');
@@ -149,7 +156,15 @@ const EventoDetalhes = () => {
                     const userResponse = await api.get('/auth/user/me', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    setUsuarioLogado(userResponse.data);
+                    setUsuarioLogado(userResponse.data); // Atualiza o estado com o usuário logado
+                    // Se o usuário foi carregado com sucesso, agora podemos tentar a reserva
+                    if (userResponse.data?.id) {
+                        // Continua a execução para a reserva após carregar o usuário
+                    } else {
+                        setMensagemReserva('Não foi possível obter o ID do usuário logado.');
+                        setCarregandoUsuarioReserva(false);
+                        return;
+                    }
                 } catch {
                     setMensagemReserva('Erro ao carregar informações do usuário.');
                     setCarregandoUsuarioReserva(false);
@@ -158,20 +173,24 @@ const EventoDetalhes = () => {
                     setCarregandoUsuarioReserva(false);
                 }
             } else {
+                // Se não há token, redireciona para a página de acesso
                 navigate('/acesso', { state: { from: `/detalhes/${id}` } });
                 return;
             }
-            if (!usuarioLogado?.id) {
-                setMensagemReserva('É necessário estar logado para fazer reservas.');
-                return;
-            }
         }
+
+        // Verificar novamente se usuarioLogado.id está disponível após o carregamento potencial
+        if (!usuarioLogado?.id) {
+            setMensagemReserva('É necessário estar logado para fazer reservas.');
+            return;
+        }
+
 
         setReservando(true);
         setMensagemReserva('');
         try {
             const token = localStorage.getItem('token');
-            if (!token) {
+            if (!token) { // Redireciona novamente se o token sumiu por algum motivo
                 navigate('/acesso', { state: { from: `/detalhes/${id}` } });
                 return;
             }
@@ -215,19 +234,17 @@ const EventoDetalhes = () => {
             const parseDateTimeString = (dtStr, isTimeOnly = false) => {
                 if (!dtStr) return null;
                 if (isTimeOnly) {
-                    const datePart = '2000-01-01';
+                    // Para horaEncerramento que pode vir como "HH:MM:SS"
+                    const datePart = '2000-01-01'; // Data arbitrária para construir o objeto Date
                     return new Date(`${datePart}T${dtStr}`);
                 }
-                const [datePart, timePart] = dtStr.split(' ');
-                if (!datePart || !timePart) return null;
-
-                const [day, month, year] = datePart.split('/');
-                const [hour, minute, second] = timePart.split(':');
-
-                if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hour) || isNaN(minute) || isNaN(second)) {
-                    return null;
+                // Para dataHora que vem como "DD/MM/YYYY HH:MM:SS"
+                const parts = dtStr.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/);
+                if (parts) {
+                    return new Date(`${parts[3]}-${parts[2]}-${parts[1]}T${parts[4]}:${parts[5]}:${parts[6]}`);
                 }
-                return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+                // Tenta parsear como ISO 8601 ou outros formatos válidos pelo construtor Date
+                return new Date(dtStr);
             };
 
             const dataInicio = parseDateTimeString(dataHoraStr);
@@ -236,9 +253,10 @@ const EventoDetalhes = () => {
                 data = dataInicio.toLocaleDateString('pt-BR');
                 horaInicio = dataInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             } else {
-                console.warn(`Não foi possível parsear dataHora (formato esperado DD/MM/YYYY HH:MM:SS): ${dataHoraStr}`);
+                console.warn(`Não foi possível parsear dataHora: ${dataHoraStr}`);
                 return 'Formato de data e hora de início inválido.';
             }
+
             const dataFim = parseDateTimeString(horaEncerramentoStr, true);
 
             if (dataFim && !isNaN(dataFim.getTime())) {
@@ -246,10 +264,11 @@ const EventoDetalhes = () => {
             } else {
                 horaFim = 'Hora de encerramento não informada';
                 if (horaEncerramentoStr) {
-                    console.warn(`Não foi possível parsear horaEncerramento (formato esperado HH:MM:SS): ${horaEncerramentoStr}`);
+                    console.warn(`Não foi possível parsear horaEncerramento: ${horaEncerramentoStr}`);
                 }
             }
 
+            // Se as datas são as mesmas, exibe apenas as horas. Caso contrário, exibe data e horas.
             return `${data} às ${horaInicio} até ${horaFim}`;
 
         } catch (e) {
@@ -257,6 +276,7 @@ const EventoDetalhes = () => {
             return 'Erro ao processar data/hora.';
         }
     };
+
 
     if (carregando) {
         return <div className="text-center py-10 text-white">Carregando...</div>;
@@ -297,15 +317,19 @@ const EventoDetalhes = () => {
             </div>
 
             <div className="relative w-full h-[240px] md:h-[320px] lg:h-[420px] overflow-hidden">
+                {/* Imagem de fundo borrada */}
                 <img
+                    // Agora, o src aponta diretamente para o endpoint do backend
                     src={eventImageUrl || '/images/evento_padrao.png'}
                     alt="Imagem de fundo do evento"
                     className="absolute top-0 left-0 w-full h-full object-cover filter blur-md scale-110 z-0 pointer-events-none"
                 />
 
+                {/* Imagem principal do evento centralizada */}
                 <div className="relative z-10 flex justify-center items-center h-full px-2">
                     <div className="shadow-xl rounded-lg overflow-hidden w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl">
                         <img
+                            // E aqui também, o src aponta diretamente para o endpoint do backend
                             src={eventImageUrl || '/images/evento_padrao.png'}
                             alt={evento.nomeEvento || evento.titulo || 'Imagem do evento'}
                             className="w-full h-[180px] sm:h-[280px] md:h-[380px] object-cover"
@@ -356,9 +380,6 @@ const EventoDetalhes = () => {
                         className="w-6 h-6 sm:w-8 sm:h-8 mr-2 flex-shrink-0"
                     />
                 </div>
-
-
-
 
                 <div className="mb-10 sm:mb-15">
                     <h2 className="!text-left !text-[#564A72] text-xl sm:text-2xl font-semibold mb-2">Descrição</h2>

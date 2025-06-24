@@ -57,17 +57,13 @@ function Home() {
         const eventosRaw = response.data;
 
         const eventosMapeados = eventosRaw.map(evento => {
-          // *** APLICANDO A FORMATAÇÃO AQUI ***
           const dataHoraFormatada = formatDateTimeForUserDisplay(evento.dataHora);
 
           return {
             id: evento.idEvento,
             titulo: evento.nomeEvento,
             local: evento.localEvento ? evento.localEvento.local : 'Local não informado',
-            // Agora a prop 'dataHora' conterá a data e hora formatadas para exibição
             dataHora: dataHoraFormatada,
-            // A prop 'hora' anterior não é mais necessária se 'dataHora' for completa
-            // hora: dataHoraCompleta ? new Date(dataHoraCompleta).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'N/A',
             imagem: evento.foto ? `eventos/${evento.idEvento}/image` : '/images/evento_padrao.png',
             genero: evento.generoMusical ? evento.generoMusical.nomeGenero : 'Não especificado'
           };
