@@ -197,7 +197,7 @@ const Artistas = () => {
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg text-center md:text-left">Artistas Disponíveis</h1>
                 <Link
                     to="/"
-                    className="flex-shrink-0 bg-[#342e5a] hover:bg-[#564A72] text-white px-6 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75 font-semibold text-lg"
+                    className="flex-shrink-0 !bg-[#342e5a] hover:!bg-[#564A72] text-white px-6 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75 font-semibold text-lg"
                 >
                     ← Voltar para Home
                 </Link>
@@ -215,7 +215,7 @@ const Artistas = () => {
                             id="evento"
                             value={eventoSelecionado}
                             onChange={handleEventoChange}
-                            className="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-[#a06cb3] focus:border-[#a06cb3] outline-none transition-all duration-200 text-lg placeholder-gray-400 shadow-sm focus:shadow-md"
+                            className="w-full border !border-gray-300 rounded-xl p-4 focus:ring-2 focus:!ring-[#a06cb3] focus:!border-[#a06cb3] outline-none transition-all duration-200 text-lg placeholder-gray-400 shadow-sm focus:shadow-md"
                         >
                             <option value="">-- Selecione um evento --</option>
                             {eventosHost.map(e => (
@@ -253,10 +253,10 @@ const Artistas = () => {
                                 <img
                                     src={profileImages[artista.usuario.id]}
                                     alt={`Foto de ${artista.nomeArtistico}`}
-                                    className="w-36 h-36 rounded-full object-cover mb-4 border-4 border-[#a06cb3] shadow-md"
+                                    className="w-36 h-36 rounded-full object-cover mb-4 border-4 !border-[#a06cb3] shadow-md"
                                 />
                             ) : (
-                                <div className="w-36 h-36 flex items-center justify-center bg-gradient-to-br from-[#9b59b6] to-[#7f399f] rounded-full mb-4 text-4xl font-bold text-white shadow-md">
+                                <div className="w-36 h-36 flex items-center justify-center bg-gradient-to-br !from-[#9b59b6] !to-[#7f399f] rounded-full mb-4 text-4xl font-bold text-white shadow-md">
                                     {artista.nomeArtistico.charAt(0).toUpperCase()}
                                 </div>
                             )}
@@ -284,27 +284,27 @@ const Artistas = () => {
                                     {showContratarForm === artista.idMusico ? (
                                         <div className="space-y-4">
                                             <div className="text-left">
-                                                <label htmlFor={`valor-${artista.idMusico}`} className="block text-base font-semibold mb-2 text-[#5c2c90]">Valor (R$):</label>
+                                                <label htmlFor={`valor-${artista.idMusico}`} className="block text-base font-semibold mb-2 !text-[#5c2c90]">Valor (R$):</label>
                                                 <input
                                                     id={`valor-${artista.idMusico}`}
                                                     type="number"
                                                     name="valor"
                                                     value={contratacaoDetalhes.valor}
                                                     onChange={handleContratacaoDetalhesChange}
-                                                    className="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-[#a06cb3] focus:border-[#a06cb3] outline-none transition-all duration-200 placeholder-gray-400 shadow-sm"
+                                                    className="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:!ring-[#a06cb3] focus:!border-[#a06cb3] outline-none transition-all duration-200 placeholder-gray-400 shadow-sm"
                                                     placeholder="Ex: 500.00"
                                                     required
                                                 />
                                             </div>
                                             <div className="text-left">
-                                                <label htmlFor={`detalhes-${artista.idMusico}`} className="block text-base font-semibold mb-2 text-[#5c2c90]">Detalhes:</label>
+                                                <label htmlFor={`detalhes-${artista.idMusico}`} className="block text-base font-semibold mb-2 !text-[#5c2c90]">Detalhes:</label>
                                                 <textarea
                                                     id={`detalhes-${artista.idMusico}`}
                                                     name="detalhes"
                                                     value={contratacaoDetalhes.detalhes}
                                                     onChange={handleContratacaoDetalhesChange}
                                                     rows="3"
-                                                    className="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-[#a06cb3] focus:border-[#a06cb3] outline-none transition-all duration-200 placeholder-gray-400 shadow-sm resize-y"
+                                                    className="w-full border !border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:!ring-[#a06cb3] focus:!border-[#a06cb3] outline-none transition-all duration-200 placeholder-gray-400 shadow-sm resize-y"
                                                     placeholder="Tipo de apresentação, duração, etc."
                                                 ></textarea>
                                             </div>
@@ -318,7 +318,7 @@ const Artistas = () => {
                                                 </button>
                                                 <button
                                                     onClick={cancelarContratacao}
-                                                    className="flex-1 bg-[#c2a0bb] hover:bg-[#a6829f] text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out font-semibold text-base transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#c2a0bb] focus:ring-opacity-75"
+                                                    className="flex-1 !bg-[#c2a0bb] hover:!bg-[#a6829f] text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out font-semibold text-base transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#c2a0bb] focus:ring-opacity-75"
                                                 >
                                                     Cancelar
                                                 </button>
@@ -327,7 +327,7 @@ const Artistas = () => {
                                     ) : (
                                         <button
                                             onClick={() => handleContratarClick(artista.idMusico)}
-                                            className="w-full bg-[#342e5a] hover:bg-[#564A72] text-white px-7 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-lg transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full !bg-[#342e5a] hover:!bg-[#564A72] text-white px-7 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out font-semibold text-lg transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-[#342e5a] focus:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
                                             disabled={!eventoSelecionado}
                                         >
                                             Contratar Artista

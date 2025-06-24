@@ -291,7 +291,7 @@ function MeusContratos() {
                 className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat font-['Poppins',_sans-serif]"
                 style={{ backgroundImage: "url('/images/fundocatalogo.png')" }}
             >
-                <div className="bg-white p-8 rounded-3xl shadow-2xl text-center text-3xl font-bold text-[#564A72] animate-pulse">
+                <div className="bg-white p-8 rounded-3xl shadow-2xl text-center text-3xl font-bold !text-[#564A72] animate-pulse">
                     Carregando seus contratos...
                 </div>
             </div>
@@ -304,7 +304,7 @@ function MeusContratos() {
                 className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat font-['Poppins',_sans-serif]"
                 style={{ backgroundImage: "url('/images/fundocatalogo.png')" }}
             >
-                <div className="bg-red-100 border border-red-400 text-red-700 px-8 py-6 rounded-3xl relative shadow-2xl text-center text-2xl font-semibold">
+                <div className="bg-red-100 border !border-red-400 !text-red-700 px-8 py-6 rounded-3xl relative shadow-2xl text-center text-2xl font-semibold">
                     <p>{error}</p>
                     <Link
                         to="/"
@@ -324,7 +324,7 @@ function MeusContratos() {
 
     return (
         <div
-            className="min-h-screen w-full bg-cover bg-center bg-no-repeat overflow-y-auto font-['Poppins',_sans-serif] text-gray-800 p-8 md:p-12"
+            className="min-h-screen w-full bg-cover bg-center bg-no-repeat overflow-y-auto font-['Poppins',_sans-serif] !text-gray-800 p-8 md:p-12"
             style={{ backgroundImage: "url('/images/fundocatalogo.png')" }}
         >
             <div className="flex flex-col md:flex-row justify-between items-center mb-12 md:mb-20 gap-6">
@@ -343,12 +343,12 @@ function MeusContratos() {
             </div>
 
             {meusContratosArtista.length === 0 ? (
-                <div className="bg-white p-10 rounded-3xl shadow-xl border border-gray-100 bg-opacity-95 backdrop-blur-sm text-center">
+                <div className="!bg-white p-10 rounded-3xl shadow-xl border !border-gray-100 bg-opacity-95 backdrop-blur-sm text-center">
                     <p className="text-3xl" style={{ color: COLORS.primary, fontWeight: 'bold' }}>Você ainda não possui nenhum contrato.</p>
-                    <p className="text-xl text-gray-700 mt-4">Explore os artistas disponíveis e mostre seu talento!</p>
+                    <p className="text-xl !text-gray-700 mt-4">Explore os artistas disponíveis e mostre seu talento!</p>
                     <Link
                         to="/artistas"
-                        className="mt-8 inline-block text-white px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-opacity-75 font-semibold text-xl"
+                        className="mt-8 inline-block !text-white px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-opacity-75 font-semibold text-xl"
                         style={{
                             backgroundColor: COLORS.buttonPurpleDark,
                             boxShadow: `0 4px 14px 0 ${COLORS.buttonPurpleLight}40`,
@@ -376,7 +376,7 @@ function MeusContratos() {
                                     </Link>
                                 </h3>
 
-                                <div className="space-y-3 text-lg text-gray-700 flex-grow">
+                                <div className="space-y-3 text-lg !text-gray-700 flex-grow">
                                     <p><strong>Gênero Musical:</strong> {contrato.idContrato.evento.generoMusical?.nomeGenero || 'Não especificado'}</p>
                                     <p><strong>Local:</strong> {contrato.idContrato.evento.localEvento?.local || 'Local não informado'}</p>
                                     <p><strong>Data e Hora:</strong> {contrato.idContrato.evento.dataHora ? new Date(contrato.idContrato.evento.dataHora).toLocaleString('pt-BR') : 'Data não disponível'}</p>
