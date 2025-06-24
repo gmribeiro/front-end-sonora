@@ -50,8 +50,6 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         }
     }, []);
 
-    // --- Funções de Formatação de Data ---
-    // Esta função é para **enviar** a data para o backend (DD/MM/AAAA HH:MM:SS)
     const formatDateTimeForBackend = (dateTimeString) => {
         if (!dateTimeString) return '';
         try {
@@ -73,22 +71,16 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         }
     };
 
-    // Esta função é para **formatar o NOVO evento** para exibição ao usuário (DD/MM/AAAA HH:MM)
-    // É importante que o novo evento seja formatado antes de ser enviado para o Home,
-    // para que a Home não precise re-formatá-lo ou o mostre incorretamente.
     const formatDateTimeForUserDisplay = (backendDateTimeString) => {
         if (typeof backendDateTimeString !== 'string' || !backendDateTimeString) {
             return 'Data e hora não informadas';
         }
 
         let date;
-        // Tenta parsear como "DD/MM/AAAA HH:MM:SS" (formato que enviamos ao backend)
         const parts = backendDateTimeString.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/);
         if (parts) {
-            // Constrói uma data no formato "YYYY-MM-DDTHH:MM:SS" para o construtor Date
             date = new Date(`${parts[3]}-${parts[2]}-${parts[1]}T${parts[4]}:${parts[5]}:${parts[6]}`);
         } else {
-            // Tenta parsear qualquer outro formato que Date() aceite (ex: ISO 8601)
             date = new Date(backendDateTimeString);
         }
 
@@ -105,8 +97,6 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
 
         return `${day}/${month}/${year} ${hours}:${minutes}`;
     };
-    // --- Fim das Funções de Formatação de Data ---
-
 
     const handleEventoClick = (eventoId) => {
         navigate(`/detalhes/${eventoId}`);
@@ -138,7 +128,6 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 }
             });
             if (response.status === 201) {
-                // Acha o evento pelo ID no array eventosFiltrados (que já vem da Home formatado)
                 setMensagemReserva(`Reserva para o evento ${eventosFiltrados.find(e => e.id === eventoId)?.titulo} realizada com sucesso!`);
                 setTimeout(() => {
                     navigate('/meusconvites');
@@ -150,7 +139,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
             console.error('Erro ao reservar evento:', error);
             setMensagemReserva(`Erro ao reservar o evento: ${error.response?.data?.message || error.message}`);
         } finally {
-            setReservandoId(null); // Importante para reabilitar o botão
+            setReservandoId(null);
         }
     };
 
@@ -192,7 +181,6 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         }
 
         try {
-            // Formata a data para envio ao backend
             const formattedDataHoraParaBackend = formatDateTimeForBackend(dataHora);
             let formattedHoraEncerramento = '00:00:00';
             if (horaEncerramento) {
@@ -214,7 +202,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
 
             const eventData = {
                 nomeEvento,
-                dataHora: formattedDataHoraParaBackend, // Usando a data formatada para o backend
+                dataHora: formattedDataHoraParaBackend,
                 horaEncerramento: formattedHoraEncerramento,
                 descricao: descricao,
                 classificacao: classificacao,
@@ -256,10 +244,9 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 setFormMessage('Evento cadastrado, mas nenhuma imagem foi selecionada ou o ID do evento não foi retornado.');
             }
 
-            // Limpa os campos do formulário
             setNomeEvento('');
             setDataHora('');
-            setHoraEnceramento('');
+            setHoraEncerramento('');
             setDescricao('');
             setClassificacao('');
             setSelectedGeneroId('');
@@ -268,23 +255,17 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
             setNumero('');
             setEventImageFile(null);
 
-            // Prepara o novo evento para ser adicionado ao estado local 'eventosCompletos' na Home.
-            // A dataHora já vem formatada para o usuário aqui.
             const novoEventoParaHome = {
                 id: novoEventoDoBackend.idEvento,
                 titulo: nomeEvento,
                 local: localEventoNome,
-                // Passa a dataHora que foi formatada para o backend, pois a Home vai re-formatar para exibição
-                // ou use formatDateTimeForUserDisplay aqui se preferir que Eventos já envie o formato de exibição.
-                // Decisão: para evitar duplo formato, vamos enviar o formato que o backend aceitou, e a Home irá re-formatar.
-                // NO ENTANTO, se a onEventoCadastrado na Home espera o formato de exibição, então faça como abaixo:
-                dataHora: formatDateTimeForUserDisplay(formattedDataHoraParaBackend), // Formata para o usuário antes de enviar para a Home
-                imagem: imageUrl || '/images/evento_padrao.png', // Usa a URL da imagem ou padrão
+                dataHora: formatDateTimeForUserDisplay(formattedDataHoraParaBackend),
+                imagem: imageUrl || '/images/evento_padrao.png',
                 genero: generos.find(g => g.idGeneroMusical === selectedGeneroId)?.nomeGenero || 'Outro'
             };
 
             if (onEventoCadastrado) {
-                onEventoCadastrado(novoEventoParaHome); // Envia o evento formatado para a Home
+                onEventoCadastrado(novoEventoParaHome);
             }
 
             setTimeout(() => {
@@ -304,8 +285,8 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
         setIsAnimating(true);
         setTimeout(() => {
             setCurrentPage(novaPagina);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
             setIsAnimating(false);
+            // Removi a linha que fazia a rolagem para o topo
         }, 300);
     };
 
@@ -510,7 +491,6 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                             </div>
                             <div className="p-5 sm:p-6 flex-grow flex flex-col">
                                 <h3 className="text-[#564A72] text-sm sm:text-base font-semibold truncate mb-1 sm:mb-2">{evento.titulo}</h3>
-                                {/* Exibe a dataHora diretamente, pois já vem formatada da Home */}
                                 <p className="!text-[#564A72] text-xs sm:text-sm mb-2 sm:mb-3">{evento.local} - {evento.dataHora}</p>
                                 {usuarioLogado?.role === 'CLIENT' && (
                                     <div className="mt-auto">

@@ -285,7 +285,7 @@ function MinhasReservas() {
                 className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat font-['Poppins',_sans-serif]"
                 style={{ backgroundImage: "url('/images/fundocatalogo.png')" }}
             >
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <div className="bg-red-100 border !border-red-400 !text-red-700 px-4 py-3 rounded relative" role="alert">
                     <strong className="font-bold">Erro!</strong>
                     <span className="block sm:inline ml-2">{error}</span>
                 </div>
@@ -299,7 +299,7 @@ function MinhasReservas() {
             className="min-h-screen p-4 sm:p-6 lg:p-8 xl:p-10 2xl:p-12 font-sans flex items-center justify-center bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: "url('/images/fundocatalogo.png')" }}
         >
-            <div className="max-w-7xl mx-auto bg-white shadow-xl rounded-lg p-6 sm:p-8 lg:p-10 border w-full" style={{ borderColor: COLORS.borderLight }}>
+            <div className="max-w-7xl mx-auto !bg-white shadow-xl rounded-lg p-6 sm:p-8 lg:p-10 border w-full" style={{ borderColor: COLORS.borderLight }}>
                 <h2 className="text-3xl sm:text-4xl font-extrabold mb-8 pb-4 border-b-4 text-center tracking-tight" style={{ color: COLORS.primary, borderColor: COLORS.secondary }}>
                     Minhas Reservas
                 </h2>
@@ -322,7 +322,7 @@ function MinhasReservas() {
                                 // Checa se a reserva já está confirmada
                                 const isConfirmed = confirmedReservationIds.has(reserva.idReserva);
                                 return (
-                                    <li key={reserva.idReserva || Math.random()} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col border" style={{ borderColor: COLORS.warning }}>
+                                    <li key={reserva.idReserva || Math.random()} className="!bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col border" style={{ borderColor: COLORS.warning }}>
                                         {reserva.evento?.imageUrl && (
                                             <img
                                                 src={reserva.evento.imageUrl}
@@ -362,7 +362,7 @@ function MinhasReservas() {
                                             <button
                                                 onClick={() => handleConfirmarPresenca(reserva.idReserva, reserva.evento?.idEvento)}
                                                 disabled={confirmandoId === reserva.idReserva || cancelandoId === reserva.idReserva || isConfirmed} // Desabilita se já confirmada
-                                                className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                                className="w-full !text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                                 style={{ backgroundColor: COLORS.secondary, color: 'white', borderColor: COLORS.secondary, '--focus-ring-color': COLORS.secondary }}
                                             >
                                                 {confirmandoId === reserva.idReserva ? 'Confirmando...' : (isConfirmed ? 'Já Confirmada' : 'Confirmar Presença')}
@@ -405,7 +405,7 @@ function MinhasReservas() {
                     ) : (
                         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {minhasReservasConfirmadas.map(reserva => (
-                                <li key={reserva.idReserva || Math.random()} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col border" style={{ borderColor: COLORS.success }}>
+                                <li key={reserva.idReserva || Math.random()} className="!bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col border" style={{ borderColor: COLORS.success }}>
                                     {reserva.evento?.imageUrl && (
                                         <img
                                             src={reserva.evento.imageUrl}
@@ -445,7 +445,7 @@ function MinhasReservas() {
                                     }}>
                                         <button
                                             onClick={() => alert('Funcionalidade de confirmação por e-mail a ser implementada.')} // Alerta para simular a funcionalidade
-                                            className="w-full sm:w-auto flex-1 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm sm:text-base"
+                                            className="w-full sm:w-auto flex-1 !text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm sm:text-base"
                                             style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}
                                         >
                                             Confirmação no Email

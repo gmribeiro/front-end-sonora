@@ -557,7 +557,7 @@ function MeusEventos() {
                                         </div>
                                     </div>
                                     {mensagemExclusaoEvento.id === evento.idEvento && (
-                                        <p className={`mt-2 text-sm ${mensagemExclusaoEvento.type === 'error' ? 'text-red-600' : 'text-green-600'}`}>
+                                        <p className={`mt-2 text-sm ${mensagemExclusaoEvento.type === 'error' ? '!text-red-600' : '!text-green-600'}`}>
                                             {mensagemExclusaoEvento.message}
                                         </p>
                                     )}
@@ -785,7 +785,7 @@ function MeusEventos() {
                             </div>
 
                             {editMessage.text && (
-                                <p className={`text-center py-2 rounded-md text-sm ${editMessage.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                <p className={`text-center py-2 rounded-md text-sm ${editMessage.type === 'error' ? 'bg-red-100 !text-red-700' : 'bg-green-100 !text-green-700'}`}>
                                     {editMessage.text}
                                 </p>
                             )}
@@ -794,7 +794,7 @@ function MeusEventos() {
                                 <button
                                     type="button"
                                     onClick={() => setShowEditModal(false)}
-                                    className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium !text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:!ring-offset-2 focus:!ring-indigo-500"
                                 >
                                     Cancelar
                                 </button>
