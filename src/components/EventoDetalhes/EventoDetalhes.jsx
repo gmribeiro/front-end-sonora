@@ -43,7 +43,6 @@ const EventoDetalhes = () => {
                     loggedInUser = await verificarUsuarioLogado(token);
                     setUsuarioLogado(loggedInUser);
 
-                    // Verificar se usuário já reservou este evento
                     if (loggedInUser?.id && eventoData?.idEvento) {
                         const reservasResponse = await api.get(`/reservas/usuario/${loggedInUser.id}/evento/${eventoData.idEvento}`, {
                             headers: { 'Authorization': `Bearer ${token}` }
@@ -55,9 +54,16 @@ const EventoDetalhes = () => {
                 if (eventoData && eventoData.idEvento) {
                     try {
                         const imageResponse = await api.get(`/eventos/${eventoData.idEvento}/image`, {
-                            responseType: 'blob'
+                            maxRedirects: 0,
+                            validateStatus: (status) => status >= 200 && status < 400
                         });
-                        setEventImageUrl(URL.createObjectURL(imageResponse.data));
+
+                        if (imageResponse.status === 302 && imageResponse.headers.location) {
+                            setEventImageUrl(imageResponse.headers.location);
+                        } else {
+                            console.error('Resposta inesperada do servidor:', imageResponse);
+                            setEventImageUrl('/images/evento_padrao.png');
+                        }
                     } catch (imageError) {
                         console.error('Erro ao carregar imagem do evento:', imageError);
                         setEventImageUrl('/images/evento_padrao.png');
@@ -356,9 +362,6 @@ const EventoDetalhes = () => {
                         className="w-6 h-6 sm:w-8 sm:h-8 mr-2 flex-shrink-0"
                     />
                 </div>
-
-
-
 
                 <div className="mb-10 sm:mb-15">
                     <h2 className="!text-left !text-[#564A72] text-xl sm:text-2xl font-semibold mb-2">Descrição</h2>
