@@ -19,57 +19,57 @@ return {
   server: {
     proxy: {
       '/auth': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/genres': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/places': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/eventos': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/reservas': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/avaliacoes': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/musicos': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/notifications': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/contratos': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/users': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       },
       '/escalas': {
-        target: env.VITE_BACKEND_URL || "http://localhost:8080",
+        target: env.VITE_BACKEND_URL || "http://localhost:5000",
         changeOrigin: true,
         secure: false
       }
