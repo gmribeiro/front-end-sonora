@@ -7,7 +7,7 @@ function MeusContratos() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [artistaldLogado, setArtistaldLogado] = useState(null);
-    const [nomeArtistaLogado, setNomeArtistaLogado] = useState("");
+    const [nomeArtistaLogado, setNomeArtistaLogado] = useState(""); // Este será preenchido com nomeArtistico
 
     const [submittingContractId, setSubmittingContractId] = useState(null);
 
@@ -24,6 +24,45 @@ function MeusContratos() {
         buttonPurpleLight: '#c2a0bb', // Rosa
         buttonPurpleDark: '#564A72', // Roxo
     };
+
+    /**
+     * Formata uma string de data e hora para o formato "DD/MM/AAAA HH:MM".
+     * Esta função é robusta para strings no formato "DD/MM/AAAA HH:MM:SS".
+     * @param {string} dateTimeString - A string de data e hora no formato "DD/MM/AAAA HH:MM:SS".
+     * @returns {string} A data e hora formatada ou "Data/Hora inválida" em caso de erro.
+     */
+    const formatDateTime = useCallback((dateTimeString) => {
+        if (!dateTimeString) return 'Não disponível';
+
+        try {
+            const [datePart, timePart] = dateTimeString.split(' ');
+            const [day, month, year] = datePart.split('/');
+            const [hours, minutes] = timePart.split(':'); // Ignora segundos se existirem, usa apenas HH:MM
+
+            // Cria um objeto Date com base nos componentes para evitar problemas de fuso horário/parsing
+            const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day),
+                parseInt(hours), parseInt(minutes));
+
+            if (isNaN(date.getTime())) {
+                throw new Error('Data de entrada inválida');
+            }
+
+            const options = {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false // Formato 24h
+            };
+
+            return new Intl.DateTimeFormat('pt-BR', options).format(date);
+
+        } catch (error) {
+            console.error('Erro ao formatar data no MeusContratos:', error);
+            return 'Data/Hora inválida';
+        }
+    }, []); // useCallback para memorizar a função
 
     const fetchMeusContratosArtista = useCallback(async (artistaId, token) => {
         setLoading(true);
@@ -56,16 +95,29 @@ function MeusContratos() {
                     return;
                 }
 
+                // Usamos Promise.all para buscar ambos os dados em paralelo
                 const [userResponse, musicosResponse] = await Promise.all([
                     api.get('/auth/user/me', { headers: { 'Authorization': `Bearer ${token}` } }),
                     api.get('/musicos', { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
 
+                // console.log('Dados do Usuário logado (userResponse.data):', userResponse.data);
+                // console.log('Lista de Músicos da API (/musicos):', musicosResponse.data);
+
                 const musicoLogado = musicosResponse.data.find(musico => musico.usuario?.id === userResponse.data.id);
+
+                // console.log('Objeto do Músico Logado Encontrado:', musicoLogado);
+                // if (musicoLogado) {
+                //     console.log('Valor de musicoLogado.nomeArtistico:', musicoLogado.nomeArtistico); // Verifique este nome
+                //     console.log('Valor de musicoLogado.nomeMusico:', musicoLogado.nomeMusico); // Este provavelmente será undefined
+                // }
+
 
                 if (musicoLogado && musicoLogado.idMusico) {
                     setArtistaldLogado(musicoLogado.idMusico);
-                    setNomeArtistaLogado(musicoLogado.nomeMusico || 'Artista Desconhecido');
+                    // CORREÇÃO APLICADA AQUI: USANDO 'nomeArtistico'
+                    setNomeArtistaLogado(musicoLogado.nomeArtistico || 'Artista Desconhecido');
+                    // console.log('Variável nomeArtistaLogado definida como:', musicoLogado.nomeArtistico || 'Artista Desconhecido');
                     await fetchMeusContratosArtista(musicoLogado.idMusico, token);
                 } else {
                     console.warn('Nenhum perfil de músico encontrado para o usuário logado.');
@@ -74,6 +126,8 @@ function MeusContratos() {
             } catch (error) {
                 console.error('Erro ao carregar dados iniciais (usuário/músicos/contratos):', error);
                 setError('Não foi possível carregar seus dados. Verifique sua conexão ou tente novamente.');
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -178,6 +232,7 @@ function MeusContratos() {
             const idHost = hostResponse.data?.id || hostResponse.data;
 
             if (idHost) {
+                // 'nomeArtistaLogado' já está com o valor correto 'nomeArtistico'
                 const mensagem = `O artista ${nomeArtistaLogado} aceitou seu convite para o evento "${nomeEvento}" e está escalado!`;
                 await enviarNotificacao(idHost, mensagem, token);
             } else {
@@ -254,6 +309,7 @@ function MeusContratos() {
             );
 
             if (idHost) {
+                // 'nomeArtistaLogado' já está com o valor correto 'nomeArtistico'
                 const mensagem = `O artista ${nomeArtistaLogado} recusou seu convite para o evento "${nomeEvento}".`;
                 await enviarNotificacao(idHost, mensagem, token);
             } else {
@@ -379,7 +435,8 @@ function MeusContratos() {
                                 <div className="space-y-3 text-lg !text-gray-700 flex-grow">
                                     <p><strong>Gênero Musical:</strong> {contrato.idContrato.evento.generoMusical?.nomeGenero || 'Não especificado'}</p>
                                     <p><strong>Local:</strong> {contrato.idContrato.evento.localEvento?.local || 'Local não informado'}</p>
-                                    <p><strong>Data e Hora:</strong> {contrato.idContrato.evento.dataHora ? new Date(contrato.idContrato.evento.dataHora).toLocaleString('pt-BR') : 'Data não disponível'}</p>
+                                    {/* APLICAÇÃO DO formatDateTime AQUI */}
+                                    <p><strong>Data e Hora:</strong> {contrato.idContrato.evento.dataHora ? formatDateTime(contrato.idContrato.evento.dataHora) : 'Data não disponível'}</p>
                                     <p><strong>Valor Proposto:</strong> <span className="font-semibold" style={{ color: COLORS.primary }}>R$ {contrato.valor ? contrato.valor.toFixed(2) : '0.00'}</span></p>
                                     <p><strong>Detalhes:</strong> {contrato.detalhes || 'Nenhum detalhe fornecido'}</p>
                                     <p className="flex items-center">

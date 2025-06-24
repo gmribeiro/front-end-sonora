@@ -17,36 +17,35 @@ const COLORS = {
 
 function MinhasReservas() {
     // Estados para gerenciar os dados e o UI
-    const [minhasReservas, setMinhasReservas] = useState([]); // Corresponde a pendingReservations
-    const [minhasReservasConfirmadas, setMinhasReservasConfirmadas] = useState([]); // Corresponde a confirmedReservations
-    const [historicoReservas, setHistoricoReservas] = useState([]); // Corresponde a pastEvents
+    const [minhasReservas, setMinhasReservas] = useState([]); // Reservas pendentes de eventos futuros/atuais
+    const [minhasReservasConfirmadas, setMinhasReservasConfirmadas] = useState([]); // Reservas confirmadas de eventos futuros/atuais
+    const [historicoReservas, setHistoricoReservas] = useState([]); // Reservas confirmadas de eventos passados
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(""); // Corresponde a errorMessage
-    const [confirmandoId, setConfirmandoId] = useState(null); // Corresponde a confirmingId
-    const [mensagemConfirmacao, setMensagemConfirmacao] = useState(""); // Corresponde a confirmMessage
-    const [cancelandoId, setCancelandoId] = useState(null); // Corresponde a cancellingId
-    const [mensagemCancelamento, setMensagemCancelamento] = useState(""); // Corresponde a cancelMessage
-    const [usuarioLogadoId, setUsuarioLogadoId] = useState(null); // Corresponde a loggedInUserId
-    const [showCancelModal, setShowCancelModal] = useState(false); // Mantido para o modal
-    const [reservationToCancel, setReservationToCancel] = useState(null); // Mantido para o modal
+    const [error, setError] = useState("");
+    const [confirmandoId, setConfirmandoId] = useState(null);
+    const [mensagemConfirmacao, setMensagemConfirmacao] = useState("");
+    const [cancelandoId, setCancelandoId] = useState(null);
+    const [mensagemCancelamento, setMensagemCancelamento] = useState("");
+    const [usuarioLogadoId, setUsuarioLogadoId] = useState(null);
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [reservationToCancel, setReservationToCancel] = useState(null);
 
-    // Para armazenar IDs de reservas confirmadas para checagem rápida
+    // Para armazenar IDs de todas as reservas confirmadas (passadas e futuras) para checagem rápida
     const [confirmedReservationIds, setConfirmedReservationIds] = useState(new Set());
 
     /**
      * Formata uma string de data e hora para o formato "DD/MM/AAAA HH:MM".
-     * Ajustado para lidar com o formato original do seu PDF e garantir o parse correto.
      * @param {string} dateTimeString - A string de data e hora no formato "DD/MM/AAAA HH:MM:SS".
-     * @returns {string} A data e hora formatada ou "Data/Hora inválida" em caso de erro.
+     * @returns {string} A data e hora formatada ou "Não disponível" em caso de erro.
      */
-    const formatDateTime = (dateTimeString) => {
+    const formatDateTime = useCallback((dateTimeString) => {
         if (!dateTimeString) return 'Não disponível';
 
         try {
             const [datePart, timePart] = dateTimeString.split(' ');
             const [day, month, year] = datePart.split('/');
 
-            // Ajuste para criar um objeto Date com fuso horário local e evitar problemas de offset
+            // Cria um objeto Date no fuso horário local
             const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day),
                 parseInt(timePart.split(':')[0]), parseInt(timePart.split(':')[1]));
 
@@ -69,7 +68,40 @@ function MinhasReservas() {
             console.error('Erro ao formatar data:', error);
             return 'Data/Hora inválida';
         }
-    };
+    }, []);
+
+    /**
+     * Verifica se a data e hora do evento já passaram.
+     * Assume que dateTimeString está no formato "DD/MM/AAAA HH:MM:SS".
+     * @param {string} dateTimeString - A string de data e hora do evento.
+     * @returns {boolean} True se a data do evento for anterior à data/hora atual, False caso contrário.
+     */
+    const isEventInPast = useCallback((dateTimeString) => {
+        if (!dateTimeString) return true; // Trata datas inválidas como passadas
+
+        try {
+            const [datePart, timePart] = dateTimeString.split(' ');
+            const [day, month, year] = datePart.split('/');
+            const [hours, minutes, seconds] = timePart.split(':');
+
+            // Cria um objeto Date no fuso horário local
+            const eventDate = new Date(
+                parseInt(year),
+                parseInt(month) - 1, // Mês é baseado em 0 (jan=0, dez=11)
+                parseInt(day),
+                parseInt(hours),
+                parseInt(minutes),
+                parseInt(seconds)
+            );
+
+            const now = new Date(); // Data e hora atual
+
+            return eventDate < now;
+        } catch (error) {
+            console.error('Erro ao verificar se o evento está no passado:', error);
+            return true; // Em caso de erro na data, considera como passado
+        }
+    }, []);
 
     /**
      * Função auxiliar para obter o token de autorização.
@@ -83,12 +115,14 @@ function MinhasReservas() {
             const response = await api.get(`/reservas/usuario/${userId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            setMinhasReservas(response.data);
+            // Filtra as reservas pendentes para não mostrar eventos passados
+            const futurasPendentes = response.data.filter(reserva => !isEventInPast(reserva.evento?.dataHora));
+            setMinhasReservas(futurasPendentes);
         } catch (err) {
             console.error('Erro ao carregar minhas reservas:', err);
             setError('Erro ao carregar suas reservas pendentes.');
         }
-    }, []);
+    }, [isEventInPast]);
 
     const fetchMinhasReservasConfirmadas = useCallback(async (userId, token) => {
         try {
@@ -96,24 +130,29 @@ function MinhasReservas() {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            // CORREÇÃO APLICADA AQUI: Garante que response.data seja um array
-            setMinhasReservasConfirmadas(Array.isArray(response.data) ? response.data : []);
+            const allConfirmed = Array.isArray(response.data) ? response.data : [];
 
-            // Atualiza o Set de IDs confirmados, garantindo que response.data seja um array
-            setConfirmedReservationIds(new Set(Array.isArray(response.data) ? response.data.map(res => res.idReserva) : []));
+            // Filtra: Apenas reservas confirmadas de eventos futuros/atuais
+            const futurasConfirmadas = allConfirmed.filter(reserva => !isEventInPast(reserva.evento?.dataHora));
+            setMinhasReservasConfirmadas(futurasConfirmadas);
+
+            // Atualiza o Set de IDs confirmados com TODAS as confirmadas para `handleConfirmarPresenca`
+            setConfirmedReservationIds(new Set(allConfirmed.map(res => res.idReserva)));
 
         } catch (err) {
             console.error('Erro ao carregar minhas reservas confirmadas:', err);
             setError('Erro ao carregar suas reservas confirmadas.');
         }
-    }, []);
+    }, [isEventInPast]);
 
     const fetchHistoricoReservas = useCallback(async (userId, token) => {
         try {
+            // Este endpoint `/reservas/user/${userId}/confirmed/past` é ideal se seu backend já retorna
+            // apenas as reservas confirmadas de eventos passados.
             const response = await api.get(`/reservas/user/${userId}/confirmed/past`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            setHistoricoReservas(response.data);
+            setHistoricoReservas(Array.isArray(response.data) ? response.data : []);
         } catch (err) {
             console.error('Erro ao carregar histórico de reservas:', err);
             setError('Erro ao carregar seu histórico de reservas.');
@@ -138,11 +177,13 @@ function MinhasReservas() {
                 const userId = userResponse.data.id;
                 setUsuarioLogadoId(userId);
 
+                // Carrega todas as reservas em paralelo
                 await Promise.all([
                     fetchMinhasReservas(userId, token),
                     fetchMinhasReservasConfirmadas(userId, token),
                     fetchHistoricoReservas(userId, token),
                 ]);
+
             } catch (err) {
                 console.error('Erro ao carregar dados do cliente:', err);
                 setError('Erro ao carregar informações.');
@@ -183,8 +224,12 @@ function MinhasReservas() {
             if (response.status === 200) {
                 // Remove a reserva da lista de pendentes
                 setMinhasReservas(prevReservas => prevReservas.filter(r => r.idReserva !== reservaId));
-                // Recarrega as confirmadas para garantir a consistência e atualizar o Set de IDs
+
+                // Recarrega as confirmadas e o histórico para garantir a consistência
+                // e para que a reserva recém-confirmada apareça na lista correta (futuras vs. passado)
                 await fetchMinhasReservasConfirmadas(usuarioLogadoId, token);
+                await fetchHistoricoReservas(usuarioLogadoId, token); // Importante recarregar histórico para pegar eventos passados
+
                 setMensagemConfirmacao('Presença confirmada!');
             } else {
                 setMensagemConfirmacao('Erro ao confirmar presença.');
@@ -226,9 +271,10 @@ function MinhasReservas() {
             });
 
             if (response.status === 204) {
-                // Remove a reserva das listas de pendentes e confirmadas
+                // Remove a reserva de todas as listas onde ela possa estar
                 setMinhasReservas(prevReservas => prevReservas.filter(r => r.idReserva !== reservationToCancel.idReserva));
                 setMinhasReservasConfirmadas(prevReservas => prevReservas.filter(r => r.idReserva !== reservationToCancel.idReserva));
+                setHistoricoReservas(prevReservas => prevReservas.filter(r => r.idReserva !== reservationToCancel.idReserva)); // Também remove do histórico
 
                 // Remove o ID da reserva do Set de IDs confirmados
                 setConfirmedReservationIds(prev => {
@@ -313,7 +359,7 @@ function MinhasReservas() {
                     </h3>
                     {minhasReservas.length === 0 ? (
                         <p className="text-base sm:text-lg italic p-4 rounded-lg shadow-inner"
-                            style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
+                           style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
                             Você não possui reservas aguardando confirmação.
                         </p>
                     ) : (
@@ -369,7 +415,7 @@ function MinhasReservas() {
                                             </button>
                                             {mensagemConfirmacao && confirmandoId === reserva.idReserva && (
                                                 <p className="text-center mt-2 text-sm animate-fade-in"
-                                                    style={{ color: COLORS.success }}>{mensagemConfirmacao}</p>
+                                                   style={{ color: COLORS.success }}>{mensagemConfirmacao}</p>
                                             )}
                                             {isConfirmed && ( // Mensagem extra se já confirmada
                                                 <p className="text-center mt-2 text-sm italic" style={{ color: COLORS.textMedium }}>
@@ -378,7 +424,7 @@ function MinhasReservas() {
                                             )}
                                             <Link to={`/detalhes/${reserva.evento?.idEvento}`} className="block mt-2">
                                                 <button className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm sm:text-base"
-                                                    style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}>
+                                                        style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}>
                                                     Ver Detalhes do Evento
                                                 </button>
                                             </Link>
@@ -390,17 +436,17 @@ function MinhasReservas() {
                     )}
                 </section>
 
-                {/* Seção de Reservas Confirmadas */}
+                {/* Seção de Reservas Confirmadas (Eventos Futuros/Atuais) */}
                 <section className="mb-10">
                     <h3 className="text-2xl sm:text-3xl font-bold mb-6 pb-2 border-b-2" style={{
                         color: COLORS.primary, borderColor: COLORS.secondary
                     }}>
-                        Suas Reservas Confirmadas
+                        Suas Reservas Confirmadas (Próximos Eventos)
                     </h3>
                     {minhasReservasConfirmadas.length === 0 ? (
                         <p className="text-base sm:text-lg italic p-4 rounded-lg shadow-inner"
-                            style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
-                            Você ainda não tem reservas confirmadas.
+                           style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
+                            Você não possui reservas confirmadas para eventos futuros ou atuais.
                         </p>
                     ) : (
                         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -444,7 +490,7 @@ function MinhasReservas() {
                                         borderColor: COLORS.borderLight, backgroundColor: COLORS.background
                                     }}>
                                         <button
-                                            onClick={() => alert('Funcionalidade de confirmação por e-mail a ser implementada.')} // Alerta para simular a funcionalidade
+                                            onClick={() => alert('Funcionalidade de confirmação por e-mail a ser implementada.')}
                                             className="w-full sm:w-auto flex-1 !text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm sm:text-base"
                                             style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}
                                         >
@@ -461,7 +507,7 @@ function MinhasReservas() {
                                     </div>
                                     {mensagemCancelamento && cancelandoId === reserva.idReserva && (
                                         <p className="text-center mt-2 text-sm animate-fade-in p-2"
-                                            style={{ color: COLORS.danger }}>{mensagemCancelamento}</p>
+                                           style={{ color: COLORS.danger }}>{mensagemCancelamento}</p>
                                     )}
                                 </li>
                             ))}
@@ -469,7 +515,7 @@ function MinhasReservas() {
                     )}
                 </section>
 
-                {/* Seção de Histórico de Eventos */}
+                {/* Seção de Histórico de Eventos Concluídos */}
                 <section>
                     <h3 className="text-2xl sm:text-3xl font-bold mb-6 pb-2 border-b-2" style={{
                         color: COLORS.primary, borderColor: COLORS.secondary
@@ -478,7 +524,7 @@ function MinhasReservas() {
                     </h3>
                     {historicoReservas.length === 0 ? (
                         <p className="text-base sm:text-lg italic p-4 rounded-lg shadow-inner"
-                            style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
+                           style={{ color: COLORS.textMedium, backgroundColor: COLORS.background }}>
                             Você não possui histórico de eventos concluídos.
                         </p>
                     ) : (
@@ -512,18 +558,25 @@ function MinhasReservas() {
                                             {reserva.evento?.localEvento?.local || 'Não disponível'}
                                         </p>
                                         <p className="text-sm font-semibold mt-2" style={{ color: COLORS.textMedium }}>
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: `${COLORS.borderLight}`, color: COLORS.textMedium }}>
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: `${COLORS.borderLight}80`, color: COLORS.textMedium }}>
                                                 Concluído
                                             </span>
                                         </p>
                                     </div>
-                                    <div className="p-4 border-t" style={{
+                                    <div className="p-4 border-t flex flex-col space-y-2" style={{ // Added flex and space-y-2 here
                                         borderColor: COLORS.borderLight, backgroundColor: COLORS.background
                                     }}>
                                         <Link to="/avaliacoes" state={{ eventoId: reserva.evento?.idEvento }}>
                                             <button className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm sm:text-base"
-                                                style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}>
+                                                    style={{ backgroundColor: COLORS.primary, color: 'white', borderColor: COLORS.primary, '--focus-ring-color': COLORS.primary }}>
                                                 Avaliar Evento
+                                            </button>
+                                        </Link>
+                                        {/* NEW: Button to view Event Details in History */}
+                                        <Link to={`/detalhes/${reserva.evento?.idEvento}`} className="block mt-2">
+                                            <button className="w-full text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm sm:text-base"
+                                                    style={{ backgroundColor: COLORS.secondary, color: 'white', borderColor: COLORS.secondary, '--focus-ring-color': COLORS.secondary }}>
+                                                Ver Detalhes do Evento
                                             </button>
                                         </Link>
                                     </div>
@@ -532,37 +585,37 @@ function MinhasReservas() {
                         </ul>
                     )}
                 </section>
-            </div>
 
-            {/* Modal de Confirmação de Cancelamento */}
-            {showCancelModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in">
-                    <div className="bg-white rounded-2xl p-6 shadow-lg w-[90%] max-w-md">
-                        <h2 className="text-xl font-bold mb-4 text-center" style={{ color: COLORS.primary }}>
-                            Deseja mesmo cancelar esta reserva?
-                        </h2>
-                        <p className="text-center mb-6" style={{ color: COLORS.textMedium }}>
-                            Evento: <span className="font-semibold">{reservationToCancel?.evento?.nomeEvento}</span>
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <button
-                                onClick={handleCancelarReservaConfirmacao}
-                                className="flex-1 text-white px-4 py-2 rounded-full shadow-md transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2"
-                                style={{ backgroundColor: COLORS.danger, color: 'white', borderColor: COLORS.danger, '--focus-ring-color': COLORS.danger }}
-                            >
-                                Sim, cancelar
-                            </button>
-                            <button
-                                onClick={handleCancelarReservaAbortar}
-                                className="flex-1 px-4 py-2 rounded-full shadow-md transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2"
-                                style={{ backgroundColor: COLORS.borderLight, color: COLORS.primary, borderColor: COLORS.borderLight, '--focus-ring-color': COLORS.borderLight }}
-                            >
-                                Não, manter
-                            </button>
+                {/* Modal de Confirmação de Cancelamento */}
+                {showCancelModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center" style={{ borderColor: COLORS.primary }}>
+                            <h3 className="text-xl font-bold mb-4" style={{ color: COLORS.danger }}>Confirmar Cancelamento</h3>
+                            <p className="mb-6 text-base" style={{ color: COLORS.textDark }}>
+                                Tem certeza que deseja cancelar a reserva para o evento "
+                                <span className="font-semibold">{reservationToCancel?.evento?.nomeEvento || 'Evento Desconhecido'}</span>"?
+                                Esta ação não pode ser desfeita.
+                            </p>
+                            <div className="flex justify-center space-x-4">
+                                <button
+                                    onClick={handleCancelarReservaConfirmacao}
+                                    className="px-6 py-2 rounded-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                    style={{ backgroundColor: COLORS.danger, color: 'white', borderColor: COLORS.danger, '--focus-ring-color': COLORS.danger }}
+                                >
+                                    Sim, Cancelar
+                                </button>
+                                <button
+                                    onClick={handleCancelarReservaAbortar}
+                                    className="px-6 py-2 rounded-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                    style={{ backgroundColor: COLORS.secondary, color: 'white', borderColor: COLORS.secondary, '--focus-ring-color': COLORS.secondary }}
+                                >
+                                    Não, Manter
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 }

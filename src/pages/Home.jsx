@@ -1,6 +1,6 @@
 import Carrossel from '../components/Carrossel/carrossel.jsx';
 import './css/global.css';
-import { useState, useEffect, useCallback } from 'react'; // Adicionado useCallback
+import { useState, useEffect, useCallback } from 'react';
 import useTitle from '../hooks/useTitle';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import api from '../api/index.js';
@@ -13,25 +13,21 @@ function Home() {
   useTitle('Início - Sonora');
   const [generoSelecionado, setGeneroSelecionado] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [eventosCompletos, setEventosCompletos] = useState([]); // Eventos brutos formatados
-  const [eventosFiltrados, setEventosFiltrados] = useState([]); // Eventos filtrados pela categoria
+  const [eventosCompletos, setEventosCompletos] = useState([]);
+  const [eventosFiltrados, setEventosFiltrados] = useState([]);
   const navigate = useNavigate();
 
   // --- Funções de Formatação de Data ---
-  // Esta função garante que a data seja exibida de forma amigável
   const formatDateTimeForUserDisplay = useCallback((backendDateTimeString) => {
     if (typeof backendDateTimeString !== 'string' || !backendDateTimeString) {
       return 'Data e hora não informadas';
     }
 
     let date;
-    // Tenta parsear como "DD/MM/AAAA HH:MM:SS"
     const parts = backendDateTimeString.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/);
     if (parts) {
-      // Constrói uma data no formato "YYYY-MM-DDTHH:MM:SS" para o construtor Date
       date = new Date(`${parts[3]}-${parts[2]}-${parts[1]}T${parts[4]}:${parts[5]}:${parts[6]}`);
     } else {
-      // Tenta parsear qualquer outro formato que Date() aceite (ex: ISO 8601)
       date = new Date(backendDateTimeString);
     }
 
@@ -47,8 +43,32 @@ function Home() {
     const minutes = String(date.getMinutes()).padStart(2, '0');
 
     return `${day}/${month}/${year} ${hours}:${minutes}`;
-  }, []); // useCallback sem dependências, pois não usa estados/props do componente
+  }, []);
 
+  // --- Nova Função: Verifica se a data do evento está no passado ---
+  const isEventInPast = useCallback((backendDateTimeString) => {
+    if (typeof backendDateTimeString !== 'string' || !backendDateTimeString) {
+      return true; // Considerar inválido como no passado para não exibir
+    }
+
+    let eventDate;
+    const parts = backendDateTimeString.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/);
+    if (parts) {
+      // Constrói a data no formato "YYYY-MM-DDTHH:MM:SS" para o construtor Date
+      eventDate = new Date(`${parts[3]}-${parts[2]}-${parts[1]}T${parts[4]}:${parts[5]}:${parts[6]}`);
+    } else {
+      eventDate = new Date(backendDateTimeString);
+    }
+
+    if (isNaN(eventDate.getTime())) {
+      console.warn("[isEventInPast] Data ou formato inválido para verificação:", backendDateTimeString);
+      return true; // Considerar inválido como no passado
+    }
+
+    const now = new Date();
+    // Comparar apenas a data para eventos que duram o dia todo, ou comparar com a hora atual se a hora for relevante
+    return eventDate < now;
+  }, []);
 
   useEffect(() => {
     const fetchEventos = async () => {
@@ -56,7 +76,9 @@ function Home() {
         const response = await api.get('/eventos');
         const eventosRaw = response.data;
 
-        const eventosMapeados = eventosRaw.map(evento => {
+        const eventosAtuais = eventosRaw.filter(evento => !isEventInPast(evento.dataHora));
+
+        const eventosMapeados = eventosAtuais.map(evento => {
           const dataHoraFormatada = formatDateTimeForUserDisplay(evento.dataHora);
 
           return {
@@ -69,36 +91,35 @@ function Home() {
           };
         });
         setEventosCompletos(eventosMapeados);
-        setEventosFiltrados(eventosMapeados); // Inicialmente, todos os eventos são filtrados
+        setEventosFiltrados(eventosMapeados);
       } catch (error) {
         console.error('Erro ao carregar eventos do backend:', error);
       }
     };
 
     fetchEventos();
-  }, [formatDateTimeForUserDisplay]); // Adicione formatDateTimeForUserDisplay como dependência
+  }, [formatDateTimeForUserDisplay, isEventInPast]); // Adicione isEventInPast como dependência
 
-  // Callback para o Carrossel
   const handleGeneroSelecionado = useCallback((genero) => {
     setGeneroSelecionado(genero);
   }, []);
 
-  // Lida com o cadastro de um novo evento
   const handleNovoEventoCadastrado = useCallback((novoEvento) => {
-    // Formata a data do novo evento antes de adicioná-lo
-    const eventoFormatado = {
-      ...novoEvento,
-      dataHora: formatDateTimeForUserDisplay(novoEvento.dataHora) // Formata o novo evento
-    };
-    setEventosCompletos(prevEventos => [eventoFormatado, ...prevEventos]);
-    // O useEffect abaixo cuidará de atualizar eventosFiltrados com base no generoSelecionado
-    setCurrentPage(1); // Reinicia a paginação
-  }, [formatDateTimeForUserDisplay]);
+    // Antes de adicionar um novo evento, verifique se ele não está no passado
+    if (!isEventInPast(novoEvento.dataHora)) {
+      const eventoFormatado = {
+        ...novoEvento,
+        dataHora: formatDateTimeForUserDisplay(novoEvento.dataHora)
+      };
+      setEventosCompletos(prevEventos => [eventoFormatado, ...prevEventos]);
+      setCurrentPage(1);
+    } else {
+      console.log("Novo evento cadastrado está no passado e não será exibido na home.");
+    }
+  }, [formatDateTimeForUserDisplay, isEventInPast]);
 
-
-  // Efeito para filtrar eventos quando o gênero selecionado ou os eventos completos mudam
   useEffect(() => {
-    setCurrentPage(1); // Sempre reseta a página ao aplicar um novo filtro
+    setCurrentPage(1);
     if (generoSelecionado) {
       setEventosFiltrados(eventosCompletos.filter(evento => evento.genero === generoSelecionado));
     } else {
@@ -113,8 +134,7 @@ function Home() {
         <Routes>
           <Route path="/" element={
             <Eventos
-                eventosFiltrados={eventosFiltrados} // Passa os eventos JÁ FORMATADOS E FILTRADOS
-                // eventosCompletos não precisa mais ser passado para Eventos
+                eventosFiltrados={eventosFiltrados}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
                 onEventoCadastrado={handleNovoEventoCadastrado}
@@ -122,7 +142,7 @@ function Home() {
           } />
           <Route path="/detalhes/:id" element={
             <InfoEvento
-                eventos={eventosCompletos} // Use eventosCompletos aqui para detalhes, se necessário
+                eventos={eventosCompletos}
                 onVoltar={() => navigate('/')}
             />
           } />
