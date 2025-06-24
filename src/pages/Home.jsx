@@ -1,6 +1,6 @@
 import Carrossel from '../components/Carrossel/carrossel.jsx';
 import './css/global.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react'; // Adicionado useCallback
 import useTitle from '../hooks/useTitle';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import api from '../api/index.js';
@@ -13,9 +13,42 @@ function Home() {
   useTitle('Início - Sonora');
   const [generoSelecionado, setGeneroSelecionado] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [eventosCompletos, setEventosCompletos] = useState([]);
-  const [eventosFiltrados, setEventosFiltrados] = useState([]);
+  const [eventosCompletos, setEventosCompletos] = useState([]); // Eventos brutos formatados
+  const [eventosFiltrados, setEventosFiltrados] = useState([]); // Eventos filtrados pela categoria
   const navigate = useNavigate();
+
+  // --- Funções de Formatação de Data ---
+  // Esta função garante que a data seja exibida de forma amigável
+  const formatDateTimeForUserDisplay = useCallback((backendDateTimeString) => {
+    if (typeof backendDateTimeString !== 'string' || !backendDateTimeString) {
+      return 'Data e hora não informadas';
+    }
+
+    let date;
+    // Tenta parsear como "DD/MM/AAAA HH:MM:SS"
+    const parts = backendDateTimeString.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/);
+    if (parts) {
+      // Constrói uma data no formato "YYYY-MM-DDTHH:MM:SS" para o construtor Date
+      date = new Date(`${parts[3]}-${parts[2]}-${parts[1]}T${parts[4]}:${parts[5]}:${parts[6]}`);
+    } else {
+      // Tenta parsear qualquer outro formato que Date() aceite (ex: ISO 8601)
+      date = new Date(backendDateTimeString);
+    }
+
+    if (isNaN(date.getTime())) {
+      console.warn("[formatDateTimeForUserDisplay] Data ou formato inválido para exibição:", backendDateTimeString);
+      return 'Data e hora inválidas';
+    }
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  }, []); // useCallback sem dependências, pois não usa estados/props do componente
+
 
   useEffect(() => {
     const fetchEventos = async () => {
@@ -24,43 +57,52 @@ function Home() {
         const eventosRaw = response.data;
 
         const eventosMapeados = eventosRaw.map(evento => {
-          const dataHoraCompleta = evento.dataHora;
-          const hora = dataHoraCompleta
-            ? new Date(dataHoraCompleta).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-            : 'N/A';
+          // *** APLICANDO A FORMATAÇÃO AQUI ***
+          const dataHoraFormatada = formatDateTimeForUserDisplay(evento.dataHora);
 
           return {
             id: evento.idEvento,
             titulo: evento.nomeEvento,
             local: evento.localEvento ? evento.localEvento.local : 'Local não informado',
-            hora: hora,
+            // Agora a prop 'dataHora' conterá a data e hora formatadas para exibição
+            dataHora: dataHoraFormatada,
+            // A prop 'hora' anterior não é mais necessária se 'dataHora' for completa
+            // hora: dataHoraCompleta ? new Date(dataHoraCompleta).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'N/A',
             imagem: evento.foto ? `eventos/${evento.idEvento}/image` : '/images/evento_padrao.png',
             genero: evento.generoMusical ? evento.generoMusical.nomeGenero : 'Não especificado'
           };
         });
         setEventosCompletos(eventosMapeados);
-        setEventosFiltrados(eventosMapeados);
-
+        setEventosFiltrados(eventosMapeados); // Inicialmente, todos os eventos são filtrados
       } catch (error) {
         console.error('Erro ao carregar eventos do backend:', error);
       }
     };
 
     fetchEventos();
+  }, [formatDateTimeForUserDisplay]); // Adicione formatDateTimeForUserDisplay como dependência
+
+  // Callback para o Carrossel
+  const handleGeneroSelecionado = useCallback((genero) => {
+    setGeneroSelecionado(genero);
   }, []);
 
-  const handleNovoEventoCadastrado = (novoEvento) => {
-    setEventosCompletos(prevEventos => [novoEvento, ...prevEventos]);
-    setEventosFiltrados(prevEventos => [novoEvento, ...prevEventos]);
-    setCurrentPage(1);
-  };
+  // Lida com o cadastro de um novo evento
+  const handleNovoEventoCadastrado = useCallback((novoEvento) => {
+    // Formata a data do novo evento antes de adicioná-lo
+    const eventoFormatado = {
+      ...novoEvento,
+      dataHora: formatDateTimeForUserDisplay(novoEvento.dataHora) // Formata o novo evento
+    };
+    setEventosCompletos(prevEventos => [eventoFormatado, ...prevEventos]);
+    // O useEffect abaixo cuidará de atualizar eventosFiltrados com base no generoSelecionado
+    setCurrentPage(1); // Reinicia a paginação
+  }, [formatDateTimeForUserDisplay]);
 
-  const handleGeneroSelecionado = (genero) => {
-    setGeneroSelecionado(genero);
-  };
 
+  // Efeito para filtrar eventos quando o gênero selecionado ou os eventos completos mudam
   useEffect(() => {
-    setCurrentPage(1);
+    setCurrentPage(1); // Sempre reseta a página ao aplicar um novo filtro
     if (generoSelecionado) {
       setEventosFiltrados(eventosCompletos.filter(evento => evento.genero === generoSelecionado));
     } else {
@@ -69,28 +111,28 @@ function Home() {
   }, [generoSelecionado, eventosCompletos]);
 
   return (
-    <main className="body">
-      <Header />
-      <Carrossel onGeneroSelecionado={handleGeneroSelecionado} />
-      <Routes>
-        <Route path="/" element={
-          <Eventos
-            eventosFiltrados={eventosFiltrados}
-            eventosCompletos={eventosCompletos}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            onEventoCadastrado={handleNovoEventoCadastrado}
-          />
-        } />
-        <Route path="/detalhes/:id" element={
-          <InfoEvento
-            eventos={eventosCompletos}
-            onVoltar={() => navigate('/')}
-          />
-        } />
-      </Routes>
-      <Footer />
-    </main>
+      <main className="body">
+        <Header />
+        <Carrossel onGeneroSelecionado={handleGeneroSelecionado} />
+        <Routes>
+          <Route path="/" element={
+            <Eventos
+                eventosFiltrados={eventosFiltrados} // Passa os eventos JÁ FORMATADOS E FILTRADOS
+                // eventosCompletos não precisa mais ser passado para Eventos
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                onEventoCadastrado={handleNovoEventoCadastrado}
+            />
+          } />
+          <Route path="/detalhes/:id" element={
+            <InfoEvento
+                eventos={eventosCompletos} // Use eventosCompletos aqui para detalhes, se necessário
+                onVoltar={() => navigate('/')}
+            />
+          } />
+        </Routes>
+        <Footer />
+      </main>
   );
 }
 
