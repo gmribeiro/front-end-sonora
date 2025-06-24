@@ -9,7 +9,6 @@ const Cadastrar = () => {
     email: '',
     senha: '',
     confirmarSenha: '',
-    telefone: '',
     genero: '',
     role: 'CLIENT',
     nomeArtistico: '',
@@ -38,7 +37,6 @@ const Cadastrar = () => {
     }
   }, [cadastroConcluido, navigate]);
 
-  // Limpa erros e mensagens depois de 15 segundos
   useEffect(() => {
     if (mensagem || Object.keys(errors).length > 0) {
       const timer = setTimeout(() => {
@@ -49,28 +47,9 @@ const Cadastrar = () => {
     }
   }, [mensagem, errors]);
 
-  const formatTelefone = (value) => {
-    const cleaned = value.replace(/\D/g, '').slice(0, 13);
-    const match = cleaned.match(/^(\d{2})(\d{2})(\d{4,5})(\d{0,4})$/);
-
-    if (match) {
-      const intl = match[1] ? `+${match[1]}` : '';
-      const ddd = match[2] ? ` (${match[2]})` : '';
-      const first = match[3] ? ` ${match[3]}` : '';
-      const last = match[4] ? `-${match[4]}` : '';
-      return `${intl}${ddd}${first}${last}`.trim();
-    }
-    return value;
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'telefone') {
-      const formatted = formatTelefone(value);
-      setFormData(prev => ({ ...prev, telefone: formatted }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: '' }));
     setMensagem('');
   };
@@ -78,11 +57,6 @@ const Cadastrar = () => {
   const validarEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
-  };
-
-  const validarTelefone = (telefone) => {
-    const numeros = telefone.replace(/\D/g, '');
-    return numeros.length === 10 || numeros.length === 11;
   };
 
   const validarCamposArtista = () => {
@@ -117,14 +91,6 @@ const Cadastrar = () => {
 
     if (formData.senha !== formData.confirmarSenha) {
       novosErros.confirmarSenha = 'As senhas não coincidem.';
-    }
-
-    if (formData.role === 'HOST') {
-      if (!formData.telefone) {
-        novosErros.telefone = 'Telefone é obrigatório para Anfitrião.';
-      } else if (!validarTelefone(formData.telefone)) {
-        novosErros.telefone = 'Telefone inválido. Use formato +55 (XX) XXXXX-XXXX.';
-      }
     }
 
     const errosArtista = validarCamposArtista();
@@ -323,20 +289,6 @@ const Cadastrar = () => {
 
                 {formData.role === 'HOST' && (
                   <>
-                    <label htmlFor="telefone" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Telefone</label>
-                    <input
-                      type="tel"
-                      id="telefone"
-                      name="telefone"
-                      placeholder="+55 (11) 91234-5678"
-                      value={formData.telefone}
-                      onChange={handleChange}
-                      maxLength={20}
-                      className={inputClass('telefone')}
-                      required
-                    />
-                    {errors.telefone && <p className="text-[#B00020] text-xs sm:text-sm mt-0.25 mb-4">{errors.telefone}</p>}
-
                     <label htmlFor="bio" className="font-bold mb-1 text-[#1F1536] text-sm sm:text-base">Bio</label>
                     <textarea
                       id="bio"
