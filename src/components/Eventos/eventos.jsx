@@ -500,7 +500,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                                                 handleReservar(evento.id);
                                             }}
                                             disabled={reservandoId === evento.id}
-                                            className="w-full bg-[#5A4E75] hover:bg-[#2E284E] text-white py-2 px-4 sm:py-3 sm:px-5 text-sm sm:text-base rounded-md transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+                                            className="w-full !bg-[#5A4E75] hover:!bg-[#2E284E] !text-white py-2 px-4 sm:py-3 sm:px-5 text-sm sm:text-base rounded-md transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
                                         >
                                             {reservandoId === evento.id ? 'Reservando...' : 'Reservar'}
                                         </button>
@@ -520,7 +520,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                     <button
                         onClick={() => mudarPagina(currentPage - 1)}
                         disabled={currentPage === 1 || isAnimating}
-                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
+                        className="!bg-[#5A4E75] hover:!bg-[#2E284E] !text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
                     >
                         &lt;
                     </button>
@@ -530,7 +530,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                     <button
                         onClick={() => mudarPagina(currentPage + 1)}
                         disabled={currentPage === totalPaginas || isAnimating}
-                        className="bg-[#5A4E75] hover:bg-[#2E284E] text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
+                        className="!bg-[#5A4E75] hover:!bg-[#2E284E] !text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-[#8B7EA2] disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
                     >
                         &gt;
                     </button>
