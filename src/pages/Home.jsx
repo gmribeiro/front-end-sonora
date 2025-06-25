@@ -10,6 +10,7 @@ import InfoEvento from '../components/InfoEvento/InfoEvento.jsx';
 import Footer from '../components/Footer/footer.jsx';
 
 function Home() {
+  const url = import.meta.env.VITE_BACKEND_URL;
   useTitle('Início - Sonora');
   const [generoSelecionado, setGeneroSelecionado] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -86,7 +87,7 @@ function Home() {
             titulo: evento.nomeEvento,
             local: evento.localEvento ? evento.localEvento.local : 'Local não informado',
             dataHora: dataHoraFormatada,
-            imagem: evento.foto ? `eventos/${evento.idEvento}/image` : '/images/evento_padrao.png',
+            imagem: evento.foto ? url + `/eventos/${evento.idEvento}/image` : '/images/evento_padrao.png',
             genero: evento.generoMusical ? evento.generoMusical.nomeGenero : 'Não especificado'
           };
         });
