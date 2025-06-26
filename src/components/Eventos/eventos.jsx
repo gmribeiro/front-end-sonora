@@ -296,7 +296,7 @@ const Eventos = ({ eventosFiltrados, currentPage, setCurrentPage, onEventoCadast
                 <div className="max-w-6xl mx-auto mb-6">
                     <button
                         onClick={() => setShowCadastro(!showCadastro)}
-                        className="!text-[#EDE6F2] bg-gradient-to-b from-[#342e5a] via-[#5A4E75] to-[#7d6588] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] lg:h-[25px] lg:mb-15 mx-auto"
+                        className="!text-[#EDE6F2] bg-gradient-to-b from-[#342e5a] via-[#5A4E75] to-[#7d6588] rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer flex flex-col w-full max-w-[350px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[400px] h-16 lg:mb-15 mx-auto justify-center items-center"
                     >
                         {showCadastro ? 'Cancelar Cadastro' : 'Cadastrar Novo Evento'}
                     </button>
