@@ -1,6 +1,7 @@
 // src/components/EmailRecoveryForm.jsx
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
+
 
 function EmailRecoveryForm() {
     const [email, setEmail] = useState('');
