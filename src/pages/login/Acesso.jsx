@@ -5,10 +5,11 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import useTitle from '../../hooks/useTitle.js';
 
 function Acesso() {
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
     useTitle('Login - Sonora');
     return (
         
-        <GoogleOAuthProvider clientId="514141073233-1e9hp32vikk8euh1hgoap2p0otbnvltp.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId={googleClientId}>
             <>
                 <Acessar />
             </>
